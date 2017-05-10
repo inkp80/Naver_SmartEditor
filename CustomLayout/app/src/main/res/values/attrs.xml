@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CustomLayout">
+        <attr name="weightSum" format="float"/>
+    </declare-styleable>
+
+    <declare-styleable name="CustomLayout_LayoutParams">
+        <attr name="layout_weight" format="float"/>
+    </declare-styleable>
+
+</resources>

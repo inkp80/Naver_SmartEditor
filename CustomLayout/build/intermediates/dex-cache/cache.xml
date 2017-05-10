@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        is-multidex="true"
+        jar="/Users/NAVER/github/CustomLayout/app/build/intermediates/incremental-runtime-classes/debug/instant-run.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="510aa6efc159983dfbffa676a0dae37568c0a46f">
+        <dex dex="/Users/NAVER/github/CustomLayout/app/build/intermediates/transforms/dex/debug/folders/1000/10000/instant-run_bf78fc7895f23916cc89f0c601bb7f58b61d3e6b/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/NAVER/github/CustomLayout/app/build/intermediates/incremental-classes/debug/instant-run-bootstrap.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="3b6211d9c7a6f43db3803d8cf5031f459191e21c">
+        <dex dex="/Users/NAVER/github/CustomLayout/app/build/intermediates/transforms/dex/debug/folders/1000/10000/instant-run-bootstrap_9a7ff1d882cc1c7cebe5f46033d15135a8444efe/classes.dex" />
+    </item>
+
+</items>
