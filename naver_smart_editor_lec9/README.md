@@ -129,4 +129,37 @@ If you need to read and write the same database, I suggest you open the database
 
 > **Create and/or open a database that will be used for reading and writing.**
 
-    
+
+
+
+---
+
+깨알
+
+throws
+메소드나 생성자를 수행할 때 발생하는 exception을 선언할 때 사용하는 키워드
+throws는 예외를 전가시키는 것
+즉, 예외를 자신이 처리하지 않고, 자신을 호출하는 메소드에세 책임을 전가하는 것
+
+
+
+throw
+실제로 exception을 throw할 때 사용되는 키워드
+
+throw는 강제로 예외를 발생시키는 것
+프로그래머의 판단에 따른 처리이다.
+
+
+
+throws 메소드를 정의할 때 throws 예약어를 시그니처에 추가하면
+그 메소드를 호출하는 곳에서 예외 처리를 해야 한다.
+
+Function throws SomeException 이라는 문장을 이해하면 이해가 쉽다.
+
+Function이 SomeException 예외를 던진다는 뜻
+
+Function을 사용하는 곳(호출하는 곳)을 try 블록으로 감싸준다.
+
+
+
+
