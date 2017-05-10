@@ -29,6 +29,9 @@ public class AddFragment extends Fragment {
 
     Button mSaveBt;
 
+    public void test(){
+
+    }
 
     public interface AddFragmentCallbacks{
         void saveObjectToDB(BookItem item);

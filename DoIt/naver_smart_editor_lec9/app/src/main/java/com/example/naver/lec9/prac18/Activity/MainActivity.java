@@ -39,8 +39,8 @@ public class MainActivity extends AppCompatActivity implements AddFragment.AddFr
     final int FOCUS_ON_ADD_FRAGMENT = 0;
     final int FOCUS_ON_LIST_FRAMGENT = 1;
 
-    public Fragment mAddItemFrament;
-    public Fragment mListItemFragment;
+    public AddFragment mAddItemFrament;
+    public ListFramgment mListItemFragment;
 
     TabLayout mTabLayout;
 
@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements AddFragment.AddFr
 
         mAddItemFrament = new AddFragment();
         mListItemFragment = new ListFramgment();
+
         getSupportFragmentManager()
                 .beginTransaction().replace(R.id.fragment_container, mAddItemFrament).commit();
 
@@ -64,7 +65,6 @@ public class MainActivity extends AppCompatActivity implements AddFragment.AddFr
         mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                //do something in here
 
                 int posisition = tab.getPosition();
 
@@ -74,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements AddFragment.AddFr
                         selectedFragment = mAddItemFrament;
                         break;
                     case FOCUS_ON_LIST_FRAMGENT:
+                        renewingListFragmentCursor();
                         selectedFragment = mListItemFragment;
                         break;
                     default:
@@ -104,13 +105,7 @@ public class MainActivity extends AppCompatActivity implements AddFragment.AddFr
         } catch (Exception e) {
             Log.e("Database", "Error occur during open Database", e);
         }
-//        return true;
     }
-
-
-    //TODO : implement Create, Read
-    //TODO : Fragment method를 어떻게 호출해야하지 Interface를 통해.. 한다는데.. 그럼 내부 변수 접근은.
-
 
 
     @Override
@@ -128,8 +123,6 @@ public class MainActivity extends AppCompatActivity implements AddFragment.AddFr
             Log.e(TAG, "Error : ", e);
         }
         Log.d("Database", "INSERT SUCCESS");
-
-//        Cursor cursor = db.rawQuery("select * from " + TABLE_NAME, null);
     }
 
     @Override
@@ -143,6 +136,12 @@ public class MainActivity extends AppCompatActivity implements AddFragment.AddFr
             cursor.moveToNext();
         }
         return cursor;
+    }
+
+
+    public void renewingListFragmentCursor(){
+        Cursor cursor = db.rawQuery("select * from " + TABLE_NAME, null);
+        mListItemFragment.setCursor(cursor);
     }
 
     private class DatabaseHelper extends SQLiteOpenHelper {
@@ -185,6 +184,7 @@ public class MainActivity extends AppCompatActivity implements AddFragment.AddFr
 
         }
     }
+
 }
 
 
