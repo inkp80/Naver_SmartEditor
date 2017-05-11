@@ -16,6 +16,17 @@
 <img src="example.png">
 
 -------------
+## 진행 상황
+
+- 기본 뷰 구조 (완성)
+- 글 작성 컴포넌트 추가 (완성)
+- 글 작성 컴포넌트에서 데이터 추출 (진행)
+
+### 해야 할 일
+* 데이터 저장을 어떻게 할 것인지 (데이터베이스 구조 설계)
+* 계획서 작성
+
+-------------
 
 ### INFO
 
@@ -41,6 +52,7 @@ http://stackoverflow.com/questions/26245139/how-to-create-recyclerview-with-mult
 http://stackoverflow.com/questions/25914003/recyclerview-and-handling-different-type-of-row-inflation/29362643#29362643
 
 http://stackoverflow.com/questions/39971350/recycle-view-inflating-different-row-getting-exception-while-binding-the-data/39972276#39972276
+
 —————
 
 ### ISSUE LOG
