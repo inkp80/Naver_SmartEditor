@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/prac10_imgview"
+        android:layout_width="40dp"
+        android:layout_height="40dp" />
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:text="coat"
+            android:id="@+id/prac10_item_name"
+            android:layout_alignParentLeft="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:text="100$"
+            android:id="@+id/prac10_item_price"
+            android:layout_below="@+id/prac10_item_name"
+            android:layout_alignParentRight="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </RelativeLayout>
+    <TextView
+        android:id="@+id/prac10_item_remark"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="remarks"/>
+
+</LinearLayout>
