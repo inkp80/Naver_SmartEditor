@@ -3,14 +3,21 @@ package com.naver.smarteditor.lesssmarteditor.Activities;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.naver.smarteditor.lesssmarteditor.Adapter.EditorComponentAdapter;
 import com.naver.smarteditor.lesssmarteditor.Database.DatabaseHelper;
+import com.naver.smarteditor.lesssmarteditor.MyApplication;
 import com.naver.smarteditor.lesssmarteditor.R;
 import com.naver.smarteditor.lesssmarteditor.Views.CustomDialog;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by NAVER on 2017. 5. 11..
@@ -18,6 +25,7 @@ import com.naver.smarteditor.lesssmarteditor.Views.CustomDialog;
 
 public class EditorActivity extends AppCompatActivity{
     final String TAG = "Editor";
+    boolean localLogPermission = true;
 
     final int TEXT_MODE = 0;
     final int IMG_MODE = 1;
@@ -34,6 +42,11 @@ public class EditorActivity extends AppCompatActivity{
     View.OnClickListener imgButtonListener;
     View.OnClickListener mapButtonListener;
 
+    List<Integer> mComponentList;
+
+    EditorComponentAdapter mComponentAdpater;
+    RecyclerView mEditorRecyclerView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -41,6 +54,9 @@ public class EditorActivity extends AppCompatActivity{
 
         dbHelper = new DatabaseHelper(this);
         db = dbHelper.getWritableDatabase();
+
+
+        mComponentList = new ArrayList<Integer>();
 
         initListener();
         mCustomDialog = new CustomDialog(this, txtButtonListener, imgButtonListener, mapButtonListener);
@@ -53,15 +69,19 @@ public class EditorActivity extends AppCompatActivity{
             }
         });
 
-
+        mComponentAdpater = new EditorComponentAdapter(this, mComponentList);
+        mEditorRecyclerView = (RecyclerView) findViewById(R.id.editor_recyclerview);
+        mEditorRecyclerView.setHasFixedSize(true);
+        mEditorRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mEditorRecyclerView.setAdapter(mComponentAdpater);
     }
 
     public void initListener(){
         txtButtonListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "txt");
                 Toast.makeText(EditorActivity.this, "TXT", Toast.LENGTH_SHORT).show();
+                addEditTextView();
                 mCustomDialog.dismiss();
             }
         };
@@ -69,7 +89,6 @@ public class EditorActivity extends AppCompatActivity{
         imgButtonListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "img");
                 Toast.makeText(EditorActivity.this, "IMG", Toast.LENGTH_SHORT).show();
                 mCustomDialog.dismiss();
             }
@@ -78,12 +97,19 @@ public class EditorActivity extends AppCompatActivity{
         mapButtonListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "map");
                 Toast.makeText(EditorActivity.this, "MAP", Toast.LENGTH_SHORT).show();
                 mCustomDialog.dismiss();
                 finish();
             }
         };
+    }
+
+    public void addEditTextView(){
+        MyApplication.LogController.makeLog(TAG, "make list", localLogPermission);
+        mComponentList.add(TEXT_MODE);
+        mComponentAdpater.setComponentList(mComponentList);
+        mComponentAdpater.notifyDataSetChanged();
+        mEditorRecyclerView.setAdapter(mComponentAdpater);
     }
 
 //    public void saveToSQLite(){

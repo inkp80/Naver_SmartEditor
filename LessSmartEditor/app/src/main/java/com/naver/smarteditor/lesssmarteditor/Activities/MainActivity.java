@@ -8,13 +8,15 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.naver.smarteditor.lesssmarteditor.Database.DatabaseHelper;
+import com.naver.smarteditor.lesssmarteditor.MyApplication;
 import com.naver.smarteditor.lesssmarteditor.R;
 
 public class MainActivity extends AppCompatActivity {
 
     FloatingActionButton mAddDocumentButton;
 
-    final String TAG = "Database";
+    final String TAG = "MainActivity";
+    boolean localLogPermission = true;
 
     private DatabaseHelper dbHelper;
     private SQLiteDatabase db;
@@ -31,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
         mAddDocumentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                MyApplication.LogController.makeLog(TAG, "item clicked", localLogPermission);
                 Intent intent = new Intent(getBaseContext(), EditorActivity.class);
                 startActivity(intent);
             }
