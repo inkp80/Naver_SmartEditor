@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">lec9</string>
+
+
+    <string name="db_name">LessSmartEditor</string>
+    <string name="db_version">1</string>
+    <string name="table_name">documents</string>
+
+
 </resources>
