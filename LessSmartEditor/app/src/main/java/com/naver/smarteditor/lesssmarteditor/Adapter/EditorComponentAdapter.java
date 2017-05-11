@@ -26,7 +26,7 @@ public class EditorComponentAdapter extends RecyclerView.Adapter<EditorComponent
 
 
     public EditorComponentAdapter(Context context, List<Integer> list){
-        MyApplication.LogController.makeLog(TAG, "Producer", localLogPermission);
+        MyApplication.LogController.makeLog(TAG, "Constructor", localLogPermission);
         mContext = context;
         mListOfComponentType = list;
     }
@@ -37,15 +37,12 @@ public class EditorComponentAdapter extends RecyclerView.Adapter<EditorComponent
 
     @Override
     public ComponentViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        MyApplication.LogController.makeLog(TAG, "onCreateViewHolder", localLogPermission);
 
         EditText tv = new EditText(mContext);
         RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        tv.setText("hello");
-//        View itemView = LayoutInflater.from(parent.getContext()).inflate(tv, parent, false);
         tv.setLayoutParams(lp);
-//        parent.addView(parent);
 
-        MyApplication.LogController.makeLog(TAG, "onCreateViewHolder", localLogPermission);
         return new ComponentViewHolder(tv);
     }
 

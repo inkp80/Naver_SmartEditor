@@ -51,15 +51,10 @@ public class EditorActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.editor_view);
-
-        dbHelper = new DatabaseHelper(this);
-        db = dbHelper.getWritableDatabase();
-
+        openDatabase();
+        initDialogSelectionListener();
 
         mComponentList = new ArrayList<Integer>();
-
-        initListener();
-        mCustomDialog = new CustomDialog(this, txtButtonListener, imgButtonListener, mapButtonListener);
 
         mAddComponentButton = (Button) findViewById(R.id.editor_bt_addcomponent);
         mAddComponentButton.setOnClickListener(new View.OnClickListener() {
@@ -69,18 +64,14 @@ public class EditorActivity extends AppCompatActivity{
             }
         });
 
-        mComponentAdpater = new EditorComponentAdapter(this, mComponentList);
-        mEditorRecyclerView = (RecyclerView) findViewById(R.id.editor_recyclerview);
-        mEditorRecyclerView.setHasFixedSize(true);
-        mEditorRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mEditorRecyclerView.setAdapter(mComponentAdpater);
+        initRecyclerView();
+
     }
 
-    public void initListener(){
+    public void initDialogSelectionListener(){
         txtButtonListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(EditorActivity.this, "TXT", Toast.LENGTH_SHORT).show();
                 addEditTextView();
                 mCustomDialog.dismiss();
             }
@@ -89,7 +80,6 @@ public class EditorActivity extends AppCompatActivity{
         imgButtonListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(EditorActivity.this, "IMG", Toast.LENGTH_SHORT).show();
                 mCustomDialog.dismiss();
             }
         };
@@ -97,19 +87,32 @@ public class EditorActivity extends AppCompatActivity{
         mapButtonListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(EditorActivity.this, "MAP", Toast.LENGTH_SHORT).show();
                 mCustomDialog.dismiss();
-                finish();
             }
         };
+
+        mCustomDialog = new CustomDialog(this, txtButtonListener, imgButtonListener, mapButtonListener);
     }
 
     public void addEditTextView(){
-        MyApplication.LogController.makeLog(TAG, "make list", localLogPermission);
+        MyApplication.LogController.makeLog(TAG, "AddEditText", localLogPermission);
         mComponentList.add(TEXT_MODE);
         mComponentAdpater.setComponentList(mComponentList);
         mComponentAdpater.notifyDataSetChanged();
         mEditorRecyclerView.setAdapter(mComponentAdpater);
+    }
+
+    public void initRecyclerView(){
+        mComponentAdpater = new EditorComponentAdapter(this, mComponentList);
+        mEditorRecyclerView = (RecyclerView) findViewById(R.id.editor_recyclerview);
+        mEditorRecyclerView.setHasFixedSize(true);
+        mEditorRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mEditorRecyclerView.setAdapter(mComponentAdpater);
+    }
+
+    public void openDatabase(){
+        dbHelper = new DatabaseHelper(this);
+        db = dbHelper.getWritableDatabase();
     }
 
 //    public void saveToSQLite(){
