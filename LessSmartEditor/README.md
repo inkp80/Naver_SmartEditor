@@ -21,23 +21,33 @@
 
 RecyclerView & ViewHolder 동작과정
 
-JSON & SQLITE
+JSON & SQLITE<br>
 http://stackoverflow.com/questions/16603621/how-to-store-json-object-in-sqlite-database
 
-Partial Bold
+Partial Bold<br>
 http://stackoverflow.com/questions/14371092/how-to-make-a-specific-text-on-textview-bold
 http://stackoverflow.com/questions/1529068/is-it-possible-to-have-multiple-styles-inside-a-textview
 
-Text Watcher -
+Text Watcher<br>
 http://stackoverflow.com/questions/7818438/how-to-insert-image-to-a-edittext
 
-Check truncated
+Check truncated<br>
 http://stackoverflow.com/questions/2923345/is-there-a-way-to-check-if-a-textviews-text-is-truncated
 
+
+how to create different view type in recyclerView
+http://stackoverflow.com/questions/26245139/how-to-create-recyclerview-with-multiple-view-type?rq=1
+
+http://stackoverflow.com/questions/25914003/recyclerview-and-handling-different-type-of-row-inflation/29362643#29362643
+
+http://stackoverflow.com/questions/39971350/recycle-view-inflating-different-row-getting-exception-while-binding-the-data/39972276#39972276
 —————
 
 ### ISSUE LOG
 
 5/11(목)
-android.view.WindowLeaked in Custom Dialog
+android.view.WindowLeaked in Custom Dialog<br>
 http://sjava.net/2011/11/androidviewwindowleaked-%EB%AC%B8%EC%A0%9C%EC%97%90-%EB%8C%80%ED%95%9C-%ED%95%B4%EA%B2%B0%EC%B1%85/
+
+RecyclerView 순서 강제<br>
+http://stackoverflow.com/questions/32065267/recyclerview-changing-items-during-scroll

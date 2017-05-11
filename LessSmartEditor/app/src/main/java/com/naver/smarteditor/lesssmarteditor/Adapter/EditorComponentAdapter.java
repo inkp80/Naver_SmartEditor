@@ -2,6 +2,8 @@ package com.naver.smarteditor.lesssmarteditor.Adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +13,7 @@ import android.widget.TextView;
 
 import com.naver.smarteditor.lesssmarteditor.MyApplication;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -46,9 +49,28 @@ public class EditorComponentAdapter extends RecyclerView.Adapter<EditorComponent
         return new ComponentViewHolder(tv);
     }
 
+
     @Override
     public void onBindViewHolder(ComponentViewHolder holder, int position) {
         MyApplication.LogController.makeLog(TAG, "onBindViewHolder", localLogPermission);
+
+
+        ((EditText)holder.itemView).addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                MyApplication.LogController.makeLog(TAG, "detect text change", localLogPermission);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
     @Override
@@ -56,10 +78,20 @@ public class EditorComponentAdapter extends RecyclerView.Adapter<EditorComponent
         return mListOfComponentType.size();
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        return position;
+    }
+
     class ComponentViewHolder extends RecyclerView.ViewHolder{
+
+        public String mViewValue;
+        public View itemView;
 
         public ComponentViewHolder(View itemView) {
             super(itemView);
+            this.itemView = itemView;
         }
+
     }
 }

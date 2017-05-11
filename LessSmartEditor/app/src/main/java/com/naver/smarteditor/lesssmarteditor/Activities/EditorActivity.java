@@ -99,7 +99,6 @@ public class EditorActivity extends AppCompatActivity{
         mComponentList.add(TEXT_MODE);
         mComponentAdpater.setComponentList(mComponentList);
         mComponentAdpater.notifyDataSetChanged();
-        mEditorRecyclerView.setAdapter(mComponentAdpater);
     }
 
     public void initRecyclerView(){
