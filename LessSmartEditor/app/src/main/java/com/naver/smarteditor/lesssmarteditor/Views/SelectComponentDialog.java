@@ -3,6 +3,7 @@ package com.naver.smarteditor.lesssmarteditor.Views;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -14,7 +15,7 @@ import com.naver.smarteditor.lesssmarteditor.R;
  * Created by NAVER on 2017. 5. 11..
  */
 
-public class CustomDialog extends Dialog {
+public class SelectComponentDialog extends Dialog {
 
     private Button mTextButton;
     private Button mImgButton;
@@ -25,16 +26,16 @@ public class CustomDialog extends Dialog {
     private View.OnClickListener mMapButtonClickListener;
 
 
-    public CustomDialog(Context context) {
+    public SelectComponentDialog(Context context) {
         super(context);
     }
 
-    public CustomDialog(Context context,
-                        View.OnClickListener textButtonListener,
-                        View.OnClickListener imgButtonListener,
-                        View.OnClickListener mapButtonListener) {
+    public SelectComponentDialog(Context context,
+                                 View.OnClickListener textButtonListener,
+                                 View.OnClickListener imgButtonListener,
+                                 View.OnClickListener mapButtonListener) {
 
-        super(context , android.R.style.Theme_Translucent_NoTitleBar);
+        super(context, android.R.style.Theme_Translucent_NoTitleBar);
 
         this.mTextButtonClickListener = textButtonListener;
         this.mImgButtonClickListener = imgButtonListener;
@@ -49,6 +50,7 @@ public class CustomDialog extends Dialog {
         lpWindow.flags = WindowManager.LayoutParams.FLAG_DIM_BEHIND;
         lpWindow.dimAmount = 0.8f;
         getWindow().setAttributes(lpWindow);
+        getWindow().setGravity(Gravity.CENTER_VERTICAL);
 
         setContentView(R.layout.dialog_view);
         init();
@@ -56,9 +58,9 @@ public class CustomDialog extends Dialog {
 
 
     public void init(){
-        mTextButton = (Button) findViewById(R.id.dialog_text);
-        mImgButton = (Button) findViewById(R.id.dialog_img);
-        mMapButton = (Button) findViewById(R.id.dialog_map);
+        mTextButton = (Button) findViewById(R.id.dialog_selcomp_bt_text);
+        mImgButton = (Button) findViewById(R.id.dialog_selcomp_bt_img);
+        mMapButton = (Button) findViewById(R.id.dialog_selcomp_bt_map);
 
         mTextButton.setOnClickListener(mTextButtonClickListener);
         mImgButton.setOnClickListener(mImgButtonClickListener);

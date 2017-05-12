@@ -5,16 +5,14 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.naver.smarteditor.lesssmarteditor.Adapter.EditorComponentAdapter;
 import com.naver.smarteditor.lesssmarteditor.Database.DatabaseHelper;
 import com.naver.smarteditor.lesssmarteditor.MyApplication;
 import com.naver.smarteditor.lesssmarteditor.R;
-import com.naver.smarteditor.lesssmarteditor.Views.CustomDialog;
+import com.naver.smarteditor.lesssmarteditor.Views.SelectComponentDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +34,7 @@ public class EditorActivity extends AppCompatActivity{
 
 
     private Button mAddComponentButton;
-    private CustomDialog mCustomDialog;
+    private SelectComponentDialog mSelectComponentDialog;
 
     View.OnClickListener txtButtonListener;
     View.OnClickListener imgButtonListener;
@@ -52,7 +50,7 @@ public class EditorActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.editor_view);
         openDatabase();
-        initDialogSelectionListener();
+        initDialog();
 
         mComponentList = new ArrayList<Integer>();
 
@@ -60,7 +58,7 @@ public class EditorActivity extends AppCompatActivity{
         mAddComponentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mCustomDialog.show();
+                mSelectComponentDialog.show();
             }
         });
 
@@ -68,37 +66,36 @@ public class EditorActivity extends AppCompatActivity{
 
     }
 
-    public void initDialogSelectionListener(){
+
+
+    public void initDialog(){
+
         txtButtonListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addEditTextView();
-                mCustomDialog.dismiss();
+                //ADD TEXT COMPONENT TO EDITOR
+                addComponent(TEXT_MODE);
+                mSelectComponentDialog.dismiss();
             }
         };
 
         imgButtonListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mCustomDialog.dismiss();
+                addComponent(IMG_MODE);
+                mSelectComponentDialog.dismiss();
             }
         };
 
         mapButtonListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mCustomDialog.dismiss();
+                addComponent(MAP_MODE);
+                mSelectComponentDialog.dismiss();
             }
         };
 
-        mCustomDialog = new CustomDialog(this, txtButtonListener, imgButtonListener, mapButtonListener);
-    }
-
-    public void addEditTextView(){
-        MyApplication.LogController.makeLog(TAG, "AddEditText", localLogPermission);
-        mComponentList.add(TEXT_MODE);
-        mComponentAdpater.setComponentList(mComponentList);
-        mComponentAdpater.notifyDataSetChanged();
+        mSelectComponentDialog = new SelectComponentDialog(this, txtButtonListener, imgButtonListener, mapButtonListener);
     }
 
     public void initRecyclerView(){
@@ -109,9 +106,23 @@ public class EditorActivity extends AppCompatActivity{
         mEditorRecyclerView.setAdapter(mComponentAdpater);
     }
 
+
+    public void addComponent(int mode){
+        MyApplication.LogController.makeLog(TAG, "AddComp mode : " + String.valueOf(mode), localLogPermission);
+        mComponentList.add(mode);
+        renewingAdapterData();
+    }
+
+
     public void openDatabase(){
         dbHelper = new DatabaseHelper(this);
         db = dbHelper.getWritableDatabase();
+    }
+
+
+    public void renewingAdapterData(){
+        mComponentAdpater.setComponentList(mComponentList);
+        mComponentAdpater.notifyDataSetChanged();
     }
 
 //    public void saveToSQLite(){

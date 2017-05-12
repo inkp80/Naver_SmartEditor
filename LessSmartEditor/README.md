@@ -16,17 +16,6 @@
 <img src="example.png">
 
 -------------
-## 진행 상황
-
-- 기본 뷰 구조 (완성)
-- 글 작성 컴포넌트 추가 (완성)
-- 글 작성 컴포넌트에서 데이터 추출 (진행)
-
-### 해야 할 일
-* 데이터 저장을 어떻게 할 것인지 (데이터베이스 구조 설계)
-* 계획서 작성
-
--------------
 
 ### INFO
 
@@ -46,20 +35,22 @@ Check truncated<br>
 http://stackoverflow.com/questions/2923345/is-there-a-way-to-check-if-a-textviews-text-is-truncated
 
 
-how to create different view type in recyclerView
+how to create different view type in recyclerView<br>
 http://stackoverflow.com/questions/26245139/how-to-create-recyclerview-with-multiple-view-type?rq=1
 
 http://stackoverflow.com/questions/25914003/recyclerview-and-handling-different-type-of-row-inflation/29362643#29362643
 
 http://stackoverflow.com/questions/39971350/recycle-view-inflating-different-row-getting-exception-while-binding-the-data/39972276#39972276
-
 —————
 
 ### ISSUE LOG
 
 5/11(목)
+
 android.view.WindowLeaked in Custom Dialog<br>
 http://sjava.net/2011/11/androidviewwindowleaked-%EB%AC%B8%EC%A0%9C%EC%97%90-%EB%8C%80%ED%95%9C-%ED%95%B4%EA%B2%B0%EC%B1%85/
 
 RecyclerView 순서 강제<br>
 http://stackoverflow.com/questions/32065267/recyclerview-changing-items-during-scroll
+
+5/12(금)
