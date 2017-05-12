@@ -13,13 +13,16 @@
 9.	불러오기 기능을 통해서 데이터베이스에 저장되어 있는 글들을 불러 올 수 있다.
 10.	아래 그림의 디자인은 예시이며, 따라할 필요 없이 디자인은 각자 구현한다. 단, 동일한 기능의 동작이 가능해야 한다.
 
++ TITLE에 입력 글자 수의 제한을 둔다.
+
 <img src="example.png">
 
 -------------
 
 ### INFO
 
-RecyclerView & ViewHolder 동작과정
+5/11-----------------
+
 
 JSON & SQLITE<br>
 http://stackoverflow.com/questions/16603621/how-to-store-json-object-in-sqlite-database
@@ -41,6 +44,53 @@ http://stackoverflow.com/questions/26245139/how-to-create-recyclerview-with-mult
 http://stackoverflow.com/questions/25914003/recyclerview-and-handling-different-type-of-row-inflation/29362643#29362643
 
 http://stackoverflow.com/questions/39971350/recycle-view-inflating-different-row-getting-exception-while-binding-the-data/39972276#39972276
+
+
+5/12-------------------------------------
+
+이미지 선택, 크롭, 저장<br>
+http://ankyu.entersoft.kr/Lecture/android/gallery_01.asp
+
+리사이클러 뷰<br>
+http://itmining.tistory.com/12
+
+HTTP<br>
+https://www.joinc.co.kr/w/Site/Network_Programing/AdvancedComm/HTTP
+
+REST<br>
+https://www.joinc.co.kr/w/man/12/rest/about
+
+REST API 제대로 알고 사용하기<br>
+http://meetup.toast.com/posts/92
+
+쿠키<br>
+https://www.joinc.co.kr/w/man/12/cookie
+
+쿠키의 취약성 및 요구되는 보안성<br>
+http://egloos.zum.com/heyjoon/v/846358
+
+비지니스 로직<br>
+http://m.blog.naver.com/anjdieheocp/20117559228'
+
+에디터<br>
+https://www.froala.com/wysiwyg-editor
+
+세션이란<br>
+http://mohwaproject.tistory.com/entry/HTTP-Session-%EC%9D%B4%EB%9E%80
+
+HTTP 1.1 캐시관련 헤더<br>
+http://icecreamie.tistory.com/52
+
+
+안드로이드 HTTP 클라이언트 라이브러리<br>
+http://d2.naver.com/helloworld/377316
+
+안드로이드 이미지로딩 라이브러리<br>
+http://d2.naver.com/helloworld/429368
+
+
+
+
 —————
 
 ### ISSUE LOG
@@ -54,3 +104,17 @@ RecyclerView 순서 강제<br>
 http://stackoverflow.com/questions/32065267/recyclerview-changing-items-during-scroll
 
 5/12(금)
+
+database 설계 - 컴포넌트들을 어떻게 저장하고 정보를 가져올 것인가?
+**Editor Adapter에 본래의 기능 이외에 기능들이 포함 분리가 필요**
+
+
+—————————
+
+### 추가로 더 알아볼 것들
+
+RecyclerView & ViewHolder 동작과정
+
+세션과 쿠키에 대해서 얘기가 너무 중구난방..?
+
+GET POST의 구분
