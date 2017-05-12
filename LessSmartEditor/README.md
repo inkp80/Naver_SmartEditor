@@ -106,6 +106,7 @@ http://stackoverflow.com/questions/32065267/recyclerview-changing-items-during-s
 5/12(금)
 
 database 설계 - 컴포넌트들을 어떻게 저장하고 정보를 가져올 것인가?
+
 **Editor Adapter에 본래의 기능 이외에 기능들이 포함 분리가 필요**
 
 
