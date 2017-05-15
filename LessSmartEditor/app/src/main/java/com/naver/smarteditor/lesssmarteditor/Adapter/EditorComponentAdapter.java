@@ -44,11 +44,17 @@ public class EditorComponentAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         MyApplication.LogController.makeLog(TAG, "onCreateViewHolder", localLogPermission);
 
-        View tv = new View(mContext);
         RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        tv.setLayoutParams(lp);
 
-        return new TextComponentViewHolder(tv);
+//        View tv = new View(mContext);
+        if(viewType == 0){
+            EditText tv = new EditText(mContext);
+            tv.setLayoutParams(lp);
+            return new TextComponentViewHolder(tv);
+        }
+
+//        return new TextComponentViewHolder(tv);
+        return null;
     }
 
 
@@ -67,7 +73,7 @@ public class EditorComponentAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     public int getItemViewType(int position) {
         super.getItemViewType(position);
 //        position;
-        return position;
+        return mListOfComponentType.get(position);
     }
 
     class TextComponentViewHolder extends RecyclerView.ViewHolder{
@@ -77,23 +83,6 @@ public class EditorComponentAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
         public TextComponentViewHolder(View itemView) {
             super(itemView);
-            this.itemView = (EditText) itemView;
-            this.itemView.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    MyApplication.LogController.makeLog(TAG, "detect text change", localLogPermission);
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
-
-                }
-            });
         }
     }
 
