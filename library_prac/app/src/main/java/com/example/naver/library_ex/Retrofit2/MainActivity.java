@@ -9,6 +9,7 @@ import android.widget.TextView;
 import com.example.naver.library_ex.R;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.List;
 
 import retrofit2.Call;
@@ -28,47 +29,64 @@ import retrofit2.Retrofit;
  */
 
 public class MainActivity extends AppCompatActivity {
-    List<Contributor> result;
+    List<List<Places>> result;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.retrofit2_main);
 
-        GitHubService gitHubService = GitHubService.retrofit.create(GitHubService.class);
-        Call<List<Contributor>> call = gitHubService.repoContributors("square", "retrofit");
+//        GitHubService gitHubService = GitHubService.retrofit.create(GitHubService.class);
+//        Call<List<Contributor>> call = gitHubService.repoContributors("square", "retrofit");
 
-        Log.d("hee","eeeee");
+        String query = "그린팩토리";
         try {
-            result = call.execute().body();
-
-            Log.d("Retrofit2", String.valueOf(result.size()));
+            query = URLEncoder.encode(query, "UTF-8");
         } catch (Exception e) {
 
         }
+        Log.d("MAIN", query);
+//        query = "%B1%D7%B8%B0%C6%D1%C5%E4%B8%AE";
+        query = "abc";
+//        NaverService naverService = NaverService.retrofit.create(NaverService.class);
+//        Call<List<Places>> call = naverService.naverPlace(query);
+
+//        Log.d("hee","eeeee");
+//        try {
+//            result = call.execute().body();
+//
+//            Log.d("Retrofit2", String.valueOf(result.size()));
+//        } catch (Exception e) {
+//
+//        }
 
 //        new NetworkCall().execute(call);
+        NaverService naverService = NaverService.retrofit.create(NaverService.class);
+        Call<List<Places>> call = naverService.naverPlace(query);
+        new NetworkCall().execute(call);
 
     }
 
-}
+    class NetworkCall extends AsyncTask<Call, Void, String> {
 
-class NetworkCall extends AsyncTask<Call, Void, String> {
-
-    @Override
-    protected String doInBackground(Call... params) {
-        try {
-            Call<List<Contributor>> call = params[0];
-            Response<List<Contributor>> response = call.execute();
-            return response.body().toString();
-        } catch (IOException e) {
-            e.printStackTrace();
+        @Override
+        protected String doInBackground(Call... params) {
+            try {
+                Call<List<Places>> call = params[0];
+                Log.d("MAINACTIVIRY", String.valueOf(params[0]));
+                Response<List<Places>> response = call.execute();
+                Log.d("doinback", String.valueOf(response));
+                return response.body().toString();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
         }
-        return null;
-    }
 
-    @Override
-    protected void onPostExecute(String result) {
-        Log.d("Retrofit2", result);
+        @Override
+        protected void onPostExecute(String result) {
+            Log.d("#######",result);
+
+        }
     }
 }
