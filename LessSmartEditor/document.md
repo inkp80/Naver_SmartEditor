@@ -28,8 +28,8 @@
 ~~~
 COMPONENT TYPE VALUE :
 	TEXT_COMPONENT = 0;
-    IMG_COMPONENT = 1;
-    MAP_COMPONENT = 2;
+	IMG_COMPONENT = 1;
+	MAP_COMPONENT = 2;
 
 Document {
 
@@ -150,11 +150,12 @@ Glide를 이용한 이미지 컴포넌트 구현
 
 5/17
 
+네이버 지도 API와 SDK를 이용한 지도 컴포넌트 구현 - 3
 데이터 처리 - 1 (JSON -> 객체)
-지도 뷰 홀더 및 추가 구현
 
 5/18
 
+지도 뷰 홀더 및 추가 구현
 데이터 처리 - 2 (컴포넌트 -> JSON로 파싱 -> 데이터베이스)
 데이터 처리 - 3 (데이터베이스 -> JSON -> 컴포넌트)
 
