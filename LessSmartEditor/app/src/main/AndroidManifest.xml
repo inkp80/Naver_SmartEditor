@@ -21,9 +21,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".Activities.EditorActivity">
+        <activity android:name=".Activities.EditorActivity"></activity>
 
-        </activity>
+        <activity android:name=".Activities.SearchPlaceActivity"></activity>
     </application>
 
 </manifest>

@@ -16,6 +16,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
+
+    <Button
+        android:id="@+id/button_map_access"
+        android:text="MAP ACCESS"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
     <android.support.v7.widget.RecyclerView
         android:layout_weight="1"
         app:layoutManager="LinearLayoutManager"

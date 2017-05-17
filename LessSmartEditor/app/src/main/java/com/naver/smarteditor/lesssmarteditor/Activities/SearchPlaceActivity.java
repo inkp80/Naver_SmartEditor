@@ -15,7 +15,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.naver.smarteditor.lesssmarteditor.Adapter.SearchPlaceResultAdatpter;
 import com.naver.smarteditor.lesssmarteditor.NaverPlaceService;
-import com.naver.smarteditor.lesssmarteditor.Objects.Place;
+import com.naver.smarteditor.lesssmarteditor.Objects.PlaceItem;
 import com.naver.smarteditor.lesssmarteditor.Objects.PlaceRequestResult;
 import com.naver.smarteditor.lesssmarteditor.R;
 import com.naver.smarteditor.lesssmarteditor.SearchResultOnClickListener;
@@ -41,7 +41,7 @@ public class SearchPlaceActivity extends AppCompatActivity {
     SearchPlaceResultAdatpter mResultViewAdapter;
     RecyclerView mSearchResultRecyclerView;
 
-    List<Place> placeSearchResults;
+    List<PlaceItem> placeItemList;
 
 
 
@@ -50,24 +50,20 @@ public class SearchPlaceActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_place);
 
-        placeSearchResults = new ArrayList<Place>();
+        placeItemList = new ArrayList<PlaceItem>();
 
         mSearchPlaceButton = (Button) findViewById(R.id.searchplace_bt_search);
         mSearchTarget = (EditText) findViewById(R.id.searchplace_et_target);
         mTestImgView = (ImageView) findViewById(R.id.image);
+        mSearchResultRecyclerView = (RecyclerView) findViewById(R.id.searchplace_recyclerview);
 
         mResultViewAdapter = new SearchPlaceResultAdatpter(this);
         mResultViewAdapter.setOnResultClickedListener(new SearchResultOnClickListener() {
             @Override
-            public void OnClickListener(View v) {
-                Toast.makeText(SearchPlaceActivity.this, "hello!", Toast.LENGTH_SHORT).show();
+            public void OnClickListener(View v, int x, int y) {
+                setStaticMapToComponent(x, y);
             }
         });
-
-        mSearchResultRecyclerView = (RecyclerView) findViewById(R.id.searchplace_recyclerview);
-        mSearchResultRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mSearchResultRecyclerView.setHasFixedSize(true);
-        mSearchResultRecyclerView.setAdapter(mResultViewAdapter);
 
 
         mSearchPlaceButton.setOnClickListener(new View.OnClickListener() {
@@ -80,39 +76,26 @@ public class SearchPlaceActivity extends AppCompatActivity {
 
     public void requestSearchPlaceService(){
         String query = mSearchTarget.getText().toString();
-        placeSearchResults = new ArrayList<Place>();
+
 
         NaverPlaceService naverService = NaverPlaceService.retrofit.create(NaverPlaceService.class);
         Call<PlaceRequestResult> call = naverService.naverPlace(query);
         call.enqueue(new Callback<PlaceRequestResult>() {
             @Override
             public void onResponse(Call<PlaceRequestResult> call, Response<PlaceRequestResult> response) {
-
                 //Vaild check 필요하다.
-                //내부에 이미지 로딩까지 구현되어 있음 분리 필요
-                //adapter 데이터 갱신 함수 만들 것
-
-                for (int i = 0; i < response.body().getPlaces().size(); i++) {
-                    placeSearchResults.add(response.body().getPlaces().get(i));
-                }
-
-                String url_add
-                        = buildRequestStaticMapImgUrlWithCoords(placeSearchResults.get(0).getKatechMapX(), placeSearchResults.get(0).getKatechMapY());
-
-                Glide.with(getBaseContext()).load(url_add).into(mTestImgView);
-                mResultViewAdapter.changeData(placeSearchResults);
-                mResultViewAdapter.notifyDataSetChanged();
+                placeItemList = response.body().getPlaces();
+                renewingAdapter();
             }
 
             @Override
             public void onFailure(Call<PlaceRequestResult> call, Throwable t) {
-                Log.d("fail","sdsd");
             }
         });
     }
 
 
-    public String buildRequestStaticMapImgUrlWithCoords(int x, int y){
+    public String buildStaticMapUrlWithCoords(int x, int y){
 
         String coords = buildCoords(x,y);
 
@@ -125,8 +108,8 @@ public class SearchPlaceActivity extends AppCompatActivity {
                 .appendQueryParameter("crs", "NHN:128")
                 .appendQueryParameter("center", coords)
                 .appendQueryParameter("level","11")
-                .appendQueryParameter("w","320")
-                .appendQueryParameter("h","320")
+                .appendQueryParameter("w","160")
+                .appendQueryParameter("h","160")
                 .appendQueryParameter("baselayer","default")
                 .appendQueryParameter("format","png")
                 .appendQueryParameter("markers", coords);
@@ -149,5 +132,22 @@ public class SearchPlaceActivity extends AppCompatActivity {
 //            return true;
 //        }
         return false;
+    }
+
+    public void setStaticMapToComponent(int x, int y){
+        String mapUrl = buildStaticMapUrlWithCoords(x, y);
+        Glide.with(this).load(mapUrl).into(mTestImgView);
+    }
+
+    public void renewingAdapter(){
+        mResultViewAdapter.changeData(placeItemList);
+        mResultViewAdapter.notifyDataSetChanged();
+    }
+
+    public void initRecyclerView(){
+        mSearchResultRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mSearchResultRecyclerView.setHasFixedSize(true);
+        mSearchResultRecyclerView.setAdapter(mResultViewAdapter);
+
     }
 }

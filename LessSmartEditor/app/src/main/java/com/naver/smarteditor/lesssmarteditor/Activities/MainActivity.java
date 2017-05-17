@@ -31,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     Button mImage;ImageView image;
+    Button mMap;
+
     final int REQ_CODE_SELECT_IMAGE=100;
 
     final String TAG = "MainActivity";
@@ -39,15 +41,14 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseHelper dbHelper;
     private SQLiteDatabase db;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         image = (ImageView)findViewById(R.id.img1);
-
         Glide.with(this).load("http://www.romand.co.kr/file_data/romand/2017/05/11/5d28daee1e35059fe8e24b26f5f89012.jpg").into(image);
-
         mImage = (Button) findViewById(R.id.button_img_access);
         mImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -56,6 +57,15 @@ public class MainActivity extends AppCompatActivity {
                 intent.setType(android.provider.MediaStore.Images.Media.CONTENT_TYPE);
                 intent.setData(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 startActivityForResult(intent, REQ_CODE_SELECT_IMAGE);
+            }
+        });
+
+        mMap = (Button) findViewById(R.id.button_map_access);
+        mMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, SearchPlaceActivity.class);
+                startActivity(intent);
             }
         });
 

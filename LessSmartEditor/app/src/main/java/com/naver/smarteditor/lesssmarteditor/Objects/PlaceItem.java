@@ -6,12 +6,14 @@ import com.google.gson.annotations.SerializedName;
  * Created by NAVER on 2017. 5. 17..
  */
 
-public class Place {
+public class PlaceItem {
 
+    @SerializedName("title")
     private String placeName;
+    @SerializedName("roadAddress")
     private String placeAddress;
 
-    public Place(String placeName, String placeAddress, int katechMapX, int katechMapY) {
+    public PlaceItem(String placeName, String placeAddress, int katechMapX, int katechMapY) {
         this.placeName = placeName;
         this.placeAddress = placeAddress;
         this.katechMapX = katechMapX;

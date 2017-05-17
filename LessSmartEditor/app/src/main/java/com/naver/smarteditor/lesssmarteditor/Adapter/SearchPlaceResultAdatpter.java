@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.naver.smarteditor.lesssmarteditor.Objects.Place;
+import com.naver.smarteditor.lesssmarteditor.Objects.PlaceItem;
 import com.naver.smarteditor.lesssmarteditor.R;
 import com.naver.smarteditor.lesssmarteditor.SearchResultOnClickListener;
 
@@ -20,7 +20,7 @@ import java.util.List;
 public class SearchPlaceResultAdatpter extends RecyclerView.Adapter<SearchPlaceResultAdatpter.PlaceViewHolder> {
 
 
-    List<Place> places;
+    List<PlaceItem> places;
     Context mContext;
     SearchResultOnClickListener mSearchResultItemOnClickListener;
 
@@ -47,10 +47,14 @@ public class SearchPlaceResultAdatpter extends RecyclerView.Adapter<SearchPlaceR
 
     @Override
     public int getItemCount() {
-        return places.size();
+        if(places == null) {
+            return 0;
+        } else {
+            return places.size();
+        }
     }
 
-    public void changeData(List<Place> newData){
+    public void changeData(List<PlaceItem> newData){
         places = newData;
     }
 
@@ -74,7 +78,7 @@ public class SearchPlaceResultAdatpter extends RecyclerView.Adapter<SearchPlaceR
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mSearchResultItemOnClickListener.OnClickListener(itemView);
+                    mSearchResultItemOnClickListener.OnClickListener(itemView, katechMapX, katechMapY);
                 }
             });
         }

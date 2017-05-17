@@ -1,5 +1,7 @@
 package com.naver.smarteditor.lesssmarteditor.Objects;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
 /**
@@ -8,9 +10,10 @@ import java.util.List;
 
 public class PlaceRequestResult {
     private int total;
-    private List<Place> Places;
+    @SerializedName("items")
+    private List<PlaceItem> Places;
 
-    public PlaceRequestResult(int total, List<Place> places) {
+    public PlaceRequestResult(int total, List<PlaceItem> places) {
         this.total = total;
         Places = places;
     }
@@ -23,11 +26,11 @@ public class PlaceRequestResult {
         this.total = total;
     }
 
-    public List<Place> getPlaces() {
+    public List<PlaceItem> getPlaces() {
         return Places;
     }
 
-    public void setPlaces(List<Place> places) {
+    public void setPlaces(List<PlaceItem> places) {
         Places = places;
     }
 }
