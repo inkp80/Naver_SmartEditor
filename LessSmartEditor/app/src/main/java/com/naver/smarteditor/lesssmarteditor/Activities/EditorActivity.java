@@ -1,5 +1,6 @@
 package com.naver.smarteditor.lesssmarteditor.Activities;
 
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -12,7 +13,7 @@ import com.naver.smarteditor.lesssmarteditor.Adapter.EditorComponentAdapter;
 import com.naver.smarteditor.lesssmarteditor.Database.DatabaseHelper;
 import com.naver.smarteditor.lesssmarteditor.MyApplication;
 import com.naver.smarteditor.lesssmarteditor.R;
-import com.naver.smarteditor.lesssmarteditor.Views.SelectComponentDialog;
+import com.naver.smarteditor.lesssmarteditor.Dialogs.SelectComponentDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -92,6 +93,7 @@ public class EditorActivity extends AppCompatActivity{
             public void onClick(View v) {
                 addComponent(MAP_MODE);
                 mSelectComponentDialog.dismiss();
+                Intent intent = new Intent(EditorActivity.this, SearchPlaceActivity.class);
             }
         };
 

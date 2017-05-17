@@ -1,4 +1,4 @@
-package com.naver.smarteditor.lesssmarteditor.Views;
+package com.naver.smarteditor.lesssmarteditor.Dialogs;
 
 import android.app.Dialog;
 import android.content.Context;

@@ -57,14 +57,8 @@ public class SearchPlaceActivity extends AppCompatActivity {
         mTestImgView = (ImageView) findViewById(R.id.image);
         mSearchResultRecyclerView = (RecyclerView) findViewById(R.id.searchplace_recyclerview);
 
-        mResultViewAdapter = new SearchPlaceResultAdatpter(this);
-        mResultViewAdapter.setOnResultClickedListener(new SearchResultOnClickListener() {
-            @Override
-            public void OnClickListener(View v, int x, int y) {
-                setStaticMapToComponent(x, y);
-            }
-        });
-
+        initAdapter();
+        initRecyclerView();
 
         mSearchPlaceButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,10 +70,9 @@ public class SearchPlaceActivity extends AppCompatActivity {
 
     public void requestSearchPlaceService(){
         String query = mSearchTarget.getText().toString();
-
-
         NaverPlaceService naverService = NaverPlaceService.retrofit.create(NaverPlaceService.class);
         Call<PlaceRequestResult> call = naverService.naverPlace(query);
+
         call.enqueue(new Callback<PlaceRequestResult>() {
             @Override
             public void onResponse(Call<PlaceRequestResult> call, Response<PlaceRequestResult> response) {
@@ -117,21 +110,8 @@ public class SearchPlaceActivity extends AppCompatActivity {
         return builder.toString();
     }
 
-
     public String buildCoords(int x, int y){
         return String.valueOf(x) + "," + String.valueOf(y);
-    }
-
-    public boolean checkResponseVaild(Response<PlaceRequestResult> response){
-        if(response.code() == REQUEST_FAIL_CODE400 ){
-            Log.d("HTTP protocol", "ERROR");
-            return true;
-        }
-//        if(response.body() == 0){
-//            Log.d("HTTP protocol", "EMPTY");
-//            return true;
-//        }
-        return false;
     }
 
     public void setStaticMapToComponent(int x, int y){
@@ -148,6 +128,27 @@ public class SearchPlaceActivity extends AppCompatActivity {
         mSearchResultRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mSearchResultRecyclerView.setHasFixedSize(true);
         mSearchResultRecyclerView.setAdapter(mResultViewAdapter);
+    }
 
+    public void initAdapter(){
+        mResultViewAdapter = new SearchPlaceResultAdatpter(this);
+        mResultViewAdapter.setOnResultClickedListener(new SearchResultOnClickListener() {
+            @Override
+            public void OnClickListener(View v, int x, int y) {
+                setStaticMapToComponent(x, y);
+            }
+        });
+    }
+
+    public boolean checkResponseVaild(Response<PlaceRequestResult> response){
+        if(response.code() == REQUEST_FAIL_CODE400 ){
+            Log.d("HTTP protocol", "ERROR");
+            return true;
+        }
+//        if(response.body() == 0){
+//            Log.d("HTTP protocol", "EMPTY");
+//            return true;
+//        }
+        return false;
     }
 }
