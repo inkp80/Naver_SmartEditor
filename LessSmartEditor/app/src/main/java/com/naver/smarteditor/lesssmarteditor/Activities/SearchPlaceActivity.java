@@ -1,5 +1,6 @@
 package com.naver.smarteditor.lesssmarteditor.Activities;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -16,6 +17,7 @@ import com.bumptech.glide.Glide;
 import com.naver.smarteditor.lesssmarteditor.Adapter.SearchPlaceResultAdatpter;
 import com.naver.smarteditor.lesssmarteditor.NaverPlaceService;
 import com.naver.smarteditor.lesssmarteditor.Objects.PlaceItem;
+import com.naver.smarteditor.lesssmarteditor.Objects.PlaceItemPasser;
 import com.naver.smarteditor.lesssmarteditor.Objects.PlaceRequestResult;
 import com.naver.smarteditor.lesssmarteditor.R;
 import com.naver.smarteditor.lesssmarteditor.SearchResultOnClickListener;
@@ -63,7 +65,7 @@ public class SearchPlaceActivity extends AppCompatActivity {
         mSearchPlaceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               requestSearchPlaceService();
+                requestSearchPlaceService();
             }
         });
     }
@@ -83,6 +85,7 @@ public class SearchPlaceActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<PlaceRequestResult> call, Throwable t) {
+                //TODO: 예외 처리 -
             }
         });
     }
@@ -119,6 +122,10 @@ public class SearchPlaceActivity extends AppCompatActivity {
         Glide.with(this).load(mapUrl).into(mTestImgView);
     }
 
+    public String getStaticMapUri(int x, int y){
+        return buildStaticMapUrlWithCoords(x, y);
+    }
+
     public void renewingAdapter(){
         mResultViewAdapter.changeData(placeItemList);
         mResultViewAdapter.notifyDataSetChanged();
@@ -134,8 +141,18 @@ public class SearchPlaceActivity extends AppCompatActivity {
         mResultViewAdapter = new SearchPlaceResultAdatpter(this);
         mResultViewAdapter.setOnResultClickedListener(new SearchResultOnClickListener() {
             @Override
-            public void OnClickListener(View v, int x, int y) {
-                setStaticMapToComponent(x, y);
+            public void OnClickListener(View v, int x, int y, int position) {
+//                setStaticMapToComponent(x, y);
+                String mapUri = getStaticMapUri(x, y);
+
+                Intent intent = getIntent();
+
+                //TODO: Parcelable
+                PlaceItemPasser passer = new PlaceItemPasser(placeItemList.get(position).getPlaceName().toString(), placeItemList.get(position).getPlaceAddress().toString(), buildCoords(x,y).toString(), mapUri);
+                intent.putExtra("passer", passer);
+
+                setResult(RESULT_OK, intent);
+
             }
         });
     }
@@ -145,10 +162,6 @@ public class SearchPlaceActivity extends AppCompatActivity {
             Log.d("HTTP protocol", "ERROR");
             return true;
         }
-//        if(response.body() == 0){
-//            Log.d("HTTP protocol", "EMPTY");
-//            return true;
-//        }
         return false;
     }
 }

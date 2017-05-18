@@ -20,6 +20,10 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.naver.smarteditor.lesssmarteditor.Database.DatabaseHelper;
 import com.naver.smarteditor.lesssmarteditor.MyApplication;
+import com.naver.smarteditor.lesssmarteditor.Objects.Comp;
+import com.naver.smarteditor.lesssmarteditor.Objects.ImgComp;
+import com.naver.smarteditor.lesssmarteditor.Objects.TextComponent;
+import com.naver.smarteditor.lesssmarteditor.Objects.TxtComp;
 import com.naver.smarteditor.lesssmarteditor.R;
 
 import java.io.FileNotFoundException;
@@ -81,6 +85,18 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        ImgComp imgComp = new ImgComp();
+        MyApplication.LogController.makeLog("compTest:img", String.valueOf(imgComp.getComponentType()), localLogPermission);
+
+        Comp tmpComp = imgComp;
+        MyApplication.LogController.makeLog("compTest:comp", String.valueOf(tmpComp.getComponentType()), localLogPermission);
+        MyApplication.LogController.makeLog("compTest:comp2", String.valueOf(Comp.Type.IMAGE.ordinal()), localLogPermission);
+
+
+
+
+
     }
 
     @Override

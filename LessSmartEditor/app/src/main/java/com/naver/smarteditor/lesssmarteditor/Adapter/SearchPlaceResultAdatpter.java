@@ -43,6 +43,7 @@ public class SearchPlaceResultAdatpter extends RecyclerView.Adapter<SearchPlaceR
         holder.placeAddress.setText(places.get(position).getPlaceAddress());
         holder.katechMapX = places.get(position).getKatechMapX();
         holder.katechMapY = places.get(position).getKatechMapY();
+        holder.postion = position;
     }
 
     @Override
@@ -68,6 +69,7 @@ public class SearchPlaceResultAdatpter extends RecyclerView.Adapter<SearchPlaceR
         TextView placeName;
         TextView placeAddress;
         int katechMapX, katechMapY;
+        int postion;
 
         public PlaceViewHolder(final View itemView) {
             super(itemView);
@@ -78,7 +80,7 @@ public class SearchPlaceResultAdatpter extends RecyclerView.Adapter<SearchPlaceR
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mSearchResultItemOnClickListener.OnClickListener(itemView, katechMapX, katechMapY);
+                    mSearchResultItemOnClickListener.OnClickListener(itemView, katechMapX, katechMapY, postion);
                 }
             });
         }

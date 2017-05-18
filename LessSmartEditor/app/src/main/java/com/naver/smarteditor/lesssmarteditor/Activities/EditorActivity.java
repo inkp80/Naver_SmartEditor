@@ -1,7 +1,9 @@
 package com.naver.smarteditor.lesssmarteditor.Activities;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,6 +14,16 @@ import android.widget.Button;
 import com.naver.smarteditor.lesssmarteditor.Adapter.EditorComponentAdapter;
 import com.naver.smarteditor.lesssmarteditor.Database.DatabaseHelper;
 import com.naver.smarteditor.lesssmarteditor.MyApplication;
+import com.naver.smarteditor.lesssmarteditor.Objects.Comp;
+import com.naver.smarteditor.lesssmarteditor.Objects.Component;
+import com.naver.smarteditor.lesssmarteditor.Objects.ImageComponent;
+import com.naver.smarteditor.lesssmarteditor.Objects.ImgComp;
+import com.naver.smarteditor.lesssmarteditor.Objects.MapComp;
+import com.naver.smarteditor.lesssmarteditor.Objects.MapComponent;
+import com.naver.smarteditor.lesssmarteditor.Objects.PlaceItem;
+import com.naver.smarteditor.lesssmarteditor.Objects.PlaceItemPasser;
+import com.naver.smarteditor.lesssmarteditor.Objects.TextComponent;
+import com.naver.smarteditor.lesssmarteditor.Objects.TxtComp;
 import com.naver.smarteditor.lesssmarteditor.R;
 import com.naver.smarteditor.lesssmarteditor.Dialogs.SelectComponentDialog;
 
@@ -26,6 +38,11 @@ public class EditorActivity extends AppCompatActivity{
     final String TAG = "Editor";
     boolean localLogPermission = true;
 
+
+    final int REQ_CODE_SELECT_IMAGE = 100;
+    final int REQ_CODE_SELECT_MAP = 200;
+    Object dataMessenger;
+
     final int TEXT_MODE = 0;
     final int IMG_MODE = 1;
     final int MAP_MODE = 2;
@@ -37,11 +54,13 @@ public class EditorActivity extends AppCompatActivity{
     private Button mAddComponentButton;
     private SelectComponentDialog mSelectComponentDialog;
 
+
     View.OnClickListener txtButtonListener;
     View.OnClickListener imgButtonListener;
     View.OnClickListener mapButtonListener;
 
-    List<Integer> mComponentList;
+//    List<Component> mComponentList;
+    List<Comp> mCompList;
 
     EditorComponentAdapter mComponentAdpater;
     RecyclerView mEditorRecyclerView;
@@ -52,8 +71,11 @@ public class EditorActivity extends AppCompatActivity{
         setContentView(R.layout.editor_view);
         openDatabase();
         initDialog();
+        dataMessenger = new Object();
 
-        mComponentList = new ArrayList<Integer>();
+
+//        mComponentList = new ArrayList<Component>();
+        mCompList = new ArrayList<Comp>();
 
         mAddComponentButton = (Button) findViewById(R.id.editor_bt_addcomponent);
         mAddComponentButton.setOnClickListener(new View.OnClickListener() {
@@ -69,13 +91,23 @@ public class EditorActivity extends AppCompatActivity{
 
 
 
+    public void initRecyclerView(){
+        mComponentAdpater = new EditorComponentAdapter(this, mCompList);
+        mEditorRecyclerView = (RecyclerView) findViewById(R.id.editor_recyclerview);
+        mEditorRecyclerView.setHasFixedSize(true);
+        mEditorRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mEditorRecyclerView.setAdapter(mComponentAdpater);
+        mEditorRecyclerView.setItemViewCacheSize(100);
+    }
+
     public void initDialog(){
+        //TODO: rename & restructuring
 
         txtButtonListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //ADD TEXT COMPONENT TO EDITOR
-                addComponent(TEXT_MODE);
+                addCompToList(createTextComponent());
                 mSelectComponentDialog.dismiss();
             }
         };
@@ -83,7 +115,7 @@ public class EditorActivity extends AppCompatActivity{
         imgButtonListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addComponent(IMG_MODE);
+                addCompToList(createImgCompoenent());
                 mSelectComponentDialog.dismiss();
             }
         };
@@ -91,40 +123,113 @@ public class EditorActivity extends AppCompatActivity{
         mapButtonListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addComponent(MAP_MODE);
+                addCompToList(createMapComponent());
                 mSelectComponentDialog.dismiss();
-                Intent intent = new Intent(EditorActivity.this, SearchPlaceActivity.class);
             }
         };
 
         mSelectComponentDialog = new SelectComponentDialog(this, txtButtonListener, imgButtonListener, mapButtonListener);
     }
 
-    public void initRecyclerView(){
-        mComponentAdpater = new EditorComponentAdapter(this, mComponentList);
-        mEditorRecyclerView = (RecyclerView) findViewById(R.id.editor_recyclerview);
-        mEditorRecyclerView.setHasFixedSize(true);
-        mEditorRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mEditorRecyclerView.setAdapter(mComponentAdpater);
+    public TxtComp createTextComponent(){
+        TxtComp txtComp = new TxtComp();
+        return txtComp;
     }
 
+    public ImgComp createImgCompoenent(){
+        ImgComp imgComp = new ImgComp();
+        getImgSrcFromDevice();
+        String imgSrc = dataMessenger.toString();
+        imgComp.setComponentData(imgSrc);
+        return imgComp;
+    }
 
-    public void addComponent(int mode){
-        MyApplication.LogController.makeLog(TAG, "AddComp mode : " + String.valueOf(mode), localLogPermission);
-        mComponentList.add(mode);
+    public MapComp createMapComponent(){
+        MapComp mapComp = new MapComp();
+        getMapSrcFromServer();
+        mapComp.setComponentData(dataMessenger);
+        return mapComp;
+    }
+
+    public void addCompToList(Comp comp){
+        MyApplication.LogController.makeLog(TAG, String.valueOf(comp.getComponentType()), localLogPermission);
+        mCompList.add(comp);
         renewingAdapterData();
     }
 
+    public void getImgSrcFromDevice(){
+        //TODO: 정말 좋지 않은 구조인듯
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType(android.provider.MediaStore.Images.Media.CONTENT_TYPE);
+        intent.setData(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intent, REQ_CODE_SELECT_IMAGE);
+//        return dataMessenger.toString();
+        //TODO: 이 부분 개선 필요함
+    }
+
+    public void getMapSrcFromServer(){
+        Intent intent = new Intent(this, SearchPlaceActivity.class);
+        startActivity(intent);
+
+    }
+
+    public MapComponent parsePalceltoObject(PlaceItemPasser data){
+        MapComponent mapComponent = new MapComponent(data.getPlaceName(), data.getPlaceAddress(), data.getPlaceCoords(), data.getPlaceUri());
+        return mapComponent;
+    }
+
+
 
     public void openDatabase(){
+        //TODO: default CRUD
         dbHelper = new DatabaseHelper(this);
         db = dbHelper.getWritableDatabase();
     }
 
 
     public void renewingAdapterData(){
-        mComponentAdpater.setComponentList(mComponentList);
+        mComponentAdpater.setComponentList(mCompList);
         mComponentAdpater.notifyDataSetChanged();
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        //TODO: handling data
+        if(requestCode == REQ_CODE_SELECT_IMAGE) {
+            if(resultCode == Activity.RESULT_OK) {
+                try {
+                    Uri selectedImgUri = data.getData();
+                    MyApplication.LogController.makeLog(TAG, selectedImgUri.toString(), localLogPermission);
+
+
+//                } catch (FileNotFoundException e) {
+//                    // TODO Auto-generated catch block
+//                    e.printStackTrace();
+//                } catch (IOException e) {
+//                    // TODO Auto-generated catch block
+//                    e.printStackTrace();
+                    dataMessenger = selectedImgUri.toString();
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        if(requestCode == REQ_CODE_SELECT_MAP){
+            if(resultCode == RESULT_OK){
+                try{
+                    Bundle bundle = getIntent().getExtras();
+
+                    PlaceItemPasser passer = (PlaceItemPasser) bundle.getParcelable("passer");
+                    dataMessenger = parsePalceltoObject(passer);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
 //    public void saveToSQLite(){

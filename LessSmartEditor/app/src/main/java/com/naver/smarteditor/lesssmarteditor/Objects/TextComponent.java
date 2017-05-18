@@ -5,6 +5,17 @@ package com.naver.smarteditor.lesssmarteditor.Objects;
  */
 
 public class TextComponent {
-    int componentType;
-    String textString
+    String textString;
+
+    public TextComponent(String textString) {
+        this.textString = textString;
+    }
+
+    public String getTextString() {
+        return textString;
+    }
+
+    public void setTextString(String textString) {
+        this.textString = textString;
+    }
 }

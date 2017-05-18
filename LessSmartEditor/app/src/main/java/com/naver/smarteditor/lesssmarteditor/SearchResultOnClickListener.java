@@ -7,5 +7,5 @@ import android.view.View;
  */
 
 public interface SearchResultOnClickListener {
-    public void OnClickListener(View v, int x, int y);
+    public void OnClickListener(View v, int x, int y, int position);
 }

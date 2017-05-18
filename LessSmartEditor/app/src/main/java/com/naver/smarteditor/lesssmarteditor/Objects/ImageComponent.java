@@ -5,6 +5,19 @@ package com.naver.smarteditor.lesssmarteditor.Objects;
  */
 
 public class ImageComponent {
-    int componentType;
     String imageUri;
+
+    public ImageComponent( String imageUri) {
+
+        this.imageUri = imageUri;
+    }
+
+
+    public String getImageUri() {
+        return imageUri;
+    }
+
+    public void setImageUri(String imageUri) {
+        this.imageUri = imageUri;
+    }
 }
