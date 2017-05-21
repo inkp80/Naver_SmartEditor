@@ -1,4 +1,4 @@
-package com.naver.smarteditor.lesssmarteditor.Activities;
+package com.naver.smarteditor.lesssmarteditor.views.edit;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -11,30 +11,50 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
 
-import com.naver.smarteditor.lesssmarteditor.Adapter.EditorComponentAdapter;
-import com.naver.smarteditor.lesssmarteditor.Database.DatabaseHelper;
-import com.naver.smarteditor.lesssmarteditor.MyApplication;
-import com.naver.smarteditor.lesssmarteditor.Objects.Comp;
-import com.naver.smarteditor.lesssmarteditor.Objects.Component;
-import com.naver.smarteditor.lesssmarteditor.Objects.ImageComponent;
-import com.naver.smarteditor.lesssmarteditor.Objects.ImgComp;
-import com.naver.smarteditor.lesssmarteditor.Objects.MapComp;
-import com.naver.smarteditor.lesssmarteditor.Objects.MapComponent;
-import com.naver.smarteditor.lesssmarteditor.Objects.PlaceItem;
-import com.naver.smarteditor.lesssmarteditor.Objects.PlaceItemPasser;
-import com.naver.smarteditor.lesssmarteditor.Objects.TextComponent;
-import com.naver.smarteditor.lesssmarteditor.Objects.TxtComp;
+//import com.naver.smarteditor.lesssmarteditor.Activities.SearchPlaceActivity;
+//import com.naver.smarteditor.lesssmarteditor.Adapter.EditorComponentAdapter;
+//import com.naver.smarteditor.lesssmarteditor.Database.DatabaseHelper;
+//import com.naver.smarteditor.lesssmarteditor.Dialogs.SelectComponentDialog;
+//import com.naver.smarteditor.lesssmarteditor.MyApplication;
+//import com.naver.smarteditor.lesssmarteditor.Objects.Comp;
+//import com.naver.smarteditor.lesssmarteditor.Objects.ImgComp;
+//import com.naver.smarteditor.lesssmarteditor.Objects.MapComp;
+//import com.naver.smarteditor.lesssmarteditor.Objects.MapComponent;
+//import com.naver.smarteditor.lesssmarteditor.Objects.PlaceItemPasser;
+//import com.naver.smarteditor.lesssmarteditor.Objects.TxtComp;
 import com.naver.smarteditor.lesssmarteditor.R;
-import com.naver.smarteditor.lesssmarteditor.Dialogs.SelectComponentDialog;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * Created by NAVER on 2017. 5. 11..
  */
 
 public class EditorActivity extends AppCompatActivity{
+    @BindView(R.id.editor_bt_addcomponent)
+    Button mButton;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_editor_view);
+        ButterKnife.bind(this);
+
+        mButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //add text component;
+            }
+        });
+    }
+
+
+
+    /*
     final String TAG = "Editor";
     boolean localLogPermission = true;
 
@@ -68,7 +88,7 @@ public class EditorActivity extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.editor_view);
+        setContentView(R.layout.activity_editor_view);
         openDatabase();
         initDialog();
         dataMessenger = new Object();
@@ -232,6 +252,8 @@ public class EditorActivity extends AppCompatActivity{
         }
     }
 
+
+    */
 //    public void saveToSQLite(){
 //        try {
 //            Log.d("from AddFrag value, ","title:"+item.getTitle());

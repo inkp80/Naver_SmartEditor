@@ -14,6 +14,11 @@ public class TxtComp extends Comp {
     }
 
     @Override
+    public Type getComponentType() {
+        return Type.TEXT;
+    }
+
+    @Override
     public void setComponentData(Object componentData) {
         TextComponent txt = (TextComponent) componentData;
         text = txt.getTextString();

@@ -30,7 +30,6 @@ public class EditorComponentAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     public RequestManager requestManager;
 
     Context mContext;
-    List<Component> mComponents;
     List<Comp> mCompList;
 
     final int TXT_COMPONENT = 0;
@@ -80,13 +79,13 @@ public class EditorComponentAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         switch (holder.getItemViewType()){
             case TXT_COMPONENT :
                 TextComponentViewHolder textComponentViewHolder = (TextComponentViewHolder) holder;
-                textComponentViewHolder.mText.setText(((TextComponent)(mComponents.get(position).getComponent())).getTextString());
+//                textComponentViewHolder.mText.setText(((TextComponent)(mCompList.get(position).get())).getTextString());
                 break;
 
             case IMG_COMPONENT:
                 ImageComponentViewHolder imageComponentViewHolder = (ImageComponentViewHolder) holder;
-                String imgUrl = ((ImageComponent)(mComponents.get(position).getComponent())).getImageUri();
-                requestManager.load(imgUrl).into(((ImageComponentViewHolder) holder).mImage);
+//                String imgUrl = ((ImageComponent)(mComponents.get(position).getComponent())).getImageUri();
+//                requestManager.load(imgUrl).into(((ImageComponentViewHolder) holder).mImage);
                 break;
             case MAP_COMPONENT:
 
@@ -103,7 +102,7 @@ public class EditorComponentAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     public int getItemViewType(int position) {
         super.getItemViewType(position);
 //        position;
-        return mCompList.get(position).getComponentType().ordinal();
+        return position;
     }
 
     class TextComponentViewHolder extends RecyclerView.ViewHolder{
