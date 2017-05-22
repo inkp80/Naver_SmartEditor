@@ -1,7 +1,9 @@
 package com.naver.smarteditor.lesssmarteditor.adpater.edit;
 
 import com.naver.smarteditor.lesssmarteditor.adpater.basic.BaseAdapterContract;
+import com.naver.smarteditor.lesssmarteditor.adpater.basic.holder.BasicViewHolder;
 import com.naver.smarteditor.lesssmarteditor.data.BaseComponent;
+import com.naver.smarteditor.lesssmarteditor.listener.OnTextChangeListener;
 
 import java.util.ArrayList;
 
@@ -10,17 +12,19 @@ import java.util.ArrayList;
  */
 
 public interface EditComponentAdapterContract {
-    interface View{
+    interface View extends BaseAdapterContract.View{
 
-        void setOnClickListener();
+        void setOnTextChangeListener(OnTextChangeListener onTextChangeListener);
 
         void notifyAdapter();
 
     }
 
-    interface Model{
+    interface Model extends BaseAdapterContract.Model {
 
-        void addComponent(ArrayList<BaseComponent> components);
+        void setComponent(ArrayList<BaseComponent> components);
+
+        void editComponent(CharSequence s, int position);
 
         BaseComponent getComponent(int position);
 

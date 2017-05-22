@@ -1,6 +1,7 @@
 package com.naver.smarteditor.lesssmarteditor;
 
-import com.naver.smarteditor.lesssmarteditor.Objects.PlaceRequestResult;
+
+import com.naver.smarteditor.lesssmarteditor.data.api.naver_map.PlaceRequestResult;
 
 import retrofit2.Call;
 import retrofit2.Retrofit;

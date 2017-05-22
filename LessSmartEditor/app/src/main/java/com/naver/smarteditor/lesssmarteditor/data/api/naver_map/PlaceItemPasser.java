@@ -1,10 +1,10 @@
-package com.naver.smarteditor.lesssmarteditor.Objects;
+package com.naver.smarteditor.lesssmarteditor.data.api.naver_map;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
- * Created by NAVER on 2017. 5. 18..
+ * Created by NAVER on 2017. 5. 22..
  */
 
 public class PlaceItemPasser implements Parcelable {

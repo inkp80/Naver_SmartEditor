@@ -89,22 +89,6 @@ http://d2.naver.com/helloworld/377316
 http://d2.naver.com/helloworld/429368
 
 
-5/19 -----------------
-
-mvp 패턴<br>
-https://www.slideshare.net/madvirus/mvp-63161829
-
-architecture pattern, design pattern의 차이에 대하여<br>
-http://stackoverflow.com/questions/4243187/whats-the-difference-between-design-patterns-and-architectural-patterns
-
-리스트 뷰에 MVP를? 무슨 소리지?<br>
-http://stackoverflow.com/questions/24858050/how-to-control-listview-with-mvp-pattern-for-android
-
-어뎁터는 뭘까? 데이터? 뷰?<br>
-https://medium.com/@jsuch2362/adapter-%EB%88%84%EA%B5%AC%EB%83%90-%EB%84%8C-data-view-2db7eff11c20
-
-처음부터 따라가는 MVP<br>
-http://thdev.tech/androiddev/2016/06/14/Android-TODO-MVP-Example.html
 
 
 —————
@@ -124,17 +108,6 @@ http://stackoverflow.com/questions/32065267/recyclerview-changing-items-during-s
 database 설계 - 컴포넌트들을 어떻게 저장하고 정보를 가져올 것인가?
 
 **Editor Adapter에 본래의 기능 이외에 기능들이 포함 분리가 필요**
-
-5/18(목)
-Component 설계 문제 인지
-
-5/19(금)
-컴포넌트, 뷰 사이 data 전달 문제 인지
-->18일 Component 설계 문제와 함께 위 문제의 해결 방안으로 MVP 패턴 선택
-
-5/21(일)
-MVP 패턴으로 설계 변환 진행 중
-
 
 
 —————————

@@ -10,13 +10,22 @@ public class TextComponent extends BaseComponent{
 
     private String text;
 
-    @Override
-    public void setComponentType(TypE type) {
-        this.componentType = type;
+    public TextComponent(String text) {
+        this.componentType = TypE.TEXT;
+        this.text = text;
     }
 
     @Override
-    public int getComponentType() {
-        return 0;
+    public TypE getComponentType(){
+        return this.componentType;
+    }
+
+    public String getText(){
+        return text;
+    }
+
+    public void setText(String text){
+        this.text = text;
+
     }
 }

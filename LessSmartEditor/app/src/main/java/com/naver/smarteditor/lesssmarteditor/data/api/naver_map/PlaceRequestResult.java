@@ -1,11 +1,11 @@
-package com.naver.smarteditor.lesssmarteditor.Objects;
+package com.naver.smarteditor.lesssmarteditor.data.api.naver_map;
 
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
 /**
- * Created by NAVER on 2017. 5. 17..
+ * Created by NAVER on 2017. 5. 22..
  */
 
 public class PlaceRequestResult {
