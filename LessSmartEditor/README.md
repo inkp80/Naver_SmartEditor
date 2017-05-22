@@ -135,6 +135,14 @@ database 설계 - 컴포넌트들을 어떻게 저장하고 정보를 가져올 
 
 **Editor Adapter에 본래의 기능 이외에 기능들이 포함 분리가 필요**
 
+5/14~15
+
+retrofit2 - json 파싱 문제 발생
+
+5/18(목)
+
+구조 문제 인지 - MVP 패턴
+
 5/22(월)
 
 TextWatcher - edit-presenter에서 onTextChanged가 반복적으로 호출되며 TextComponent의 데이터에 문제 발생
