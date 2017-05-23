@@ -117,6 +117,17 @@ http://thdev.tech/androiddev/2017/02/20/Android-MVP-Package-Structure.html
 recyclerView
 https://medium.com/@bansooknam/android-recyclerview-%EC%9A%94%EC%95%BD-aaea4a9c95e7
 
+
+
+
+http://kimjihyok.info/2017/04/04/android-mvp-implemenation-%EC%A2%85%EB%A5%98/
+
+http://blog.kusweet.com/mvc%EC%99%80-mvp/
+
+http://herbyoung.tistory.com/60
+
+http://pluu.github.io/blog/android/2016/12/30/android-mvc-mvp-diff/
+
 —————
 
 ### ISSUE LOG
@@ -145,7 +156,8 @@ retrofit2 - json 파싱 문제 발생
 
 5/22(월)
 
-TextWatcher - edit-presenter에서 onTextChanged가 반복적으로 호출되며 TextComponent의 데이터에 문제 발생
+TextWatcher - edit-presenter에서 onTextChanged가 반복적으로 호출되며 TextComponent의 데이터에 문제 발생 => Watcher의 중복 등록과 등록 시점의 문제
+
 
 
 —————————
