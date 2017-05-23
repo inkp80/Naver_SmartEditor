@@ -46,11 +46,8 @@ public class EditPresenter implements EditContract.Presenter, OnTextChangeListen
         editComponentRepository.addComponent(type, new EditComponentDataSource.LoadComponentCallBack() {
             @Override
             public void OnComponentLoaded(ArrayList<BaseComponent> components) {
-                for(int i=0; i<components.size(); i++){
-                    TextComponent textComponent = (TextComponent) components.get(i);
-                    MyApplication.LogController.makeLog(TAG, String.valueOf(i)+",,,"+String.valueOf(textComponent.getText()), localLogPermission);
-                }
                 if(components != null) {
+//                    adapterModel.clearComponent();
                     adapterModel.setComponent(components);
                     adapterView.notifyAdapter();
                 }
@@ -77,7 +74,7 @@ public class EditPresenter implements EditContract.Presenter, OnTextChangeListen
 
     @Override
     public void onTextChanged(CharSequence s, int position) {
-        MyApplication.LogController.makeLog(TAG,"THIS!!!" + String.valueOf(position),localLogPermission);
+        MyApplication.LogController.makeLog(TAG,"onTextChanged : " + String.valueOf(position),localLogPermission);
         editComponentRepository.editComponent(s, position, new EditComponentDataSource.LoadComponentCallBack(){
             @Override
             public void OnComponentLoaded(ArrayList<BaseComponent> components){

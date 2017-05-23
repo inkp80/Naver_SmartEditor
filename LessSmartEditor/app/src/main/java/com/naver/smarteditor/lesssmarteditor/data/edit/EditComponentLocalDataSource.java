@@ -5,7 +5,6 @@ import com.naver.smarteditor.lesssmarteditor.data.BaseComponent;
 import com.naver.smarteditor.lesssmarteditor.data.TextComponent;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by NAVER on 2017. 5. 21..
@@ -13,18 +12,18 @@ import java.util.List;
 
 public class EditComponentLocalDataSource implements EditComponentDataSource {
     private final String TAG = "EditComponentLocalDataSource";
-    private boolean localLogPermission = false;
+    private boolean localLogPermission = true;
 
 
-    ArrayList<BaseComponent> components;
+    ArrayList<BaseComponent> mComponents;
 
     public EditComponentLocalDataSource(){
-        components = new ArrayList<>();
+        mComponents = new ArrayList<>();
     }
 
     @Override
     public void setComponent(ArrayList<BaseComponent> components, LoadComponentCallBack loadComponentCallBack) {
-        this.components = components;
+        this.mComponents = components;
         if(loadComponentCallBack != null) {
             loadComponentCallBack.OnComponentLoaded(components);
         }
@@ -35,7 +34,7 @@ public class EditComponentLocalDataSource implements EditComponentDataSource {
         //do something -
 
         if(loadComponentCallBack != null) {
-            loadComponentCallBack.OnComponentLoaded(components);
+            loadComponentCallBack.OnComponentLoaded(mComponents);
         }
     }
 
@@ -47,34 +46,32 @@ public class EditComponentLocalDataSource implements EditComponentDataSource {
         if(type == BaseComponent.TypE.TEXT){
             TextComponent textComponent = new TextComponent(null);
             component = textComponent;
+
         }
 
         try {
             if (component == null) {
                 throw new FoolException();
             }
-            components.add(component);
+            mComponents.add(component);
         } catch (FoolException e){
             MyApplication.LogController.makeLog(TAG, "Fail to add Component", localLogPermission);
         }
 
 
         if(loadComponentCallBack != null) {
-            loadComponentCallBack.OnComponentLoaded(components);
+            MyApplication.LogController.makeLog(TAG, "component Size : " + mComponents.size(), localLogPermission);
+            loadComponentCallBack.OnComponentLoaded(mComponents);
         }
 
     }
 
     @Override
     public void editComponent(CharSequence s, int position, LoadComponentCallBack loadComponentCallBack) {
-        ((TextComponent) components.get(position)).setText(s.toString());
 
-        for(int i=0; i<components.size(); i++){
-            TextComponent textComponent = (TextComponent) components.get(i);
-            MyApplication.LogController.makeLog(TAG, String.valueOf(i)+","+String.valueOf(textComponent.getText()), localLogPermission);
-        }
+        ((TextComponent) mComponents.get(position)).setText(s.toString());
         if(loadComponentCallBack != null) {
-            loadComponentCallBack.OnComponentLoaded(components);
+            loadComponentCallBack.OnComponentLoaded(mComponents);
         }
     }
 }

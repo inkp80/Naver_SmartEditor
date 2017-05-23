@@ -11,7 +11,6 @@ import com.naver.smarteditor.lesssmarteditor.adpater.basic.holder.BasicViewHolde
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.holder.TextComponentViewHolder;
 import com.naver.smarteditor.lesssmarteditor.data.BaseComponent;
 import com.naver.smarteditor.lesssmarteditor.data.TextComponent;
-import com.naver.smarteditor.lesssmarteditor.listener.OnItemClickedListener;
 import com.naver.smarteditor.lesssmarteditor.listener.OnTextChangeListener;
 
 import java.util.ArrayList;
@@ -21,6 +20,8 @@ import java.util.ArrayList;
  */
 
 public class EditComponentAdapter extends RecyclerView.Adapter<BasicViewHolder> implements EditComponentAdapterContract.Model, EditComponentAdapterContract.View{
+
+    int idx = 0;
 
     private final String TAG = "EditComponentAdapter";
     private boolean localLogPermission = true;
@@ -32,11 +33,11 @@ public class EditComponentAdapter extends RecyclerView.Adapter<BasicViewHolder> 
 
     private Context mContext;
     private OnTextChangeListener onTextChangeListener;
-    private ArrayList<BaseComponent> components;
+    private ArrayList<BaseComponent> mComponents;
 
     public EditComponentAdapter(Context context){
         this.mContext = context;
-        components = new ArrayList<>();
+        mComponents = new ArrayList<>();
     }
 
     @Override
@@ -46,7 +47,8 @@ public class EditComponentAdapter extends RecyclerView.Adapter<BasicViewHolder> 
         if(viewType == TEXT_COMPONENT){
             EditText et = new EditText(mContext);
             et.setLayoutParams(lp);
-            return new TextComponentViewHolder(et, onTextChangeListener);
+            TextComponentViewHolder textComponentViewHolder = new TextComponentViewHolder(et, onTextChangeListener);
+            return textComponentViewHolder;
         }
 
         return null;
@@ -54,21 +56,30 @@ public class EditComponentAdapter extends RecyclerView.Adapter<BasicViewHolder> 
 
     @Override
     public void onBindViewHolder(BasicViewHolder holder, int position) {
-        if(components.get(position).getComponentType().getTypeValue() == TEXT_COMPONENT) {
-            TextComponent thisTextComponent = (TextComponent) components.get(position);
 
-            TextComponentViewHolder textComponentViewHolder = (TextComponentViewHolder) holder;
+        int thisComponentType = mComponents.get(position).getComponentType().getTypeValue();
 
-            textComponentViewHolder.onBind(holder.getAdapterPosition());
+        switch (thisComponentType){
+            case TEXT_COMPONENT :
+                TextComponent thisTextComponent = (TextComponent) mComponents.get(position);
 
-            textComponentViewHolder.setText(thisTextComponent.getText());
-
+                TextComponentViewHolder textComponentViewHolder = (TextComponentViewHolder) holder;
+                textComponentViewHolder.removeWatcher();
+                textComponentViewHolder.setText(thisTextComponent.getText());
+                textComponentViewHolder.onBind(position);
+                break;
+            case IMG_COMPONENT :
+                break;
+            case MAP_COMPONENT :
+                break;
+            default:
+                break;
         }
     }
 
     @Override
     public int getItemCount() {
-        return components.size();
+        return mComponents.size();
     }
 
     @Override
@@ -78,13 +89,14 @@ public class EditComponentAdapter extends RecyclerView.Adapter<BasicViewHolder> 
 
     @Override
     public void notifyAdapter() {
+        MyApplication.LogController.makeLog(TAG, "notifyadapter", localLogPermission);
         notifyDataSetChanged();
     }
 
     @Override
     public int getItemViewType(int position) {
         super.getItemViewType(position);
-        int componentType = components.get(position).getComponentType().getTypeValue();
+        int componentType = mComponents.get(position).getComponentType().getTypeValue();
         switch (componentType){
             case TEXT_COMPONENT:
                 return TEXT_COMPONENT;
@@ -102,16 +114,20 @@ public class EditComponentAdapter extends RecyclerView.Adapter<BasicViewHolder> 
 
     @Override
     public void setComponent(ArrayList<BaseComponent> components) {
-        this.components = components;
+        mComponents = new ArrayList<>(components);
     }
 
     @Override
     public void editComponent(CharSequence s, int position) {
-
     }
 
     @Override
     public BaseComponent getComponent(int position) {
-        return components.get(position);
+        return mComponents.get(position);
+    }
+
+    @Override
+    public void clearComponent() {
+        mComponents.clear();
     }
 }

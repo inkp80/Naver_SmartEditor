@@ -14,10 +14,12 @@ import com.naver.smarteditor.lesssmarteditor.listener.OnTextChangeListener;
 
 public class TextComponentViewHolder extends BasicViewHolder {
 
-    private EditText et;
-    private OnTextChangeListener onTextChangeListener;
 
-    public TextComponentViewHolder(View itemView, OnTextChangeListener onTextChangeListener) {
+    private EditText et;
+    private final OnTextChangeListener onTextChangeListener;
+    private TextWatcher textWatcher;
+
+    public TextComponentViewHolder(View itemView, final OnTextChangeListener onTextChangeListener) {
         super(itemView);
         this.et = (EditText) itemView;
         this.onTextChangeListener = onTextChangeListener;
@@ -29,7 +31,8 @@ public class TextComponentViewHolder extends BasicViewHolder {
 
     public void onBind(final int position){
 
-        et.addTextChangedListener(new TextWatcher() {
+
+        et.addTextChangedListener(textWatcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -45,5 +48,12 @@ public class TextComponentViewHolder extends BasicViewHolder {
 
             }
         });
+
     }
+
+    public void removeWatcher(){
+        et.removeTextChangedListener(textWatcher);
+    }
+
 }
+

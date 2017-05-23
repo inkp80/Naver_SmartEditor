@@ -28,5 +28,7 @@ public interface EditComponentAdapterContract {
 
         BaseComponent getComponent(int position);
 
+        void clearComponent();
+
     }
 }

@@ -89,33 +89,7 @@ http://d2.naver.com/helloworld/377316
 http://d2.naver.com/helloworld/429368
 
 
-5/22-----
 
-
-http://javacan.tistory.com/entry/16
-
-
-*MVP 
-
-MVC, MVP, MVVM
-https://news.realm.io/kr/news/eric-maxwell-mvc-mvp-and-mvvm-on-android
-
-
-google blueprint
-https://github.com/googlesamples/android-architecture/tree/todo-mvp/
-
-MVP outline
-https://www.slideshare.net/madvirus/mvp-63161829
-
-GDE adpater with clean architecture
-https://medium.com/@jsuch2362/adapter-%EB%88%84%EA%B5%AC%EB%83%90-%EB%84%8C-data-view-2db7eff11c20
-
-MVP prac
-http://thdev.tech/androiddev/2017/02/20/Android-MVP-Package-Structure.html
--=-=-=-=-=-=-
-
-recyclerView
-https://medium.com/@bansooknam/android-recyclerview-%EC%9A%94%EC%95%BD-aaea4a9c95e7
 
 —————
 
@@ -134,18 +108,6 @@ http://stackoverflow.com/questions/32065267/recyclerview-changing-items-during-s
 database 설계 - 컴포넌트들을 어떻게 저장하고 정보를 가져올 것인가?
 
 **Editor Adapter에 본래의 기능 이외에 기능들이 포함 분리가 필요**
-
-5/14~15
-
-retrofit2 - json 파싱 문제 발생
-
-5/18(목)
-
-구조 문제 인지 - MVP 패턴
-
-5/22(월)
-
-TextWatcher - edit-presenter에서 onTextChanged가 반복적으로 호출되며 TextComponent의 데이터에 문제 발생
 
 
 —————————
