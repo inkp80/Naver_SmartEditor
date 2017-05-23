@@ -14,7 +14,6 @@ import com.naver.smarteditor.lesssmarteditor.views.basic.presenter.BasePresenter
 public interface EditContract {
 
     interface View extends BaseView{
-
     }
 
     interface Presenter extends BasePresenter{
@@ -23,7 +22,7 @@ public interface EditContract {
 
         void detachView();
 
-        void addComponent(BaseComponent.TypE type);
+        void addComponent(BaseComponent.TypE type, Object componentData);
 
         void loadComponent();
 

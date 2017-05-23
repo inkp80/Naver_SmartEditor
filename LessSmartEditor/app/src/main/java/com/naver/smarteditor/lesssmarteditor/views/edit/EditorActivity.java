@@ -11,11 +11,14 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
 
+import com.naver.smarteditor.lesssmarteditor.MyApplication;
 import com.naver.smarteditor.lesssmarteditor.R;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.EditComponentAdapter;
 import com.naver.smarteditor.lesssmarteditor.data.BaseComponent;
+import com.naver.smarteditor.lesssmarteditor.data.api.naver_map.PlaceItemPasser;
 import com.naver.smarteditor.lesssmarteditor.data.edit.EditComponentDataSource;
 import com.naver.smarteditor.lesssmarteditor.data.edit.EditComponentRepository;
+import com.naver.smarteditor.lesssmarteditor.dialog.SelectComponentDialog;
 import com.naver.smarteditor.lesssmarteditor.views.edit.presenter.EditContract;
 import com.naver.smarteditor.lesssmarteditor.views.edit.presenter.EditPresenter;
 
@@ -31,6 +34,9 @@ import butterknife.ButterKnife;
 
 public class EditorActivity extends AppCompatActivity implements EditContract.View{
 
+    private final int REQ_CODE_MOV2_GALLERY = 100;
+    private final int REQ_CODE_MOV2_SEARCH_PLACE = 101;
+
 
     EditContract.Presenter mPresenter;
     EditComponentAdapter mAdapter;
@@ -40,6 +46,13 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
     Button mButton;
     @BindView(R.id.editor_recyclerview)
     RecyclerView mEditorRecyclerView;
+
+    private SelectComponentDialog mSelectComponentDialog;
+
+
+    View.OnClickListener txtButtonListener;
+    View.OnClickListener imgButtonListener;
+    View.OnClickListener mapButtonListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -51,14 +64,13 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         mAdapter = new EditComponentAdapter(this);
         initPresenter();
         initRecyclerView();
-
+        initDialog();
 
 
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //add text component;
-                mPresenter.addComponent(BaseComponent.TypE.TEXT);
+                mSelectComponentDialog.show();
             }
         });
     }
@@ -86,4 +98,75 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         mPresenter.setComponentDataSource(EditComponentRepository.getInstance());
     }
 
+
+    private void initDialog(){
+        //TODO: rename & restructuring
+
+        txtButtonListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //ADD TEXT COMPONENT TO EDITOR
+                mPresenter.addComponent(BaseComponent.TypE.TEXT, null);
+                mSelectComponentDialog.dismiss();
+            }
+        };
+
+        imgButtonListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getImgSrcFromGallery();
+                mSelectComponentDialog.dismiss();
+            }
+        };
+
+        mapButtonListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mSelectComponentDialog.dismiss();
+            }
+        };
+
+        mSelectComponentDialog = new SelectComponentDialog(this, txtButtonListener, imgButtonListener, mapButtonListener);
+    }
+
+
+    Object dataMessenger;
+
+    public void getImgSrcFromGallery(){
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType(android.provider.MediaStore.Images.Media.CONTENT_TYPE);
+        intent.setData(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intent, REQ_CODE_MOV2_GALLERY);
+    }
+
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        //TODO: handling data
+        if(requestCode == REQ_CODE_MOV2_GALLERY) {
+            if(resultCode == Activity.RESULT_OK) {
+                try {
+                    Uri selectedImgUri = data.getData();
+                    mPresenter.addComponent(BaseComponent.TypE.IMG, selectedImgUri);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+//        if(requestCode == REQ_CODE_MOV2_SEARCH_PLACE){
+//            if(resultCode == RESULT_OK){
+//                try{
+//                    Bundle bundle = getIntent().getExtras();
+//
+//                    PlaceItemPasser passer = (PlaceItemPasser) bundle.getParcelable("passer");
+//                    dataMessenger = parsePalceltoObject(passer);
+//
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
+    }
 }

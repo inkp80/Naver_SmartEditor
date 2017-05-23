@@ -11,9 +11,14 @@ import com.naver.smarteditor.lesssmarteditor.adpater.basic.holder.BasicViewHolde
 
 public class ImgComponentViewHolder extends BasicViewHolder {
 
-    ImageView imageView;
+    private ImageView imageView;
 
     public ImgComponentViewHolder(View itemView) {
         super(itemView);
+        this.imageView = (ImageView) itemView;
+    }
+
+    public ImageView getImageView(){
+        return imageView;
     }
 }

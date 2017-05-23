@@ -17,7 +17,7 @@ public interface EditComponentDataSource {
 
     void getComponent(LoadComponentCallBack loadComponentCallBack);
 
-    void addComponent(BaseComponent.TypE type, LoadComponentCallBack loadComponentCallBack);
+    void addComponent(BaseComponent.TypE type, Object componentData, LoadComponentCallBack loadComponentCallBack);
 
     void editComponent(CharSequence s, int position, LoadComponentCallBack loadComponentCallBack);
 

@@ -53,9 +53,9 @@ public class EditComponentRepository implements EditComponentDataSource {
     }
 
     @Override
-    public void addComponent(BaseComponent.TypE type, final LoadComponentCallBack loadComponentCallBack) {
+    public void addComponent(BaseComponent.TypE type, Object componentData, final LoadComponentCallBack loadComponentCallBack) {
         MyApplication.LogController.makeLog(TAG, "addComponent", localLogPermission);
-        editComponentLocalDataSource.addComponent(type, new LoadComponentCallBack() {
+        editComponentLocalDataSource.addComponent(type, componentData, new LoadComponentCallBack() {
             @Override
             public void OnComponentLoaded(ArrayList<BaseComponent> components) {
                 if(loadComponentCallBack != null) {

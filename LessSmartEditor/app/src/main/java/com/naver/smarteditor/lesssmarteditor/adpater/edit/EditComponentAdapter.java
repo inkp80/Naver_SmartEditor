@@ -1,15 +1,21 @@
 package com.naver.smarteditor.lesssmarteditor.adpater.edit;
 
 import android.content.Context;
+import android.nfc.Tag;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 import com.naver.smarteditor.lesssmarteditor.MyApplication;
 import com.naver.smarteditor.lesssmarteditor.adpater.basic.holder.BasicViewHolder;
+import com.naver.smarteditor.lesssmarteditor.adpater.edit.holder.ImgComponentViewHolder;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.holder.TextComponentViewHolder;
 import com.naver.smarteditor.lesssmarteditor.data.BaseComponent;
+import com.naver.smarteditor.lesssmarteditor.data.ImgComponent;
 import com.naver.smarteditor.lesssmarteditor.data.TextComponent;
 import com.naver.smarteditor.lesssmarteditor.listener.OnTextChangeListener;
 
@@ -21,8 +27,6 @@ import java.util.ArrayList;
 
 public class EditComponentAdapter extends RecyclerView.Adapter<BasicViewHolder> implements EditComponentAdapterContract.Model, EditComponentAdapterContract.View{
 
-    int idx = 0;
-
     private final String TAG = "EditComponentAdapter";
     private boolean localLogPermission = true;
 
@@ -30,6 +34,7 @@ public class EditComponentAdapter extends RecyclerView.Adapter<BasicViewHolder> 
     private final int IMG_COMPONENT = 1;
     private final int MAP_COMPONENT = 2;
 
+    private RequestManager requestManager;
 
     private Context mContext;
     private OnTextChangeListener onTextChangeListener;
@@ -38,17 +43,35 @@ public class EditComponentAdapter extends RecyclerView.Adapter<BasicViewHolder> 
     public EditComponentAdapter(Context context){
         this.mContext = context;
         mComponents = new ArrayList<>();
+        requestManager = Glide.with(context);
     }
 
     @Override
     public BasicViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
+        
         RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         if(viewType == TEXT_COMPONENT){
             EditText et = new EditText(mContext);
             et.setLayoutParams(lp);
             TextComponentViewHolder textComponentViewHolder = new TextComponentViewHolder(et, onTextChangeListener);
             return textComponentViewHolder;
+        }
+
+        switch (viewType){
+            case TEXT_COMPONENT :
+                EditText et = new EditText(mContext);
+                et.setLayoutParams(lp);
+                TextComponentViewHolder textComponentViewHolder = new TextComponentViewHolder(et, onTextChangeListener);
+                return textComponentViewHolder;
+            case IMG_COMPONENT :
+                ImageView img = new ImageView(mContext);
+                img.setLayoutParams(lp);
+                ImgComponentViewHolder imgComponentViewHolder = new ImgComponentViewHolder(img);
+                return imgComponentViewHolder;
+            case MAP_COMPONENT :
+                break;
+            default:
+                break;
         }
 
         return null;
@@ -69,6 +92,11 @@ public class EditComponentAdapter extends RecyclerView.Adapter<BasicViewHolder> 
                 textComponentViewHolder.onBind(position);
                 break;
             case IMG_COMPONENT :
+                MyApplication.LogController.makeLog(TAG, "IMG_Comp, Binding", localLogPermission);
+                ImgComponent thisImgComponent = (ImgComponent) mComponents.get(position);
+                ImgComponentViewHolder imgComponentViewHolder = (ImgComponentViewHolder) holder;
+                requestManager.load(thisImgComponent.getImgUri()).into(imgComponentViewHolder.getImageView());
+
                 break;
             case MAP_COMPONENT :
                 break;
@@ -96,20 +124,8 @@ public class EditComponentAdapter extends RecyclerView.Adapter<BasicViewHolder> 
     @Override
     public int getItemViewType(int position) {
         super.getItemViewType(position);
-        int componentType = mComponents.get(position).getComponentType().getTypeValue();
-        switch (componentType){
-            case TEXT_COMPONENT:
-                return TEXT_COMPONENT;
-            case IMG_COMPONENT:
-                return IMG_COMPONENT;
-            case MAP_COMPONENT:
-                return MAP_COMPONENT;
-            default:
-                //throw Exception E
-                break;
-        }
-        //TODO: 에러 / 예외 처리 하기
-        return -1;
+        BaseComponent thisComponent = mComponents.get(position);
+        return thisComponent.getComponentType().getTypeValue();
     }
 
     @Override

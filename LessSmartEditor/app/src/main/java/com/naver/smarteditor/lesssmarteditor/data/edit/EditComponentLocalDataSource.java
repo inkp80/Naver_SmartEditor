@@ -1,9 +1,14 @@
 package com.naver.smarteditor.lesssmarteditor.data.edit;
 
+import android.net.Uri;
+
 import com.naver.smarteditor.lesssmarteditor.MyApplication;
+import com.naver.smarteditor.lesssmarteditor.adpater.edit.holder.ImgComponentViewHolder;
 import com.naver.smarteditor.lesssmarteditor.data.BaseComponent;
+import com.naver.smarteditor.lesssmarteditor.data.ImgComponent;
 import com.naver.smarteditor.lesssmarteditor.data.TextComponent;
 
+import java.net.URI;
 import java.util.ArrayList;
 
 /**
@@ -39,13 +44,22 @@ public class EditComponentLocalDataSource implements EditComponentDataSource {
     }
 
     @Override
-    public void addComponent(BaseComponent.TypE type, LoadComponentCallBack loadComponentCallBack) {
+    public void addComponent(BaseComponent.TypE type, Object componentData, LoadComponentCallBack loadComponentCallBack) {
         BaseComponent component = null;
         //TODO: check type then add to list
+
 
         if(type == BaseComponent.TypE.TEXT){
             TextComponent textComponent = new TextComponent(null);
             component = textComponent;
+        }
+
+        else if (type == BaseComponent.TypE.IMG){
+            ImgComponent imgComponent = new ImgComponent((Uri)componentData);
+            component = imgComponent;
+        }
+
+        else if(type == BaseComponent.TypE.MAP){
 
         }
 
@@ -60,7 +74,6 @@ public class EditComponentLocalDataSource implements EditComponentDataSource {
 
 
         if(loadComponentCallBack != null) {
-            MyApplication.LogController.makeLog(TAG, "component Size : " + mComponents.size(), localLogPermission);
             loadComponentCallBack.OnComponentLoaded(mComponents);
         }
 
