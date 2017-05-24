@@ -6,6 +6,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -13,9 +15,11 @@ import com.bumptech.glide.RequestManager;
 import com.naver.smarteditor.lesssmarteditor.MyApplication;
 import com.naver.smarteditor.lesssmarteditor.adpater.basic.holder.BasicViewHolder;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.holder.ImgComponentViewHolder;
+import com.naver.smarteditor.lesssmarteditor.adpater.edit.holder.MapComponentViewHolder;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.holder.TextComponentViewHolder;
 import com.naver.smarteditor.lesssmarteditor.data.BaseComponent;
 import com.naver.smarteditor.lesssmarteditor.data.ImgComponent;
+import com.naver.smarteditor.lesssmarteditor.data.MapComponent;
 import com.naver.smarteditor.lesssmarteditor.data.TextComponent;
 import com.naver.smarteditor.lesssmarteditor.listener.OnTextChangeListener;
 
@@ -69,7 +73,22 @@ public class EditComponentAdapter extends RecyclerView.Adapter<BasicViewHolder> 
                 ImgComponentViewHolder imgComponentViewHolder = new ImgComponentViewHolder(img);
                 return imgComponentViewHolder;
             case MAP_COMPONENT :
-                break;
+                TextView text = new TextView(mContext);
+                ImageView mapImg = new ImageView(mContext);
+                text.setLayoutParams(lp);
+                mapImg.setLayoutParams(lp);
+
+                LinearLayout linearLayout = new LinearLayout(mContext);
+                LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                linearLayout.setOrientation(LinearLayout.VERTICAL);
+                linearLayout.setLayoutParams(llp);
+
+                linearLayout.addView(mapImg);
+                linearLayout.addView(text);
+
+                MapComponentViewHolder mapComponentViewHolder = new MapComponentViewHolder(linearLayout);
+                return mapComponentViewHolder;
+
             default:
                 break;
         }
@@ -96,9 +115,12 @@ public class EditComponentAdapter extends RecyclerView.Adapter<BasicViewHolder> 
                 ImgComponent thisImgComponent = (ImgComponent) mComponents.get(position);
                 ImgComponentViewHolder imgComponentViewHolder = (ImgComponentViewHolder) holder;
                 requestManager.load(thisImgComponent.getImgUri()).into(imgComponentViewHolder.getImageView());
-
                 break;
             case MAP_COMPONENT :
+                MapComponent thisMapComponent = (MapComponent) mComponents.get(position);
+                MapComponentViewHolder mapComponentViewHolder = (MapComponentViewHolder) holder;
+                mapComponentViewHolder.getTextView().setText(thisMapComponent.getPlaceName());
+                requestManager.load(thisMapComponent.getPlaceMapImgUri()).into(mapComponentViewHolder.getImageView());
                 break;
             default:
                 break;

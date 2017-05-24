@@ -13,6 +13,11 @@ public class PlaceItemPasser implements Parcelable {
     String placeCoords;
     String placeUri;
 
+
+    public PlaceItemPasser(Parcel in){
+        readFromParcel(in);
+    }
+
     public PlaceItemPasser(String name, String address, String coords, String uri){
         this.placeName = name;
         this.placeAddress = address;
@@ -20,22 +25,6 @@ public class PlaceItemPasser implements Parcelable {
         this.placeUri = uri;
     }
 
-    public PlaceItemPasser(Parcel src){
-        this.placeName = src.readString();
-        this.placeAddress = src.readString();
-        this.placeCoords = src.readString();
-        this.placeCoords = src.readString();
-    }
-
-    public static final Parcelable.Creator CREATOR = new Parcelable.Creator(){
-        public PlaceItemPasser createFromParcel(Parcel in){
-            return new PlaceItemPasser(in);
-        }
-
-        public PlaceItemPasser[] newArray(int size){
-            return new PlaceItemPasser[size];
-        }
-    };
 
     @Override
     public int describeContents() {
@@ -48,6 +37,23 @@ public class PlaceItemPasser implements Parcelable {
         dest.writeString(placeCoords);
         dest.writeString(placeUri);
     }
+
+    private void readFromParcel(Parcel in){
+        this.placeName = in.readString();
+        this.placeAddress = in.readString();
+        this.placeCoords = in.readString();
+        this.placeUri = in.readString();
+    }
+
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        public PlaceItemPasser createFromParcel(Parcel in){
+            return new PlaceItemPasser(in);
+        }
+
+        public PlaceItemPasser[] newArray(int size){
+            return new PlaceItemPasser[size];
+        }
+    };
 
     public String getPlaceName() {
         return placeName;

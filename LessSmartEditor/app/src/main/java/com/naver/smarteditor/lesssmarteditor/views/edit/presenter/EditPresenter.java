@@ -1,14 +1,10 @@
 package com.naver.smarteditor.lesssmarteditor.views.edit.presenter;
 
-import com.naver.smarteditor.lesssmarteditor.MyApplication;
-import com.naver.smarteditor.lesssmarteditor.adpater.edit.EditComponentAdapter;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.EditComponentAdapterContract;
 import com.naver.smarteditor.lesssmarteditor.data.BaseComponent;
-import com.naver.smarteditor.lesssmarteditor.data.TextComponent;
-import com.naver.smarteditor.lesssmarteditor.data.edit.EditComponentDataSource;
-import com.naver.smarteditor.lesssmarteditor.data.edit.EditComponentRepository;
+import com.naver.smarteditor.lesssmarteditor.data.edit.local.EditorComponentDataSource;
+import com.naver.smarteditor.lesssmarteditor.data.edit.local.EditorComponentRepository;
 import com.naver.smarteditor.lesssmarteditor.listener.OnTextChangeListener;
-import com.naver.smarteditor.lesssmarteditor.views.basic.presenter.BasePresenter;
 
 import java.util.ArrayList;
 
@@ -24,7 +20,7 @@ public class EditPresenter implements EditContract.Presenter, OnTextChangeListen
     private EditComponentAdapterContract.Model adapterModel;
     private EditComponentAdapterContract.View adapterView;
 
-    private EditComponentRepository editComponentRepository;
+    private EditorComponentRepository editComponentRepository;
 
 
     public void attachView(EditContract.View view) {
@@ -53,13 +49,13 @@ public class EditPresenter implements EditContract.Presenter, OnTextChangeListen
     }
 
     @Override
-    public void setComponentDataSource(EditComponentRepository repository) {
+    public void setComponentDataSource(EditorComponentRepository repository) {
         this.editComponentRepository = repository;
     }
 
     @Override
     public void addComponent(BaseComponent.TypE type, Object componentData){
-        editComponentRepository.addComponent(type, componentData, new EditComponentDataSource.LoadComponentCallBack() {
+        editComponentRepository.addComponent(type, componentData, new EditorComponentDataSource.LoadComponentCallBack() {
             @Override
             public void OnComponentLoaded(ArrayList<BaseComponent> components) {
                 if(components != null) {
@@ -72,7 +68,7 @@ public class EditPresenter implements EditContract.Presenter, OnTextChangeListen
 
     @Override
     public void onTextChanged(CharSequence s, int position) {
-        editComponentRepository.editComponent(s, position, new EditComponentDataSource.LoadComponentCallBack(){
+        editComponentRepository.editComponent(s, position, new EditorComponentDataSource.LoadComponentCallBack(){
             @Override
             public void OnComponentLoaded(ArrayList<BaseComponent> components){
                 if(components != null) {

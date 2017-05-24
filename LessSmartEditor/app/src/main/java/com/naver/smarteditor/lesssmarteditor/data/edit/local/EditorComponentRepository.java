@@ -1,4 +1,6 @@
-package com.naver.smarteditor.lesssmarteditor.data.edit;
+package com.naver.smarteditor.lesssmarteditor.data.edit.local;
+
+import android.content.Context;
 
 import com.naver.smarteditor.lesssmarteditor.MyApplication;
 import com.naver.smarteditor.lesssmarteditor.data.BaseComponent;
@@ -9,23 +11,23 @@ import java.util.ArrayList;
  * Created by NAVER on 2017. 5. 21..
  */
 
-public class EditComponentRepository implements EditComponentDataSource {
-    private final String TAG = "EditComponentRepository";
+public class EditorComponentRepository implements EditorComponentDataSource {
+    private final String TAG = "EditorComponentRepository";
     private boolean localLogPermission = true;
 
-    private static EditComponentRepository editComponentRepository;
+    private static EditorComponentRepository editComponentRepository;
 
-    public static EditComponentRepository getInstance(){
+    public static EditorComponentRepository getInstance(Context context){
         if(editComponentRepository == null){
-            editComponentRepository = new EditComponentRepository();
+            editComponentRepository = new EditorComponentRepository(context);
         }
         return editComponentRepository;
     } //Singleton
 
-    private EditComponentLocalDataSource editComponentLocalDataSource;
+    private EditorComponentLocalDataSource editComponentLocalDataSource;
 
-    private EditComponentRepository(){
-        editComponentLocalDataSource = new EditComponentLocalDataSource();
+    private EditorComponentRepository(Context mContext){
+        editComponentLocalDataSource = new EditorComponentLocalDataSource(mContext);
     }
 
     @Override
@@ -76,5 +78,35 @@ public class EditComponentRepository implements EditComponentDataSource {
             }
         });
     }
+
+    @Override
+    public void clearComponents() {
+        editComponentLocalDataSource.clearComponents();
+    }
+
+    @Override
+    public void saveDocument(final SaveToDatabaseCallBack saveToDatabaseCallBack) {
+        editComponentLocalDataSource.saveDocument(new SaveToDatabaseCallBack() {
+            @Override
+            public void OnSaveFinished() {
+                if(saveToDatabaseCallBack != null) {
+                    saveToDatabaseCallBack.OnSaveFinished();
+                }
+            }
+        });
+    }
+
+    @Override
+    public void loadDocument(final LoadFromDatabaseCallBack loadFromDataBaseCallBack) {
+        editComponentLocalDataSource.loadDocument(new LoadFromDatabaseCallBack() {
+            @Override
+            public void OnLoadFinished() {
+                if(loadFromDataBaseCallBack != null){
+                    loadFromDataBaseCallBack.OnLoadFinished();
+                }
+            }
+        });
+    }
+
 
 }

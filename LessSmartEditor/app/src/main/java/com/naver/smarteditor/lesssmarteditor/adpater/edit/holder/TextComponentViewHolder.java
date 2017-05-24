@@ -18,6 +18,7 @@ public class TextComponentViewHolder extends BasicViewHolder {
     private EditText et;
     private final OnTextChangeListener onTextChangeListener;
     private TextWatcher textWatcher;
+    //memory leak..
 
     public TextComponentViewHolder(View itemView, final OnTextChangeListener onTextChangeListener) {
         super(itemView);

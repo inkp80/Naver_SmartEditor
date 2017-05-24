@@ -2,7 +2,6 @@ package com.naver.smarteditor.lesssmarteditor.views.edit;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -16,14 +15,11 @@ import com.naver.smarteditor.lesssmarteditor.R;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.EditComponentAdapter;
 import com.naver.smarteditor.lesssmarteditor.data.BaseComponent;
 import com.naver.smarteditor.lesssmarteditor.data.api.naver_map.PlaceItemPasser;
-import com.naver.smarteditor.lesssmarteditor.data.edit.EditComponentDataSource;
-import com.naver.smarteditor.lesssmarteditor.data.edit.EditComponentRepository;
+import com.naver.smarteditor.lesssmarteditor.data.edit.local.EditorComponentRepository;
 import com.naver.smarteditor.lesssmarteditor.dialog.SelectComponentDialog;
 import com.naver.smarteditor.lesssmarteditor.views.edit.presenter.EditContract;
 import com.naver.smarteditor.lesssmarteditor.views.edit.presenter.EditPresenter;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.naver.smarteditor.lesssmarteditor.views.map.SearchPlaceActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -33,6 +29,8 @@ import butterknife.ButterKnife;
  */
 
 public class EditorActivity extends AppCompatActivity implements EditContract.View{
+    private final String TAG = "EditorActivity";
+    private boolean localLogPermission = true;
 
     private final int REQ_CODE_MOV2_GALLERY = 100;
     private final int REQ_CODE_MOV2_SEARCH_PLACE = 101;
@@ -95,9 +93,8 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         mPresenter.attachView(this);
         mPresenter.setComponentAdapterView(mAdapter);
         mPresenter.setComponentAdatperModel(mAdapter);
-        mPresenter.setComponentDataSource(EditComponentRepository.getInstance());
+        mPresenter.setComponentDataSource(EditorComponentRepository.getInstance(this));
     }
-
 
     private void initDialog(){
         //TODO: rename & restructuring
@@ -122,6 +119,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         mapButtonListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                getMapSrcFromNaverPlaceAPI();
                 mSelectComponentDialog.dismiss();
             }
         };
@@ -130,8 +128,6 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
     }
 
 
-    Object dataMessenger;
-
     public void getImgSrcFromGallery(){
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType(android.provider.MediaStore.Images.Media.CONTENT_TYPE);
@@ -139,7 +135,10 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         startActivityForResult(intent, REQ_CODE_MOV2_GALLERY);
     }
 
-
+    public void getMapSrcFromNaverPlaceAPI(){
+        Intent intent = new Intent(this, SearchPlaceActivity.class);
+        startActivityForResult(intent, REQ_CODE_MOV2_SEARCH_PLACE);
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -155,18 +154,23 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
             }
         }
 
-//        if(requestCode == REQ_CODE_MOV2_SEARCH_PLACE){
-//            if(resultCode == RESULT_OK){
-//                try{
-//                    Bundle bundle = getIntent().getExtras();
+        if(requestCode == REQ_CODE_MOV2_SEARCH_PLACE){
+            MyApplication.LogController.makeLog(TAG, "hi", localLogPermission);
+            if(resultCode == RESULT_OK){
+                MyApplication.LogController.makeLog(TAG, "OK", localLogPermission);
+                try{
 //
-//                    PlaceItemPasser passer = (PlaceItemPasser) bundle.getParcelable("passer");
-//                    dataMessenger = parsePalceltoObject(passer);
-//
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }
+
+                    Bundle bundle = data.getExtras();
+                    PlaceItemPasser passer = bundle.getParcelable("parcel");
+
+                    mPresenter.addComponent(BaseComponent.TypE.MAP, passer);
+
+                } catch (Exception e) {
+                    MyApplication.LogController.makeLog(TAG, "ERROR", localLogPermission);
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }

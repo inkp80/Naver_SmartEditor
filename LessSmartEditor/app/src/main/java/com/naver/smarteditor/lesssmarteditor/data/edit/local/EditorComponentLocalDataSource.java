@@ -1,28 +1,38 @@
-package com.naver.smarteditor.lesssmarteditor.data.edit;
+package com.naver.smarteditor.lesssmarteditor.data.edit.local;
 
+import android.content.Context;
 import android.net.Uri;
 
 import com.naver.smarteditor.lesssmarteditor.MyApplication;
-import com.naver.smarteditor.lesssmarteditor.adpater.edit.holder.ImgComponentViewHolder;
 import com.naver.smarteditor.lesssmarteditor.data.BaseComponent;
 import com.naver.smarteditor.lesssmarteditor.data.ImgComponent;
+import com.naver.smarteditor.lesssmarteditor.data.MapComponent;
 import com.naver.smarteditor.lesssmarteditor.data.TextComponent;
+import com.naver.smarteditor.lesssmarteditor.data.api.naver_map.PlaceItemPasser;
+import com.naver.smarteditor.lesssmarteditor.data.edit.local.utils.EditorDbHelper;
 
-import java.net.URI;
 import java.util.ArrayList;
 
 /**
  * Created by NAVER on 2017. 5. 21..
  */
 
-public class EditComponentLocalDataSource implements EditComponentDataSource {
-    private final String TAG = "EditComponentLocalDataSource";
+public class EditorComponentLocalDataSource implements EditorComponentDataSource {
+    private final String TAG = "EditorComponentLocalDataSource";
     private boolean localLogPermission = true;
+    private EditorDbHelper mDbHelper;
+    private Context mContext;
+
 
 
     ArrayList<BaseComponent> mComponents;
 
-    public EditComponentLocalDataSource(){
+    public EditorComponentLocalDataSource(Context context){
+        //singleton 구현
+        //database open
+        this.mContext = context;
+        mDbHelper = new EditorDbHelper(context);
+        mDbHelper.getWritableDatabase();
         mComponents = new ArrayList<>();
     }
 
@@ -60,7 +70,9 @@ public class EditComponentLocalDataSource implements EditComponentDataSource {
         }
 
         else if(type == BaseComponent.TypE.MAP){
-
+            PlaceItemPasser passer = (PlaceItemPasser) componentData;
+            MapComponent mapComponent = new MapComponent(passer.getPlaceName(), passer.getPlaceAddress(), passer.getPlaceCoords(), passer.getPlaceUri());
+            component = mapComponent;
         }
 
         try {
@@ -86,6 +98,24 @@ public class EditComponentLocalDataSource implements EditComponentDataSource {
         if(loadComponentCallBack != null) {
             loadComponentCallBack.OnComponentLoaded(mComponents);
         }
+    }
+
+    @Override
+    public void clearComponents() {
+        mComponents.clear();
+        mComponents = new ArrayList<>();
+    }
+
+    @Override
+    public void saveDocument(SaveToDatabaseCallBack saveToDatabaseCallBack) {
+        //do for( ~ ) save to db
+        //before must parse Data to Json;
+
+    }
+
+    @Override
+    public void loadDocument(LoadFromDatabaseCallBack loadFromDataBaseCallBack) {
+
     }
 }
 

@@ -1,4 +1,4 @@
-package com.naver.smarteditor.lesssmarteditor.data.edit;
+package com.naver.smarteditor.lesssmarteditor.data.edit.local;
 
 import com.naver.smarteditor.lesssmarteditor.data.BaseComponent;
 
@@ -8,9 +8,17 @@ import java.util.ArrayList;
  * Created by NAVER on 2017. 5. 21..
  */
 
-public interface EditComponentDataSource {
+public interface EditorComponentDataSource {
     interface LoadComponentCallBack{
         void OnComponentLoaded(ArrayList<BaseComponent> components);
+    }
+
+    interface LoadFromDatabaseCallBack{
+        void OnLoadFinished();
+    }
+
+    interface SaveToDatabaseCallBack{
+        void OnSaveFinished();
     }
 
     void setComponent(ArrayList<BaseComponent> components, LoadComponentCallBack loadComponentCallBack);
@@ -21,5 +29,8 @@ public interface EditComponentDataSource {
 
     void editComponent(CharSequence s, int position, LoadComponentCallBack loadComponentCallBack);
 
+    void clearComponents();
 
+    void saveDocument(SaveToDatabaseCallBack saveToDatabaseCallBack);
+    void loadDocument(LoadFromDatabaseCallBack loadFromDataBaseCallBack);
 }
