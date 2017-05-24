@@ -3,6 +3,7 @@ package com.naver.smarteditor.lesssmarteditor.data.edit.local;
 import android.content.Context;
 import android.net.Uri;
 
+import com.google.gson.Gson;
 import com.naver.smarteditor.lesssmarteditor.MyApplication;
 import com.naver.smarteditor.lesssmarteditor.data.BaseComponent;
 import com.naver.smarteditor.lesssmarteditor.data.ImgComponent;
@@ -23,6 +24,8 @@ public class EditorComponentLocalDataSource implements EditorComponentDataSource
     private EditorDbHelper mDbHelper;
     private Context mContext;
 
+    private Gson gson;
+
 
 
     ArrayList<BaseComponent> mComponents;
@@ -34,6 +37,7 @@ public class EditorComponentLocalDataSource implements EditorComponentDataSource
         mDbHelper = new EditorDbHelper(context);
         mDbHelper.getWritableDatabase();
         mComponents = new ArrayList<>();
+        gson = new Gson();
     }
 
     @Override
@@ -110,7 +114,17 @@ public class EditorComponentLocalDataSource implements EditorComponentDataSource
     public void saveDocument(SaveToDatabaseCallBack saveToDatabaseCallBack) {
         //do for( ~ ) save to db
         //before must parse Data to Json;
-
+        for(int i=0; i<mComponents.size(); i++){
+            BaseComponent.TypE type =  mComponents.get(i).getComponentType();
+            if(type == BaseComponent.TypE.TEXT){
+                gson.toJson((TextComponent)mComponents.get(i));
+            } else if(type == BaseComponent.TypE.IMG){
+                gson.toJson((ImgComponent)mComponents.get(i));
+            } else if(type == BaseComponent.TypE.MAP){
+                gson.toJson((MapComponent)mComponents.get(i));
+            }
+        }
+        MyApplication.LogController.makeLog(TAG, gson.toString(), localLogPermission);
     }
 
     @Override
