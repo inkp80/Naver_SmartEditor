@@ -31,5 +31,8 @@ public interface EditContract {
 
         void setComponentDataSource(EditorComponentRepository repository);
 
+        void saveDocumentToDataBase();
+
+        void loadDocumentFromDataBase();
     }
 }

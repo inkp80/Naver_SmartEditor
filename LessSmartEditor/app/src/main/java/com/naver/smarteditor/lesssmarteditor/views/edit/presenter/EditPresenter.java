@@ -1,5 +1,6 @@
 package com.naver.smarteditor.lesssmarteditor.views.edit.presenter;
 
+import com.naver.smarteditor.lesssmarteditor.MyApplication;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.EditComponentAdapterContract;
 import com.naver.smarteditor.lesssmarteditor.data.BaseComponent;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.EditorComponentDataSource;
@@ -21,7 +22,6 @@ public class EditPresenter implements EditContract.Presenter, OnTextChangeListen
     private EditComponentAdapterContract.View adapterView;
 
     private EditorComponentRepository editComponentRepository;
-
 
     public void attachView(EditContract.View view) {
         this.view = view;
@@ -80,4 +80,23 @@ public class EditPresenter implements EditContract.Presenter, OnTextChangeListen
     }
 
 
+    @Override
+    public void saveDocumentToDataBase() {
+        editComponentRepository.saveDocument(new EditorComponentDataSource.SaveToDatabaseCallBack() {
+            @Override
+            public void OnSaveFinished() {
+                MyApplication.LogController.makeLog(TAG, "DB request success", localLogPermission);
+            }
+        });
+    }
+
+    @Override
+    public void loadDocumentFromDataBase() {
+        editComponentRepository.loadDocument(new EditorComponentDataSource.LoadFromDatabaseCallBack() {
+            @Override
+            public void OnLoadFinished() {
+                MyApplication.LogController.makeLog(TAG, "load from database success", localLogPermission);
+            }
+        });
+    }
 }

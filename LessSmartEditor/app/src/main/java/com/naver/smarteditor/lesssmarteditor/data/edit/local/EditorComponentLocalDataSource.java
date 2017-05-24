@@ -4,6 +4,12 @@ import android.content.Context;
 import android.net.Uri;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.naver.smarteditor.lesssmarteditor.MyApplication;
 import com.naver.smarteditor.lesssmarteditor.data.BaseComponent;
 import com.naver.smarteditor.lesssmarteditor.data.ImgComponent;
@@ -11,7 +17,9 @@ import com.naver.smarteditor.lesssmarteditor.data.MapComponent;
 import com.naver.smarteditor.lesssmarteditor.data.TextComponent;
 import com.naver.smarteditor.lesssmarteditor.data.api.naver_map.PlaceItemPasser;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.utils.EditorDbHelper;
+import com.naver.smarteditor.lesssmarteditor.data.to_json.TextData;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 /**
@@ -114,25 +122,64 @@ public class EditorComponentLocalDataSource implements EditorComponentDataSource
     public void saveDocument(SaveToDatabaseCallBack saveToDatabaseCallBack) {
         //do for( ~ ) save to db
         //before must parse Data to Json;
+        MyApplication.LogController.makeLog(TAG, String.valueOf(mComponents.size()), localLogPermission);
+        MyApplication.LogController.makeLog(TAG, String.valueOf(mComponents.get(0).getComponentType().getTypeValue()), localLogPermission);
+        String jsonBuilder="";
         for(int i=0; i<mComponents.size(); i++){
             BaseComponent.TypE type =  mComponents.get(i).getComponentType();
             if(type == BaseComponent.TypE.TEXT){
-                gson.toJson((TextComponent)mComponents.get(i));
+                jsonBuilder += new GsonBuilder().serializeNulls().create().toJson((TextComponent)mComponents.get(i));
+
             } else if(type == BaseComponent.TypE.IMG){
                 gson.toJson((ImgComponent)mComponents.get(i));
             } else if(type == BaseComponent.TypE.MAP){
                 gson.toJson((MapComponent)mComponents.get(i));
             }
         }
-        MyApplication.LogController.makeLog(TAG, gson.toString(), localLogPermission);
+        MyApplication.LogController.makeLog(TAG, jsonBuilder, localLogPermission);
+
+        if(saveToDatabaseCallBack != null) {
+            saveToDatabaseCallBack.OnSaveFinished();
+        }
     }
 
     @Override
     public void loadDocument(LoadFromDatabaseCallBack loadFromDataBaseCallBack) {
+        JsonObject jsonObject=null;
 
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(BaseComponent.class, new MyTypeModelDeserializer());
+        Gson gson = gsonBuilder.create();
+
+        BaseComponent myTypeModel = gson.fromJson(jsonObject, BaseComponent.class);
     }
 }
 
 class FoolException extends Exception {
     //Exception for test
+}
+
+class MyTypeModelDeserializer implements JsonDeserializer<BaseComponent> {
+
+    @Override
+    public BaseComponent deserialize(final JsonElement json, final Type typeOfT, final JsonDeserializationContext context)
+            throws JsonParseException {
+
+        JsonObject jsonObject = json.getAsJsonObject();
+
+        JsonElement jsonType = jsonObject.get("componentType");
+        String type = jsonType.getAsString();
+
+        BaseComponent typeModel = null;
+
+        if("TEXT".equals(type)) {
+            typeModel = new TextComponent(null);
+        } else if("IMG".equals(type)) {
+            typeModel = new ImgComponent(null);
+        }
+        // TODO : set properties of type model
+
+        return typeModel;
+    }
+
 }

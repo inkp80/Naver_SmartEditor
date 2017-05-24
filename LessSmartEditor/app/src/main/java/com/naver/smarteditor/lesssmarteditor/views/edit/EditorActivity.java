@@ -39,7 +39,8 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
     EditContract.Presenter mPresenter;
     EditComponentAdapter mAdapter;
 
-
+    @BindView(R.id.editor_bt_save)
+    Button mSave;
     @BindView(R.id.editor_bt_addcomponent)
     Button mButton;
     @BindView(R.id.editor_recyclerview)
@@ -69,8 +70,17 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
             @Override
             public void onClick(View v) {
                 mSelectComponentDialog.show();
+//                mPresenter.saveDocumentToDataBase();
             }
         });
+
+        mSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPresenter.saveDocumentToDataBase();
+            }
+        });
+
     }
 
 
