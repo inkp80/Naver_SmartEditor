@@ -8,13 +8,13 @@ public class DocumentData {
     private int _id;
     private String title;
     private String timeStemp;
-    private String Components_json;
+    private String componentsJson;
 
-    public DocumentData(int _id,String title, String timeStemp, String components_json) {
+    public DocumentData(int _id,String title, String timeStemp, String componentsJson) {
         this._id = _id;
         this.title = title;
         this.timeStemp = timeStemp;
-        this.Components_json = components_json;
+        this.componentsJson = componentsJson;
     }
 
     public String getTitle() {
@@ -33,11 +33,11 @@ public class DocumentData {
         this.timeStemp = timeStemp;
     }
 
-    public String getComponents_json() {
-        return Components_json;
+    public String getComponentsJson() {
+        return componentsJson;
     }
 
-    public void setComponents_json(String components_json) {
-        Components_json = components_json;
+    public void setComponentsJson(String componentsJson) {
+        this.componentsJson = componentsJson;
     }
 }

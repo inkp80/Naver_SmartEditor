@@ -14,7 +14,7 @@ import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
 import com.naver.smarteditor.lesssmarteditor.data.component.ImgComponent;
 import com.naver.smarteditor.lesssmarteditor.data.component.MapComponent;
 import com.naver.smarteditor.lesssmarteditor.data.component.TextComponent;
-import com.naver.smarteditor.lesssmarteditor.data.api.naver_map.PlaceItemPasser;
+import com.naver.smarteditor.lesssmarteditor.data.api.naver_map.PlaceItemParcelable;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.utils.EditorContract;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.utils.EditorDbHelper;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.utils.EmptyComponentException;
@@ -89,7 +89,7 @@ public class EditorComponentLocalDataSource implements EditorComponentDataSource
         }
 
         else if(type == BaseComponent.TypE.MAP){
-            PlaceItemPasser passer = (PlaceItemPasser) componentData;
+            PlaceItemParcelable passer = (PlaceItemParcelable) componentData;
             MapComponent mapComponent = new MapComponent(passer.getPlaceName(), passer.getPlaceAddress(), passer.getPlaceCoords(), passer.getPlaceUri());
             component = mapComponent;
         }

@@ -7,18 +7,18 @@ import android.os.Parcelable;
  * Created by NAVER on 2017. 5. 22..
  */
 
-public class PlaceItemPasser implements Parcelable {
+public class PlaceItemParcelable implements Parcelable {
     String placeName;
     String placeAddress;
     String placeCoords;
     String placeUri;
 
 
-    public PlaceItemPasser(Parcel in){
+    public PlaceItemParcelable(Parcel in){
         readFromParcel(in);
     }
 
-    public PlaceItemPasser(String name, String address, String coords, String uri){
+    public PlaceItemParcelable(String name, String address, String coords, String uri){
         this.placeName = name;
         this.placeAddress = address;
         this.placeCoords = coords;
@@ -46,12 +46,12 @@ public class PlaceItemPasser implements Parcelable {
     }
 
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
-        public PlaceItemPasser createFromParcel(Parcel in){
-            return new PlaceItemPasser(in);
+        public PlaceItemParcelable createFromParcel(Parcel in){
+            return new PlaceItemParcelable(in);
         }
 
-        public PlaceItemPasser[] newArray(int size){
-            return new PlaceItemPasser[size];
+        public PlaceItemParcelable[] newArray(int size){
+            return new PlaceItemParcelable[size];
         }
     };
 

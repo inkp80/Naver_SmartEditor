@@ -15,7 +15,7 @@ import com.naver.smarteditor.lesssmarteditor.MyApplication;
 import com.naver.smarteditor.lesssmarteditor.R;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.EditComponentAdapter;
 import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
-import com.naver.smarteditor.lesssmarteditor.data.api.naver_map.PlaceItemPasser;
+import com.naver.smarteditor.lesssmarteditor.data.api.naver_map.PlaceItemParcelable;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.EditorComponentRepository;
 import com.naver.smarteditor.lesssmarteditor.dialog.SelectComponentDialog;
 import com.naver.smarteditor.lesssmarteditor.views.edit.presenter.EditContract;
@@ -175,7 +175,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
                 try{
                     //TODO: parcel should declared with final
                     Bundle bundle = data.getExtras();
-                    PlaceItemPasser passer = bundle.getParcelable("parcel");
+                    PlaceItemParcelable passer = bundle.getParcelable("parcel");
                     mPresenter.addComponent(BaseComponent.TypE.MAP, passer);
 
                 } catch (Exception e) {

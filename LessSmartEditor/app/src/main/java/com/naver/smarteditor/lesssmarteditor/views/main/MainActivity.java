@@ -81,6 +81,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     @Override
     protected void onDestroy(){
         super.onDestroy();
+        mainPresenter.detachView();
 
     }
 
@@ -89,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         if(requestCode == REQ_CODE_UPDATE){
             if(resultCode == RESULT_OK){
                 try {
-                    //update
+                    mainPresenter.requestDocList();
                 } catch (Exception e){
 
                 }
@@ -99,6 +100,9 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
 
     @Override
     public void passDataToEditor() {
-
+        Intent intent = new Intent(MainActivity.this, EditorActivity.class);
+        intent.putExtra()
+        startActivityForResult();
     }
+
 }

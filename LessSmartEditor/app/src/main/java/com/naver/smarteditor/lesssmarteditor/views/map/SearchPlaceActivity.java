@@ -9,15 +9,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
 import com.naver.smarteditor.lesssmarteditor.NaverPlaceService;
 import com.naver.smarteditor.lesssmarteditor.R;
 import com.naver.smarteditor.lesssmarteditor.SearchResultOnClickListener;
 import com.naver.smarteditor.lesssmarteditor.adpater.map.SearchPlaceResultAdatpter;
 import com.naver.smarteditor.lesssmarteditor.data.api.naver_map.PlaceItem;
-import com.naver.smarteditor.lesssmarteditor.data.api.naver_map.PlaceItemPasser;
+import com.naver.smarteditor.lesssmarteditor.data.api.naver_map.PlaceItemParcelable;
 import com.naver.smarteditor.lesssmarteditor.data.api.naver_map.PlaceRequestResult;
 import com.naver.smarteditor.lesssmarteditor.views.edit.EditorActivity;
 
@@ -114,7 +112,7 @@ public class SearchPlaceActivity extends AppCompatActivity {
 //                setStaticMapToComponent(x, y);
                 String mapUri = getStaticMapUri(x, y);
 
-                PlaceItemPasser passer = new PlaceItemPasser(placeItemList.get(position).getPlaceName().toString(), placeItemList.get(position).getPlaceAddress().toString(), buildCoords(x,y).toString(), mapUri);
+                PlaceItemParcelable passer = new PlaceItemParcelable(placeItemList.get(position).getPlaceName().toString(), placeItemList.get(position).getPlaceAddress().toString(), buildCoords(x,y).toString(), mapUri);
 
                 Intent intent = new Intent(SearchPlaceActivity.this, EditorActivity.class);
                 intent.putExtra("parcel", passer);
