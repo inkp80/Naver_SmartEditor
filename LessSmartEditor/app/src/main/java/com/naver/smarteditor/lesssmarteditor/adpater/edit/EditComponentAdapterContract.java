@@ -1,8 +1,7 @@
 package com.naver.smarteditor.lesssmarteditor.adpater.edit;
 
 import com.naver.smarteditor.lesssmarteditor.adpater.basic.BaseAdapterContract;
-import com.naver.smarteditor.lesssmarteditor.adpater.basic.holder.BasicViewHolder;
-import com.naver.smarteditor.lesssmarteditor.data.BaseComponent;
+import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
 import com.naver.smarteditor.lesssmarteditor.listener.OnTextChangeListener;
 
 import java.util.ArrayList;

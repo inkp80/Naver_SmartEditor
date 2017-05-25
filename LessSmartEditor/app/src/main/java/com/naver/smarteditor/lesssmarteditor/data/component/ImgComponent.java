@@ -1,8 +1,6 @@
-package com.naver.smarteditor.lesssmarteditor.data;
+package com.naver.smarteditor.lesssmarteditor.data.component;
 
 import android.net.Uri;
-
-import com.naver.smarteditor.lesssmarteditor.data.BaseComponent;
 
 
 /**

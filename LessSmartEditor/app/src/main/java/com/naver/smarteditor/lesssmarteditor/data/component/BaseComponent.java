@@ -1,4 +1,4 @@
-package com.naver.smarteditor.lesssmarteditor.data;
+package com.naver.smarteditor.lesssmarteditor.data.component;
 
 /**
  * Created by NAVER on 2017. 5. 21..

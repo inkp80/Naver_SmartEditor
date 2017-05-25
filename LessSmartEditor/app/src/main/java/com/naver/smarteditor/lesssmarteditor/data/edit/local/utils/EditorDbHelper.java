@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.naver.smarteditor.lesssmarteditor.MyApplication;
+import com.naver.smarteditor.lesssmarteditor.views.edit.presenter.EditContract;
 
 /**
  * Created by NAVER on 2017. 5. 24..
@@ -36,9 +37,9 @@ public class EditorDbHelper extends SQLiteOpenHelper {
 
         String CREATE_SQL = "create table " + TABLE_NAME + "("
                 + " _id integer PRIMARY KEY autoincrement, "
-                + " title text, "
-                + " timestamp text, "
-                + " components_json text)";
+                + EditorContract.ComponentEntry.COLUMN_TITLE + " text, "
+                + EditorContract.ComponentEntry.COLUMN_TIMESTAMP + " text, "
+                + EditorContract.ComponentEntry.COLUNM_COMPONENTS_JSON + " text)";
 
         try {
             db.execSQL(CREATE_SQL);

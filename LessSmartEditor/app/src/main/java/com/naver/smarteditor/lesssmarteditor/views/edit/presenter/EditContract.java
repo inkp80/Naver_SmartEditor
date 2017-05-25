@@ -1,7 +1,7 @@
 package com.naver.smarteditor.lesssmarteditor.views.edit.presenter;
 
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.EditComponentAdapterContract;
-import com.naver.smarteditor.lesssmarteditor.data.BaseComponent;
+import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.EditorComponentRepository;
 import com.naver.smarteditor.lesssmarteditor.views.basic.BaseView;
 import com.naver.smarteditor.lesssmarteditor.views.basic.presenter.BasePresenter;
@@ -13,6 +13,8 @@ import com.naver.smarteditor.lesssmarteditor.views.basic.presenter.BasePresenter
 public interface EditContract {
 
     interface View extends BaseView{
+        void waitForDbProcessing();
+        void finishActivity();
     }
 
     interface Presenter extends BasePresenter{
@@ -31,8 +33,8 @@ public interface EditContract {
 
         void setComponentDataSource(EditorComponentRepository repository);
 
-        void saveDocumentToDataBase();
+        void saveDocumentToDataBase(String title);
 
-        void loadDocumentFromDataBase();
+        void loadDocumentFromDataBase(int id);
     }
 }

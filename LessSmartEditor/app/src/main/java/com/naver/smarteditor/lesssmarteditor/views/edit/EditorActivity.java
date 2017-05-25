@@ -9,11 +9,12 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
 import com.naver.smarteditor.lesssmarteditor.MyApplication;
 import com.naver.smarteditor.lesssmarteditor.R;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.EditComponentAdapter;
-import com.naver.smarteditor.lesssmarteditor.data.BaseComponent;
+import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
 import com.naver.smarteditor.lesssmarteditor.data.api.naver_map.PlaceItemPasser;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.EditorComponentRepository;
 import com.naver.smarteditor.lesssmarteditor.dialog.SelectComponentDialog;
@@ -39,8 +40,10 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
     EditContract.Presenter mPresenter;
     EditComponentAdapter mAdapter;
 
+    @BindView(R.id.editor_et_title)
+    EditText mTitle;
     @BindView(R.id.editor_bt_save)
-    Button mSave;
+    Button mSaveButton;
     @BindView(R.id.editor_bt_addcomponent)
     Button mButton;
     @BindView(R.id.editor_recyclerview)
@@ -70,14 +73,17 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
             @Override
             public void onClick(View v) {
                 mSelectComponentDialog.show();
-//                mPresenter.saveDocumentToDataBase();
             }
         });
 
-        mSave.setOnClickListener(new View.OnClickListener() {
+        mSaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mPresenter.saveDocumentToDataBase();
+                mPresenter.saveDocumentToDataBase(mTitle.getText().toString());
+                mPresenter.loadDocumentFromDataBase(0);
+                //메인 액티비티로 재전송
+                //이때 화면에 pregress-bar를 보인다.
+                //main activity로
             }
         });
 
@@ -165,15 +171,11 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         }
 
         if(requestCode == REQ_CODE_MOV2_SEARCH_PLACE){
-            MyApplication.LogController.makeLog(TAG, "hi", localLogPermission);
             if(resultCode == RESULT_OK){
-                MyApplication.LogController.makeLog(TAG, "OK", localLogPermission);
                 try{
-//
-
+                    //TODO: parcel should declared with final
                     Bundle bundle = data.getExtras();
                     PlaceItemPasser passer = bundle.getParcelable("parcel");
-
                     mPresenter.addComponent(BaseComponent.TypE.MAP, passer);
 
                 } catch (Exception e) {
@@ -182,5 +184,17 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
                 }
             }
         }
+    }
+
+    @Override
+    public void waitForDbProcessing() {
+        //TODO : list on wait
+        //setProgress Bar - Waiting
+        //save & add comp bt inactivate
+    }
+
+    @Override
+    public void finishActivity() {
+        finish();
     }
 }

@@ -1,6 +1,4 @@
-package com.naver.smarteditor.lesssmarteditor.data;
-
-import android.widget.BaseAdapter;
+package com.naver.smarteditor.lesssmarteditor.data.component;
 
 /**
  * Created by NAVER on 2017. 5. 21..

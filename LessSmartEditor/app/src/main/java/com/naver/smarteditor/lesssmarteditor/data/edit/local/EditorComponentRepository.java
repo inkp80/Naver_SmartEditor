@@ -3,9 +3,11 @@ package com.naver.smarteditor.lesssmarteditor.data.edit.local;
 import android.content.Context;
 
 import com.naver.smarteditor.lesssmarteditor.MyApplication;
-import com.naver.smarteditor.lesssmarteditor.data.BaseComponent;
+import com.naver.smarteditor.lesssmarteditor.data.DocumentData;
+import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by NAVER on 2017. 5. 21..
@@ -85,8 +87,8 @@ public class EditorComponentRepository implements EditorComponentDataSource {
     }
 
     @Override
-    public void saveDocument(final SaveToDatabaseCallBack saveToDatabaseCallBack) {
-        editComponentLocalDataSource.saveDocument(new SaveToDatabaseCallBack() {
+    public void saveDocument(String title, final SaveToDatabaseCallBack saveToDatabaseCallBack) {
+        editComponentLocalDataSource.saveDocument(title, new SaveToDatabaseCallBack() {
             @Override
             public void OnSaveFinished() {
                 if(saveToDatabaseCallBack != null) {
@@ -97,16 +99,31 @@ public class EditorComponentRepository implements EditorComponentDataSource {
     }
 
     @Override
-    public void loadDocument(final LoadFromDatabaseCallBack loadFromDataBaseCallBack) {
-        editComponentLocalDataSource.loadDocument(new LoadFromDatabaseCallBack() {
+    public void loadDocument(int _id, LoadFromDatabaseCallBack loadFromDataBaseCallBack) {
+
+    }
+
+//    @Override
+//    public void loadDocument(int _id,final LoadFromDatabaseCallBack loadFromDataBaseCallBack) {
+//        editComponentLocalDataSource.loadDocument(_id, new LoadFromDatabaseCallBack() {
+//            @Override
+//            public void OnLoadFinished() {
+//                if(loadFromDataBaseCallBack != null){
+//                    loadFromDataBaseCallBack.OnLoadFinished();
+//                }
+//            }
+//        });
+//    }
+
+    @Override
+    public void requestDocuments(final LoadFromDatabaseCallBack loadFromDatabaseCallBack) {
+        editComponentLocalDataSource.requestDocuments(new LoadFromDatabaseCallBack() {
             @Override
-            public void OnLoadFinished() {
-                if(loadFromDataBaseCallBack != null){
-                    loadFromDataBaseCallBack.OnLoadFinished();
+            public void OnLoadFinished(List<DocumentData> data) {
+                if(loadFromDatabaseCallBack != null){
+                    loadFromDatabaseCallBack.OnLoadFinished(data);
                 }
             }
         });
     }
-
-
 }

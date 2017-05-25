@@ -2,7 +2,7 @@ package com.naver.smarteditor.lesssmarteditor.views.edit.presenter;
 
 import com.naver.smarteditor.lesssmarteditor.MyApplication;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.EditComponentAdapterContract;
-import com.naver.smarteditor.lesssmarteditor.data.BaseComponent;
+import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.EditorComponentDataSource;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.EditorComponentRepository;
 import com.naver.smarteditor.lesssmarteditor.listener.OnTextChangeListener;
@@ -81,22 +81,24 @@ public class EditPresenter implements EditContract.Presenter, OnTextChangeListen
 
 
     @Override
-    public void saveDocumentToDataBase() {
-        editComponentRepository.saveDocument(new EditorComponentDataSource.SaveToDatabaseCallBack() {
+    public void saveDocumentToDataBase(String title) {
+        editComponentRepository.saveDocument(title, new EditorComponentDataSource.SaveToDatabaseCallBack() {
             @Override
             public void OnSaveFinished() {
                 MyApplication.LogController.makeLog(TAG, "DB request success", localLogPermission);
+                editComponentRepository.clearComponents();
+//                view.finishActivity();
             }
         });
     }
 
     @Override
-    public void loadDocumentFromDataBase() {
-        editComponentRepository.loadDocument(new EditorComponentDataSource.LoadFromDatabaseCallBack() {
-            @Override
-            public void OnLoadFinished() {
-                MyApplication.LogController.makeLog(TAG, "load from database success", localLogPermission);
-            }
-        });
+    public void loadDocumentFromDataBase(int _id) {
+//        editComponentRepository.loadDocument(_id, new EditorComponentDataSource.LoadFromDatabaseCallBack() {
+//            @Override
+//            public void OnLoadFinished() {
+//                MyApplication.LogController.makeLog(TAG, "load from database success", localLogPermission);
+//            }
+//        });
     }
 }

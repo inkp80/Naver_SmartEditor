@@ -5,23 +5,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <Button
-        android:id="@+id/button_img_access"
-        android:text="img access"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
 
-    <ImageView
-        android:id="@+id/img1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-
-    <Button
-        android:id="@+id/button_map_access"
-        android:text="MAP ACCESS"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
 
 
     <android.support.v7.widget.RecyclerView

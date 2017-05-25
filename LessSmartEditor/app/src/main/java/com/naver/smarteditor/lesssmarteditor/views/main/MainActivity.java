@@ -9,6 +9,8 @@ import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -17,22 +19,28 @@ import com.bumptech.glide.Glide;
 import com.naver.smarteditor.lesssmarteditor.MyApplication;
 
 import com.naver.smarteditor.lesssmarteditor.R;
+import com.naver.smarteditor.lesssmarteditor.adpater.main.MainAdapter;
+import com.naver.smarteditor.lesssmarteditor.data.edit.local.EditorComponentRepository;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.utils.EditorContract;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.utils.EditorDbHelper;
+import com.naver.smarteditor.lesssmarteditor.views.edit.EditorActivity;
+import com.naver.smarteditor.lesssmarteditor.views.main.presenter.MainContract;
+import com.naver.smarteditor.lesssmarteditor.views.main.presenter.MainPresenter;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MainContract.View{
 
-    FloatingActionButton mAddDocumentButton;
+    private final String TAG = "MainActivity";
+    private boolean localLogPermission = true;
 
 
-    Button mImage;ImageView image;
-    final int REQ_CODE_SELECT_IMAGE=100;
+    private final int REQ_CODE_UPDATE = 101;
+    private final int REQ_ADD_DOCUMENT = 102;
+    private FloatingActionButton mAddDocumentButton;
 
-    final String TAG = "MainActivity";
-    boolean localLogPermission = true;
+    private MainPresenter mainPresenter;
+    private MainAdapter mainAdapter;
 
-    private EditorDbHelper dbHelper;
-    private SQLiteDatabase db;
+    private RecyclerView recyclerView;
 
 
     @Override
@@ -40,88 +48,57 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        image = (ImageView)findViewById(R.id.img1);
-        Glide.with(this).load("http://www.romand.co.kr/file_data/romand/2017/05/11/5d28daee1e35059fe8e24b26f5f89012.jpg").into(image);
-        mImage = (Button) findViewById(R.id.button_img_access);
-        mImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_PICK);
-                intent.setType(MediaStore.Images.Media.CONTENT_TYPE);
-                intent.setData(MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(intent, REQ_CODE_SELECT_IMAGE);
-            }
-        });
+        //init recyclerview
+        mainAdapter = new MainAdapter(this);
+        recyclerView = (RecyclerView) findViewById(R.id.main_rv_list);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(mainAdapter);
 
 
-        dbHelper = new EditorDbHelper(this);
-        db = dbHelper.getWritableDatabase();
+        //init presenter
+        mainPresenter = new MainPresenter();
+        mainPresenter.setMainAdapterModel(mainAdapter);
+        mainPresenter.setMainAdapterView(mainAdapter);
+        mainPresenter.attachView(this);
+        mainPresenter.setComponentDataSource(EditorComponentRepository.getInstance(this));
+
+
+        mainPresenter.requestDocList();
+
 
         mAddDocumentButton = (FloatingActionButton) findViewById(R.id.fab);
         mAddDocumentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                insertRecord();
-                getRecords();
+                Intent intent = new Intent(MainActivity.this, EditorActivity.class);
+                startActivityForResult(intent, REQ_ADD_DOCUMENT);
             }
         });
 
     }
 
     @Override
+    protected void onDestroy(){
+        super.onDestroy();
+
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-
-//        Toast.makeText(getBaseContext(), "resultCode : "+resultCode,Toast.LENGTH_SHORT).show();
-
-        if(requestCode == REQ_CODE_SELECT_IMAGE)
-        {
-            if(resultCode== Activity.RESULT_OK)
-            {
+        if(requestCode == REQ_CODE_UPDATE){
+            if(resultCode == RESULT_OK){
                 try {
-                    Uri selectedImg = data.getData();
-                    MyApplication.LogController.makeLog(TAG, selectedImg.toString(), localLogPermission);
+                    //update
+                } catch (Exception e){
 
-                    Glide.with(this).load(selectedImg).into(image);
-
-//                } catch (FileNotFoundException e) {
-//                    // TODO Auto-generated catch block
-//                    e.printStackTrace();
-//                } catch (IOException e) {
-//                    // TODO Auto-generated catch block
-//                    e.printStackTrace();
-                } catch (Exception e)
-                {
-                    e.printStackTrace();
                 }
             }
         }
     }
 
-    public String getImageNameToUri(Uri data)
-    {
-        String[] proj = { MediaStore.Images.Media.DATA };
-        Cursor cursor = managedQuery(data, proj, null, null, null);
-        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+    @Override
+    public void passDataToEditor() {
 
-        cursor.moveToFirst();
-
-        String imgPath = cursor.getString(column_index);
-        String imgName = imgPath.substring(imgPath.lastIndexOf("/")+1);
-
-        return imgName;
-    }
-
-    public void insertRecord(){
-
-        String insert = "INSERT INTO "+ EditorContract.ComponentEntry.TABLE_NAME + "(" + EditorContract.ComponentEntry.COLUMN_TITLE + "," +EditorContract.ComponentEntry.COLUMN_TIMESTAMP+
-                ", "+EditorContract.ComponentEntry.COLUNM_DESCRIPTION_JSON + ") values ('document1', 170524, 'JSON');";
-        db.execSQL(insert);
-    }
-
-    public void getRecords(){
-        Cursor cursor = db.rawQuery("select * from " + EditorContract.ComponentEntry.TABLE_NAME, null);
-        cursor.moveToNext();
-        MyApplication.LogController.makeLog(TAG, cursor.getString(1), localLogPermission);
     }
 }

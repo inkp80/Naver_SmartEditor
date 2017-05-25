@@ -1,14 +1,12 @@
 package com.naver.smarteditor.lesssmarteditor.adpater.edit;
 
 import android.content.Context;
-import android.nfc.Tag;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
@@ -17,10 +15,10 @@ import com.naver.smarteditor.lesssmarteditor.adpater.basic.holder.BasicViewHolde
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.holder.ImgComponentViewHolder;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.holder.MapComponentViewHolder;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.holder.TextComponentViewHolder;
-import com.naver.smarteditor.lesssmarteditor.data.BaseComponent;
-import com.naver.smarteditor.lesssmarteditor.data.ImgComponent;
-import com.naver.smarteditor.lesssmarteditor.data.MapComponent;
-import com.naver.smarteditor.lesssmarteditor.data.TextComponent;
+import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
+import com.naver.smarteditor.lesssmarteditor.data.component.ImgComponent;
+import com.naver.smarteditor.lesssmarteditor.data.component.MapComponent;
+import com.naver.smarteditor.lesssmarteditor.data.component.TextComponent;
 import com.naver.smarteditor.lesssmarteditor.listener.OnTextChangeListener;
 
 import java.util.ArrayList;

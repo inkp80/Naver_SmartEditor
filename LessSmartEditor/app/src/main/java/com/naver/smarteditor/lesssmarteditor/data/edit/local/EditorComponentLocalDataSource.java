@@ -1,26 +1,30 @@
 package com.naver.smarteditor.lesssmarteditor.data.edit.local;
 
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.naver.smarteditor.lesssmarteditor.MyApplication;
-import com.naver.smarteditor.lesssmarteditor.data.BaseComponent;
-import com.naver.smarteditor.lesssmarteditor.data.ImgComponent;
-import com.naver.smarteditor.lesssmarteditor.data.MapComponent;
-import com.naver.smarteditor.lesssmarteditor.data.TextComponent;
-import com.naver.smarteditor.lesssmarteditor.data.api.naver_map.PlaceItemPasser;
-import com.naver.smarteditor.lesssmarteditor.data.edit.local.utils.EditorDbHelper;
-import com.naver.smarteditor.lesssmarteditor.data.to_json.TextData;
 
-import java.lang.reflect.Type;
+import com.naver.smarteditor.lesssmarteditor.MyApplication;
+import com.naver.smarteditor.lesssmarteditor.data.DocumentData;
+import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
+import com.naver.smarteditor.lesssmarteditor.data.component.ImgComponent;
+import com.naver.smarteditor.lesssmarteditor.data.component.MapComponent;
+import com.naver.smarteditor.lesssmarteditor.data.component.TextComponent;
+import com.naver.smarteditor.lesssmarteditor.data.api.naver_map.PlaceItemPasser;
+import com.naver.smarteditor.lesssmarteditor.data.edit.local.utils.EditorContract;
+import com.naver.smarteditor.lesssmarteditor.data.edit.local.utils.EditorDbHelper;
+import com.naver.smarteditor.lesssmarteditor.data.edit.local.utils.EmptyComponentException;
+import com.naver.smarteditor.lesssmarteditor.data.edit.local.utils.MyJsonDeserializer;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 
 /**
  * Created by NAVER on 2017. 5. 21..
@@ -30,6 +34,7 @@ public class EditorComponentLocalDataSource implements EditorComponentDataSource
     private final String TAG = "EditorComponentLocalDataSource";
     private boolean localLogPermission = true;
     private EditorDbHelper mDbHelper;
+    private SQLiteDatabase db;
     private Context mContext;
 
     private Gson gson;
@@ -41,11 +46,13 @@ public class EditorComponentLocalDataSource implements EditorComponentDataSource
     public EditorComponentLocalDataSource(Context context){
         //singleton 구현
         //database open
-        this.mContext = context;
-        mDbHelper = new EditorDbHelper(context);
-        mDbHelper.getWritableDatabase();
         mComponents = new ArrayList<>();
+
+
+        this.mContext = context;
         gson = new Gson();
+        mDbHelper = new EditorDbHelper(context);
+        db = mDbHelper.getWritableDatabase();
     }
 
     @Override
@@ -89,11 +96,11 @@ public class EditorComponentLocalDataSource implements EditorComponentDataSource
 
         try {
             if (component == null) {
-                throw new FoolException();
+                throw new EmptyComponentException();
             }
             mComponents.add(component);
-        } catch (FoolException e){
-            MyApplication.LogController.makeLog(TAG, "Fail to add Component", localLogPermission);
+        } catch (EmptyComponentException e){
+            MyApplication.LogController.makeLog(TAG + e, "Fail to add Component", localLogPermission);
         }
 
 
@@ -118,25 +125,20 @@ public class EditorComponentLocalDataSource implements EditorComponentDataSource
         mComponents = new ArrayList<>();
     }
 
+    String jsonStr = null;
     @Override
-    public void saveDocument(SaveToDatabaseCallBack saveToDatabaseCallBack) {
-        //do for( ~ ) save to db
-        //before must parse Data to Json;
-        MyApplication.LogController.makeLog(TAG, String.valueOf(mComponents.size()), localLogPermission);
-        MyApplication.LogController.makeLog(TAG, String.valueOf(mComponents.get(0).getComponentType().getTypeValue()), localLogPermission);
-        String jsonBuilder="";
-        for(int i=0; i<mComponents.size(); i++){
-            BaseComponent.TypE type =  mComponents.get(i).getComponentType();
-            if(type == BaseComponent.TypE.TEXT){
-                jsonBuilder += new GsonBuilder().serializeNulls().create().toJson((TextComponent)mComponents.get(i));
+    public void saveDocument(String title, SaveToDatabaseCallBack saveToDatabaseCallBack) {
+        //TODO : asynTask - save to database
+        jsonStr = new Gson().toJson(mComponents);
 
-            } else if(type == BaseComponent.TypE.IMG){
-                gson.toJson((ImgComponent)mComponents.get(i));
-            } else if(type == BaseComponent.TypE.MAP){
-                gson.toJson((MapComponent)mComponents.get(i));
-            }
+        String query = "INSERT INTO "+ EditorContract.ComponentEntry.TABLE_NAME + "(" + EditorContract.ComponentEntry.COLUMN_TITLE + "," +EditorContract.ComponentEntry.COLUMN_TIMESTAMP+
+                ", "+EditorContract.ComponentEntry.COLUNM_COMPONENTS_JSON + ") values ('"+title+"', '"+Calendar.getInstance().toString()+"', '"+jsonStr+"');";
+        try {
+            db.execSQL(query);
+            MyApplication.LogController.makeLog(TAG, "Database processing was Successfully done",localLogPermission);
+        } catch (Exception e){
+            MyApplication.LogController.makeLog(TAG, "Error : Database insert", localLogPermission);
         }
-        MyApplication.LogController.makeLog(TAG, jsonBuilder, localLogPermission);
 
         if(saveToDatabaseCallBack != null) {
             saveToDatabaseCallBack.OnSaveFinished();
@@ -144,42 +146,98 @@ public class EditorComponentLocalDataSource implements EditorComponentDataSource
     }
 
     @Override
-    public void loadDocument(LoadFromDatabaseCallBack loadFromDataBaseCallBack) {
-        JsonObject jsonObject=null;
+    public void loadDocument(int _id, LoadFromDatabaseCallBack loadFromDataBaseCallBack) {
+
+        //TODO : asycTask - load from database
+//        JsonObject obj = new JsonParser().parse(jsonStr).getAsJsonObject();
+
+        String query = "SELECT * FROM " + EditorContract.ComponentEntry.TABLE_NAME;
+        Cursor cursor = db.rawQuery(query, null);
+        cursor.moveToNext();
+
+        MyApplication.LogController.makeLog(TAG, "size :"+String.valueOf(cursor.getCount()),localLogPermission);
+        MyApplication.LogController.makeLog(TAG, "inner :"+cursor.getString(EditorContract.COL_COMPONENTS_JSON), localLogPermission);
+
+
+
+        String json_str = cursor.getString(EditorContract.COL_COMPONENTS_JSON);
+        MyApplication.LogController.makeLog(TAG,"sec",localLogPermission);
+
+        JSONArray jsonArray = null;
+        try {
+            jsonArray = new JSONArray(json_str);
+            MyApplication.LogController.makeLog("load from db", jsonArray.toString(), localLogPermission);
+        } catch (Exception e){
+            MyApplication.LogController.makeLog(TAG, "Error : json Processing", localLogPermission);
+        }
 
         GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.registerTypeAdapter(BaseComponent.class, new MyTypeModelDeserializer());
+        gsonBuilder.registerTypeAdapter(BaseComponent.class, new MyJsonDeserializer());
         Gson gson = gsonBuilder.create();
 
-        BaseComponent myTypeModel = gson.fromJson(jsonObject, BaseComponent.class);
+
+//        BaseComponent myTypeModel = gson.fromJson(jsonStr, BaseComponent.class);
+//        MyApplication.LogController.makeLog(TAG, String.valueOf(myTypeModel.getComponentType().getTypeValue()), localLogPermission);
+
+//        JSONArray jsonArray = jsnobject.getJSONArray("locations");
+//        for (int i = 0; i < jsonArray.length(); i++) {
+//            JSONObject explrObject = jsonArray.getJSONObject(i);
+//        }
+
+
+
+        for(int i=0; i < jsonArray.length(); i++){
+            try{
+                JSONObject object = jsonArray.getJSONObject(i);
+                mComponents.add(gson.fromJson(object.toString(), BaseComponent.class));
+
+                //Test field
+                BaseComponent.TypE type = mComponents.get(i).getComponentType();
+                if(type == BaseComponent.TypE.TEXT){
+                    String textVal = ((TextComponent)mComponents.get(i)).getText();
+                    MyApplication.LogController.makeLog("Json result", textVal, localLogPermission);
+                } else if(type == BaseComponent.TypE.IMG) {
+                    String uri = ((ImgComponent)mComponents.get(i)).getImgUri().toString();
+                    MyApplication.LogController.makeLog("Json result", uri, localLogPermission);
+                } else if(type == BaseComponent.TypE.MAP){
+                    String placeVal = ((MapComponent)mComponents.get(i)).getPlaceName();
+                    MyApplication.LogController.makeLog("Json result", placeVal, localLogPermission);
+                }
+
+            } catch (Exception e){
+
+            }
+
+//            lists.add(gson.fromJson(jsonArray.getJSONObject(i), BaseComponent));
+        }
+
+//        Type listType = new TypeToken<List<BaseComponent>>(){}.getType();
+//        //In this test code i just shove the JSON here as string.
+//        List<BaseComponent> asd = gson.fromJson("[{'componentType':\"TEXT\"}, {'component':\"MAP\"}]", listType);
+//        MyApplication.LogController.makeLog("heel", String.valueOf(asd.get(0).getComponentType().getTypeValue()), true);
+//        gson.fromJson(jsonStr, listType);
+//        MyApplication.LogController.makeLog("deserialize", gson.toString(), true);
+
     }
-}
-
-class FoolException extends Exception {
-    //Exception for test
-}
-
-class MyTypeModelDeserializer implements JsonDeserializer<BaseComponent> {
 
     @Override
-    public BaseComponent deserialize(final JsonElement json, final Type typeOfT, final JsonDeserializationContext context)
-            throws JsonParseException {
+    public void requestDocuments(LoadFromDatabaseCallBack loadFromDatabaseCallBack) {
+        String query = "SELECT * FROM " + EditorContract.ComponentEntry.TABLE_NAME;
+        Cursor cursor = db.rawQuery(query, null);
+        cursor.moveToNext();
 
-        JsonObject jsonObject = json.getAsJsonObject();
+        List<DocumentData> DocList = new ArrayList<>();
 
-        JsonElement jsonType = jsonObject.get("componentType");
-        String type = jsonType.getAsString();
-
-        BaseComponent typeModel = null;
-
-        if("TEXT".equals(type)) {
-            typeModel = new TextComponent(null);
-        } else if("IMG".equals(type)) {
-            typeModel = new ImgComponent(null);
+        while (cursor.moveToNext()) {
+            int doc_id = cursor.getInt(EditorContract.COL_ID);
+            String title = cursor.getString(EditorContract.COL_TITLE);
+            String timeStamp = cursor.getString(EditorContract.COL_TIMESTAMP);
+            String jsonObject = cursor.getString(EditorContract.COL_COMPONENTS_JSON);
+            DocumentData data = new DocumentData(doc_id, title,timeStamp, jsonObject);
+            DocList.add(data);
         }
-        // TODO : set properties of type model
-
-        return typeModel;
+        if(loadFromDatabaseCallBack != null){
+            loadFromDatabaseCallBack.OnLoadFinished(DocList);
+        }
     }
-
 }
