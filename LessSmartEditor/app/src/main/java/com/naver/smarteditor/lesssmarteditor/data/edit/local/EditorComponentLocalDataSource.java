@@ -231,6 +231,7 @@ public class EditorComponentLocalDataSource implements EditorComponentDataSource
         while (cursor.moveToNext()) {
             int doc_id = cursor.getInt(EditorContract.COL_ID);
             String title = cursor.getString(EditorContract.COL_TITLE);
+            MyApplication.LogController.makeLog(TAG, title, localLogPermission);
             String timeStamp = cursor.getString(EditorContract.COL_TIMESTAMP);
             String jsonObject = cursor.getString(EditorContract.COL_COMPONENTS_JSON);
             DocumentData data = new DocumentData(doc_id, title,timeStamp, jsonObject);

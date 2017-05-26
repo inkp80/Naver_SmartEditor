@@ -5,6 +5,7 @@ import android.widget.TextView;
 
 import com.naver.smarteditor.lesssmarteditor.adpater.basic.holder.BasicViewHolder;
 import com.naver.smarteditor.lesssmarteditor.data.DocumentData;
+import com.naver.smarteditor.lesssmarteditor.data.DocumentDataParcelable;
 import com.naver.smarteditor.lesssmarteditor.listener.OnDocumentClickedListener;
 
 /**
@@ -24,14 +25,15 @@ public class MainViewHolder extends BasicViewHolder{
         mTitleText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //reset this value
-                onDocumentClickedListener.OnClick(documentData);
+                DocumentDataParcelable documentDataParcelable = new DocumentDataParcelable(
+                        documentData.get_id(),
+                        documentData.getTitle(),
+                        documentData.getTimeStemp(),
+                        documentData.getComponentsJson()
+                );
+                onDocumentClickedListener.OnClick(documentDataParcelable);
             }
         });
-    }
-
-    public TextView getTextView(){
-        return mTitleText;
     }
 
     public void bindDocumentData(DocumentData data){

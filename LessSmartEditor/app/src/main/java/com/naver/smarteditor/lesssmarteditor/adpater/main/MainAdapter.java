@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.naver.smarteditor.lesssmarteditor.MyApplication;
 import com.naver.smarteditor.lesssmarteditor.adpater.basic.holder.BasicViewHolder;
 import com.naver.smarteditor.lesssmarteditor.adpater.main.holder.MainViewHolder;
 import com.naver.smarteditor.lesssmarteditor.data.DocumentData;
@@ -24,7 +25,7 @@ public class MainAdapter extends RecyclerView.Adapter<BasicViewHolder> implement
     private OnDocumentClickedListener onDocumentClickedListener;
     private List<DocumentData> mDocumentData;
 
-    public MainAdapter(Context context){
+    public MainAdapter(Context context ){
         this.mContext = context;
         mDocumentData = new ArrayList<>();
     }
@@ -59,13 +60,18 @@ public class MainAdapter extends RecyclerView.Adapter<BasicViewHolder> implement
 
     @Override
     public void notifyAdapter() {
+        MyApplication.LogController.makeLog("sdsds"," sdada",true);
         notifyDataSetChanged();
     }
 
     @Override
     public void setComponent(List<DocumentData> docs) {
         this.mDocumentData = docs;
+    }
 
+    @Override
+    public void setDocumentOnClickedListener(OnDocumentClickedListener onDocumentClickedListener) {
+        this.onDocumentClickedListener = onDocumentClickedListener;
     }
 
     @Override

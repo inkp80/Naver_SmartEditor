@@ -87,7 +87,7 @@ public class EditPresenter implements EditContract.Presenter, OnTextChangeListen
             public void OnSaveFinished() {
                 MyApplication.LogController.makeLog(TAG, "DB request success", localLogPermission);
                 editComponentRepository.clearComponents();
-//                view.finishActivity();
+                view.finishActivity();
             }
         });
     }

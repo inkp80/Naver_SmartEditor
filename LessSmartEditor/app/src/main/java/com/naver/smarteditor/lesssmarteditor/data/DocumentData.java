@@ -17,6 +17,14 @@ public class DocumentData {
         this.componentsJson = componentsJson;
     }
 
+    public int get_id() {
+        return _id;
+    }
+
+    public void set_id(int _id) {
+        this._id = _id;
+    }
+
     public String getTitle() {
         return title;
     }

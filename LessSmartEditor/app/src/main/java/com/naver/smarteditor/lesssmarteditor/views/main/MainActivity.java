@@ -20,6 +20,7 @@ import com.naver.smarteditor.lesssmarteditor.MyApplication;
 
 import com.naver.smarteditor.lesssmarteditor.R;
 import com.naver.smarteditor.lesssmarteditor.adpater.main.MainAdapter;
+import com.naver.smarteditor.lesssmarteditor.data.DocumentDataParcelable;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.EditorComponentRepository;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.utils.EditorContract;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.utils.EditorDbHelper;
@@ -35,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
 
     private final int REQ_CODE_UPDATE = 101;
     private final int REQ_ADD_DOCUMENT = 102;
+    private final int REQ_EDIT_DOCUMENT = 103;
     private FloatingActionButton mAddDocumentButton;
 
     private MainPresenter mainPresenter;
@@ -96,13 +98,39 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
                 }
             }
         }
+
+        if(requestCode == REQ_EDIT_DOCUMENT){
+            if(resultCode == RESULT_OK){
+                try {
+                    mainPresenter.requestDocList();
+                } catch (Exception e) {
+
+                }
+            }
+        }
+
+        if(requestCode == REQ_ADD_DOCUMENT){
+            if(resultCode == RESULT_OK){
+                try {
+                    MyApplication.LogController.makeLog(TAG, "onresult", localLogPermission);
+                    mainPresenter.requestDocList();
+                } catch (Exception e) {
+
+                }
+            }
+        }
+
+
     }
 
+    final String PARCELABLE = "docparcelable";
+    boolean EDITOR_FLAG = false;
     @Override
-    public void passDataToEditor() {
+    public void passDataToEditor(DocumentDataParcelable documentDataParcelable) {
         Intent intent = new Intent(MainActivity.this, EditorActivity.class);
-        intent.putExtra()
-        startActivityForResult();
+        intent.putExtra(PARCELABLE, documentDataParcelable);
+        intent.putExtra("flag", EDITOR_FLAG);
+        startActivityForResult(intent, REQ_EDIT_DOCUMENT);
     }
 
 }

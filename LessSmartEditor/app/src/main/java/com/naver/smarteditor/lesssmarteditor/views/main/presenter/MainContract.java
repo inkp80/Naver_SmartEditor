@@ -2,6 +2,7 @@ package com.naver.smarteditor.lesssmarteditor.views.main.presenter;
 
 import com.naver.smarteditor.lesssmarteditor.adpater.main.MainAdapter;
 import com.naver.smarteditor.lesssmarteditor.adpater.main.MainAdapterContract;
+import com.naver.smarteditor.lesssmarteditor.data.DocumentDataParcelable;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.EditorComponentRepository;
 import com.naver.smarteditor.lesssmarteditor.views.basic.BaseView;
 import com.naver.smarteditor.lesssmarteditor.views.basic.presenter.BasePresenter;
@@ -12,7 +13,7 @@ import com.naver.smarteditor.lesssmarteditor.views.basic.presenter.BasePresenter
 
 public interface MainContract {
     interface View extends BaseView{
-        void passDataToEditor();
+        void passDataToEditor(DocumentDataParcelable documentDataParcelable);
     }
 
     interface Presenter extends BasePresenter{

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,6 +15,7 @@ import android.widget.EditText;
 import com.naver.smarteditor.lesssmarteditor.MyApplication;
 import com.naver.smarteditor.lesssmarteditor.R;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.EditComponentAdapter;
+import com.naver.smarteditor.lesssmarteditor.data.DocumentDataParcelable;
 import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
 import com.naver.smarteditor.lesssmarteditor.data.api.naver_map.PlaceItemParcelable;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.EditorComponentRepository;
@@ -35,6 +37,8 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
 
     private final int REQ_CODE_MOV2_GALLERY = 100;
     private final int REQ_CODE_MOV2_SEARCH_PLACE = 101;
+
+    private boolean EDIT_MODE = false;
 
 
     EditContract.Presenter mPresenter;
@@ -69,6 +73,8 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         initDialog();
 
 
+
+
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -80,7 +86,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
             @Override
             public void onClick(View v) {
                 mPresenter.saveDocumentToDataBase(mTitle.getText().toString());
-                mPresenter.loadDocumentFromDataBase(0);
+//                mPresenter.loadDocumentFromDataBase(0);
                 //메인 액티비티로 재전송
                 //이때 화면에 pregress-bar를 보인다.
                 //main activity로
@@ -195,6 +201,14 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
 
     @Override
     public void finishActivity() {
+        setResult(102);
         finish();
+    }
+
+    public void loadDocumentForEdit(){
+
+        Intent intent = getIntent();
+        Bundle bundle = getIntent().getExtras();
+        DocumentDataParcelable documentDataParcelable = bundle.getParcelable("docparcelable");
     }
 }

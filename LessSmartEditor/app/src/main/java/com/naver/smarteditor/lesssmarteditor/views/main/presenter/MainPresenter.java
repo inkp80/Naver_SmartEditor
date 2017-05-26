@@ -2,6 +2,7 @@ package com.naver.smarteditor.lesssmarteditor.views.main.presenter;
 
 import com.naver.smarteditor.lesssmarteditor.adpater.main.MainAdapterContract;
 import com.naver.smarteditor.lesssmarteditor.data.DocumentData;
+import com.naver.smarteditor.lesssmarteditor.data.DocumentDataParcelable;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.EditorComponentDataSource;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.EditorComponentRepository;
 import com.naver.smarteditor.lesssmarteditor.listener.OnDocumentClickedListener;
@@ -26,9 +27,8 @@ public class MainPresenter implements MainContract.Presenter, OnDocumentClickedL
 
 
     @Override
-    public void OnClick(DocumentData data) {
-        //데이터 담아서
-        //setResult로
+    public void OnClick(DocumentDataParcelable documentDataParcelable) {
+        view.passDataToEditor(documentDataParcelable);
     }
 
 
@@ -42,6 +42,7 @@ public class MainPresenter implements MainContract.Presenter, OnDocumentClickedL
                 adapterModel.setComponent(data);
                 adapterView.notifyAdapter();
             }
+
         });
     }
 
@@ -59,6 +60,7 @@ public class MainPresenter implements MainContract.Presenter, OnDocumentClickedL
     public void setComponentDataSource(EditorComponentRepository repository) {
         this.editComponentRepository = repository;
     }
+
 
     @Override
     public void attachView(MainContract.View view) {
