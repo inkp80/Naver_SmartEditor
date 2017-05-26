@@ -13,22 +13,20 @@ import com.naver.smarteditor.lesssmarteditor.views.basic.presenter.BasePresenter
 
 public interface MainContract {
     interface View extends BaseView{
-        void passDataToEditor(DocumentDataParcelable documentDataParcelable);
+        void passDocumentDataToEditor(DocumentDataParcelable documentDataParcelable);
     }
 
     interface Presenter extends BasePresenter{
-        void requestDocList();
+        void attachView(View view);
+
+        void detachView();
 
         void setMainAdapterModel(MainAdapterContract.Model adapter);
 
         void setMainAdapterView(MainAdapterContract.View adapter);
 
-        void setMainAdapterOnDocClickListener();
-
         void setComponentDataSource(EditorComponentRepository repository);
 
-        void attachView(View view);
-
-        void detachView();
+        void requestDocList();
     }
 }

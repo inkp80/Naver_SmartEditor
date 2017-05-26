@@ -33,8 +33,8 @@ public class EditorComponentRepository implements EditorComponentDataSource {
     }
 
     @Override
-    public void setComponent(ArrayList<BaseComponent> components, final LoadComponentCallBack loadComponentCallBack) {
-        editComponentLocalDataSource.setComponent(components, new LoadComponentCallBack() {
+    public void setComponents(ArrayList<BaseComponent> components, final LoadComponentCallBack loadComponentCallBack) {
+        editComponentLocalDataSource.setComponents(components, new LoadComponentCallBack() {
             @Override
             public void OnComponentLoaded(ArrayList<BaseComponent> components) {
                 if(loadComponentCallBack != null) {
@@ -45,20 +45,7 @@ public class EditorComponentRepository implements EditorComponentDataSource {
     }
 
     @Override
-    public void getComponent(final LoadComponentCallBack loadComponentCallBack) {
-        editComponentLocalDataSource.getComponent(new LoadComponentCallBack() {
-            @Override
-            public void OnComponentLoaded(ArrayList<BaseComponent> components) {
-                if(loadComponentCallBack != null){
-                    loadComponentCallBack.OnComponentLoaded(components);
-                }
-            }
-        });
-    }
-
-    @Override
     public void addComponent(BaseComponent.TypE type, Object componentData, final LoadComponentCallBack loadComponentCallBack) {
-        MyApplication.LogController.makeLog(TAG, "addComponent", localLogPermission);
         editComponentLocalDataSource.addComponent(type, componentData, new LoadComponentCallBack() {
             @Override
             public void OnComponentLoaded(ArrayList<BaseComponent> components) {
@@ -70,8 +57,8 @@ public class EditorComponentRepository implements EditorComponentDataSource {
     }
 
     @Override
-    public void editComponent(CharSequence s, int position, final LoadComponentCallBack loadComponentCallBack){
-        editComponentLocalDataSource.editComponent(s, position, new LoadComponentCallBack() {
+    public void updateEditTextComponent(CharSequence s, int position, final LoadComponentCallBack loadComponentCallBack){
+        editComponentLocalDataSource.updateEditTextComponent(s, position, new LoadComponentCallBack() {
             @Override
             public void OnComponentLoaded(ArrayList<BaseComponent> components) {
                 if(loadComponentCallBack != null) {
@@ -98,26 +85,11 @@ public class EditorComponentRepository implements EditorComponentDataSource {
         });
     }
 
-    @Override
-    public void loadDocument(int _id, LoadFromDatabaseCallBack loadFromDataBaseCallBack) {
 
-    }
-
-//    @Override
-//    public void loadDocument(int _id,final LoadFromDatabaseCallBack loadFromDataBaseCallBack) {
-//        editComponentLocalDataSource.loadDocument(_id, new LoadFromDatabaseCallBack() {
-//            @Override
-//            public void OnLoadFinished() {
-//                if(loadFromDataBaseCallBack != null){
-//                    loadFromDataBaseCallBack.OnLoadFinished();
-//                }
-//            }
-//        });
-//    }
 
     @Override
-    public void requestDocuments(final LoadFromDatabaseCallBack loadFromDatabaseCallBack) {
-        editComponentLocalDataSource.requestDocuments(new LoadFromDatabaseCallBack() {
+    public void getDocumentsList(final LoadFromDatabaseCallBack loadFromDatabaseCallBack) {
+        editComponentLocalDataSource.getDocumentsList(new LoadFromDatabaseCallBack() {
             @Override
             public void OnLoadFinished(List<DocumentData> data) {
                 if(loadFromDatabaseCallBack != null){
@@ -128,8 +100,8 @@ public class EditorComponentRepository implements EditorComponentDataSource {
     }
 
     @Override
-    public void loadComponents(int _id, String jsonComponents, final LoadComponentCallBack loadComponentCallBack) {
-        editComponentLocalDataSource.loadComponents(_id, jsonComponents, new LoadComponentCallBack() {
+    public void loadComponents(String jsonComponents, final LoadComponentCallBack loadComponentCallBack) {
+        editComponentLocalDataSource.loadComponents(jsonComponents, new LoadComponentCallBack() {
             @Override
             public void OnComponentLoaded(ArrayList<BaseComponent> components) {
                 if(loadComponentCallBack != null){
@@ -137,5 +109,23 @@ public class EditorComponentRepository implements EditorComponentDataSource {
                 }
             }
         });
+    }
+
+    @Override
+    public void deleteComponent(int position) {
+
+    }
+
+    @Override
+    public void updateDocument(int doc_id, final UpdateToDatabaseCallBack updateToDatabaseCallBack) {
+        editComponentLocalDataSource.updateDocument(doc_id, new UpdateToDatabaseCallBack() {
+            @Override
+            public void OnUpdateFinished() {
+                if(updateToDatabaseCallBack != null){
+                    updateToDatabaseCallBack.OnUpdateFinished();
+                }
+            }
+        });
+
     }
 }

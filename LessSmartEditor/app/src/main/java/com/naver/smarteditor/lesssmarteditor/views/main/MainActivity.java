@@ -18,13 +18,12 @@ import com.naver.smarteditor.lesssmarteditor.views.edit.EditorActivity;
 import com.naver.smarteditor.lesssmarteditor.views.main.presenter.MainContract;
 import com.naver.smarteditor.lesssmarteditor.views.main.presenter.MainPresenter;
 
-import static com.naver.smarteditor.lesssmarteditor.MyApplication.ADD_MODE;
+import static com.naver.smarteditor.lesssmarteditor.MyApplication.NEW_DOCUMENT_MODE;
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.DOCUMENT_PARCEL;
-import static com.naver.smarteditor.lesssmarteditor.MyApplication.EDIT_MODE;
+import static com.naver.smarteditor.lesssmarteditor.MyApplication.EDIT_DOCUMENT_MODE;
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.MODE_FLAG;
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.REQ_ADD_DOCUMENT;
-import static com.naver.smarteditor.lesssmarteditor.MyApplication.REQ_CODE_UPDATE;
-import static com.naver.smarteditor.lesssmarteditor.MyApplication.REQ_EDIT_DOCUMENT;
+import static com.naver.smarteditor.lesssmarteditor.MyApplication.REQ_UPDATE_DOCUMENT;
 
 public class MainActivity extends AppCompatActivity implements MainContract.View{
 
@@ -69,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, EditorActivity.class);
-                intent.putExtra(MODE_FLAG, ADD_MODE);
+                intent.putExtra(MODE_FLAG, NEW_DOCUMENT_MODE);
                 startActivityForResult(intent, REQ_ADD_DOCUMENT);
             }
         });
@@ -91,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == REQ_CODE_UPDATE){
+        if(requestCode == REQ_UPDATE_DOCUMENT){
             if(resultCode == RESULT_OK){
                 try {
                     mainPresenter.requestDocList();
@@ -101,15 +100,6 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
             }
         }
 
-        if(requestCode == REQ_EDIT_DOCUMENT){
-            if(resultCode == RESULT_OK){
-                try {
-                    mainPresenter.requestDocList();
-                } catch (Exception e) {
-
-                }
-            }
-        }
 
         if(requestCode == REQ_ADD_DOCUMENT){
             if(resultCode == RESULT_OK){
@@ -121,16 +111,14 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
                 }
             }
         }
-
-
     }
 
     @Override
-    public void passDataToEditor(DocumentDataParcelable documentDataParcelable) {
+    public void passDocumentDataToEditor(DocumentDataParcelable documentDataParcelable) {
         Intent intent = new Intent(MainActivity.this, EditorActivity.class);
         intent.putExtra(DOCUMENT_PARCEL, documentDataParcelable);
-        intent.putExtra(MODE_FLAG, EDIT_MODE);
-        startActivityForResult(intent, REQ_EDIT_DOCUMENT);
+        intent.putExtra(MODE_FLAG, EDIT_DOCUMENT_MODE);
+        startActivityForResult(intent, REQ_UPDATE_DOCUMENT);
     }
 
 }

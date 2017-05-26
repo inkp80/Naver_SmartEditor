@@ -10,18 +10,17 @@ import android.util.Log;
 public class MyApplication extends Application {
     //CODE NUMBERS (REQ, MODE, ... etc)
 
-    public static final int REQ_CODE_UPDATE = 101;
+    public static final int REQ_UPDATE_DOCUMENT = 101;
     public static final int REQ_ADD_DOCUMENT = 102;
-    public static final int REQ_EDIT_DOCUMENT = 103;
 
-    public static final int REQ_CODE_MOV2_GALLERY = 104;
-    public static final int REQ_CODE_MOV2_SEARCH_PLACE = 105;
+    public static final int REQ_MOV2_GALLERY = 104;
+    public static final int REQ_MOV2_SEARCH_PLACE = 105;
 
 
     public static final int RETROFIT_FAIL400 = 400;
 
-    public static final int EDIT_MODE = 13;
-    public static final int ADD_MODE = 11;
+    public static final int EDIT_DOCUMENT_MODE = 13;
+    public static final int NEW_DOCUMENT_MODE = 11;
 
 
     //INTENT KEY STRING

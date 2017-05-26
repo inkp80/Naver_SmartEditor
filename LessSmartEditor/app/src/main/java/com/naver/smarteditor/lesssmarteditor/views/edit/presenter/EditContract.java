@@ -14,29 +14,35 @@ public interface EditContract {
 
     interface View extends BaseView{
         void waitForDbProcessing();
-        void finishActivity();
+        void finishActivity(int REQ_CODE);
     }
 
     interface Presenter extends BasePresenter{
 
+        //init & default setup Presenter
         void attachView(View view);
-
         void detachView();
-
-        void clearComponent();
-
-        void addComponent(BaseComponent.TypE type, Object componentData);
-
-        void loadComponent(int _id, String jsonComponents);
+        void clearComponents();
 
         void setComponentAdatperModel(EditComponentAdapterContract.Model adapter);
-
         void setComponentAdapterView(EditComponentAdapterContract.View adapter);
-
         void setComponentDataSource(EditorComponentRepository repository);
 
-        void saveDocumentToDataBase(String title);
 
-        void loadDocumentFromDataBase(int id);
+
+        //components
+        void addComponent(BaseComponent.TypE type, Object componentData);
+        void deleteComponent(int doc_id);
+
+
+        //database
+        void saveDocumentToDataBase(String title);
+        void updateDocumentOnDatabase(int doc_id);
+
+
+        //utils
+        void loadComponentsFromJson(String jsonComponents);
+
+
     }
 }

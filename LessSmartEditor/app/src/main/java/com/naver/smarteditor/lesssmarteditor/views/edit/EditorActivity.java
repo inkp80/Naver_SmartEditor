@@ -26,14 +26,13 @@ import com.naver.smarteditor.lesssmarteditor.views.map.SearchPlaceActivity;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.naver.smarteditor.lesssmarteditor.MyApplication.ADD_MODE;
+import static com.naver.smarteditor.lesssmarteditor.MyApplication.NEW_DOCUMENT_MODE;
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.DOCUMENT_PARCEL;
-import static com.naver.smarteditor.lesssmarteditor.MyApplication.EDIT_MODE;
+import static com.naver.smarteditor.lesssmarteditor.MyApplication.EDIT_DOCUMENT_MODE;
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.MODE_FLAG;
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.MAPINFO_PARCEL;
-import static com.naver.smarteditor.lesssmarteditor.MyApplication.REQ_ADD_DOCUMENT;
-import static com.naver.smarteditor.lesssmarteditor.MyApplication.REQ_CODE_MOV2_GALLERY;
-import static com.naver.smarteditor.lesssmarteditor.MyApplication.REQ_CODE_MOV2_SEARCH_PLACE;
+import static com.naver.smarteditor.lesssmarteditor.MyApplication.REQ_MOV2_GALLERY;
+import static com.naver.smarteditor.lesssmarteditor.MyApplication.REQ_MOV2_SEARCH_PLACE;
 
 /**
  * Created by NAVER on 2017. 5. 11..
@@ -44,7 +43,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
     private boolean localLogPermission = true;
 
     private int currentDocumentId = -1;
-    private int EDITOR_MODE = ADD_MODE;
+    private int EDITOR_MODE = NEW_DOCUMENT_MODE;
 
 
     EditContract.Presenter mPresenter;
@@ -78,13 +77,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         initRecyclerView();
         initDialog();
 
-        Intent intent = getIntent();
-        EDITOR_MODE = intent.getIntExtra(MODE_FLAG, ADD_MODE);
-        MyApplication.LogController.makeLog(TAG, "Editor Mode :" + String.valueOf(EDITOR_MODE), localLogPermission);
-        if(EDITOR_MODE == EDIT_MODE){
-            getParcel(intent);
-        }
-
+        checkEditorMode();
 
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,16 +89,13 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         mSaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(EDITOR_MODE == ADD_MODE) {
-                    MyApplication.LogController.makeLog(TAG, "save", localLogPermission);
+                if(EDITOR_MODE == NEW_DOCUMENT_MODE) {
                     mPresenter.saveDocumentToDataBase(mTitle.getText().toString());
-                } else if(EDITOR_MODE == EDIT_MODE){
-                    //TODO : update query
+                } else if(EDITOR_MODE == EDIT_DOCUMENT_MODE){
+                    //TODO : update query, while show progress-bar
+                    mPresenter.updateDocumentOnDatabase(currentDocumentId);
+
                 }
-//                mPresenter.loadDocumentFromDataBase(0);
-                //메인 액티비티로 재전송
-                //이때 화면에 pregress-bar를 보인다.
-                //main activity로
             }
         });
 
@@ -115,10 +105,44 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
     @Override
     public void onDestroy(){
         super.onDestroy();
-        mPresenter.clearComponent();
+        mPresenter.clearComponents();
         mPresenter.detachView();
     }
 
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        //TODO: handling data
+        if(requestCode == REQ_MOV2_GALLERY) {
+            if(resultCode == Activity.RESULT_OK) {
+                try {
+                    Uri selectedImgUri = data.getData();
+                    mPresenter.addComponent(BaseComponent.TypE.IMG, selectedImgUri.toString());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        if(requestCode == REQ_MOV2_SEARCH_PLACE){
+            if(resultCode == RESULT_OK){
+                try{
+                    //TODO: parcel should declared with final
+                    Bundle bundle = data.getExtras();
+                    PlaceItemParcelable passer = bundle.getParcelable(MAPINFO_PARCEL);
+                    mPresenter.addComponent(BaseComponent.TypE.MAP, passer);
+
+                } catch (Exception e) {
+                    MyApplication.LogController.makeLog(TAG, "ERROR", localLogPermission);
+                    e.printStackTrace();
+                }
+            }
+        }
+
+    }
+
+
+    //Init & default setup method for Activity
     private void initRecyclerView(){
         mEditorRecyclerView = (RecyclerView) findViewById(R.id.editor_recyclerview);
         mEditorRecyclerView.setHasFixedSize(true);
@@ -166,49 +190,19 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         mSelectComponentDialog = new SelectComponentDialog(this, txtButtonListener, imgButtonListener, mapButtonListener);
     }
 
-
-    public void getImgSrcFromGallery(){
+    private void getImgSrcFromGallery(){
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType(android.provider.MediaStore.Images.Media.CONTENT_TYPE);
         intent.setData(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(intent, REQ_CODE_MOV2_GALLERY);
+        startActivityForResult(intent, REQ_MOV2_GALLERY);
     }
 
-    public void getMapSrcFromNaverPlaceAPI(){
+    private void getMapSrcFromNaverPlaceAPI(){
         Intent intent = new Intent(this, SearchPlaceActivity.class);
-        startActivityForResult(intent, REQ_CODE_MOV2_SEARCH_PLACE);
+        startActivityForResult(intent, REQ_MOV2_SEARCH_PLACE);
     }
+    //---
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        //TODO: handling data
-        if(requestCode == REQ_CODE_MOV2_GALLERY) {
-            if(resultCode == Activity.RESULT_OK) {
-                try {
-                    Uri selectedImgUri = data.getData();
-                    mPresenter.addComponent(BaseComponent.TypE.IMG, selectedImgUri.toString());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        if(requestCode == REQ_CODE_MOV2_SEARCH_PLACE){
-            if(resultCode == RESULT_OK){
-                try{
-                    //TODO: parcel should declared with final
-                    Bundle bundle = data.getExtras();
-                    PlaceItemParcelable passer = bundle.getParcelable(MAPINFO_PARCEL);
-                    mPresenter.addComponent(BaseComponent.TypE.MAP, passer);
-
-                } catch (Exception e) {
-                    MyApplication.LogController.makeLog(TAG, "ERROR", localLogPermission);
-                    e.printStackTrace();
-                }
-            }
-        }
-
-    }
 
     @Override
     public void waitForDbProcessing() {
@@ -218,25 +212,43 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
     }
 
     @Override
-    public void finishActivity() {
-        setResult(REQ_ADD_DOCUMENT);
+    public void finishActivity(int REQ_CODE) {
+        setResult(REQ_CODE);
         finish();
     }
 
-    public void loadDocumentForEdit(){
 
+    private void checkEditorMode(){
         Intent intent = getIntent();
-        Bundle bundle = getIntent().getExtras();
-        DocumentDataParcelable documentDataParcelable = bundle.getParcelable(DOCUMENT_PARCEL);
+        EDITOR_MODE = intent.getIntExtra(MODE_FLAG, NEW_DOCUMENT_MODE);
+        MyApplication.LogController.makeLog(TAG, "Editor Mode :" + String.valueOf(EDITOR_MODE), localLogPermission);
+
+        if(EDITOR_MODE == EDIT_DOCUMENT_MODE){
+            DocumentDataParcelable documentDataParcelable = getDocumentDataFromParcelable(intent);
+            loadDocument(documentDataParcelable);
+        } else if (EDITOR_MODE == NEW_DOCUMENT_MODE){
+            MyApplication.LogController.makeLog(TAG, "Editor Mode :" + String.valueOf(NEW_DOCUMENT_MODE), localLogPermission);
+        }
     }
 
-    public void getParcel(Intent intent){
+    private DocumentDataParcelable getDocumentDataFromParcelable(Intent intent){
         Bundle bundle = intent.getExtras();
-        DocumentDataParcelable parcelable = bundle.getParcelable(DOCUMENT_PARCEL);
-
-        mTitle.setText(parcelable.getTitle());
-        currentDocumentId = parcelable.getDoc_id();
-        String jsonComponent = parcelable.getComponentsJson();
-        mPresenter.loadComponent(currentDocumentId, jsonComponent);
+        DocumentDataParcelable documentDataParcelable = bundle.getParcelable(DOCUMENT_PARCEL);
+        return documentDataParcelable;
     }
+
+    private void loadDocument(DocumentDataParcelable documentDataParcelable){
+
+        mTitle.setText(documentDataParcelable.getTitle());
+        currentDocumentId = documentDataParcelable.getDoc_id();
+        requestLoadDocumentComponents(documentDataParcelable);
+    }
+
+    private void requestLoadDocumentComponents(DocumentDataParcelable documentDataParcelable){
+
+        String jsonComponent = documentDataParcelable.getComponentsJson();
+        mPresenter.loadComponentsFromJson(jsonComponent);
+    }
+
+
 }

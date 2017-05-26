@@ -11,6 +11,7 @@ import java.util.List;
  */
 
 public interface EditorComponentDataSource {
+
     interface LoadComponentCallBack{
         void OnComponentLoaded(ArrayList<BaseComponent> components);
     }
@@ -23,21 +24,30 @@ public interface EditorComponentDataSource {
         void OnSaveFinished();
     }
 
-    void setComponent(ArrayList<BaseComponent> components, LoadComponentCallBack loadComponentCallBack);
+    interface UpdateToDatabaseCallBack{
+        void OnUpdateFinished();
+    }
 
-    void getComponent(LoadComponentCallBack loadComponentCallBack);
 
+    //component
     void addComponent(BaseComponent.TypE type, Object componentData, LoadComponentCallBack loadComponentCallBack);
 
-    void editComponent(CharSequence s, int position, LoadComponentCallBack loadComponentCallBack);
+    void setComponents(ArrayList<BaseComponent> components, LoadComponentCallBack loadComponentCallBack);
+
+    void deleteComponent(int position);
+
+    void updateEditTextComponent(CharSequence s, int position, LoadComponentCallBack loadComponentCallBack);
 
     void clearComponents();
 
+    void loadComponents(String jsonComponents, LoadComponentCallBack loadComponentCallBack);
+
+
+
+    //database
     void saveDocument(String title, SaveToDatabaseCallBack saveToDatabaseCallBack);
 
-    void loadComponents(int _id, String jsonComponents, LoadComponentCallBack loadComponentCallBack);
+    void updateDocument(int doc_id, UpdateToDatabaseCallBack updateToDatabaseCallBack);
 
-    void loadDocument(int _id,LoadFromDatabaseCallBack loadFromDataBaseCallBack);
-
-    void requestDocuments(LoadFromDatabaseCallBack loadFromDatabaseCallBack);
+    void getDocumentsList(LoadFromDatabaseCallBack loadFromDatabaseCallBack);
 }
