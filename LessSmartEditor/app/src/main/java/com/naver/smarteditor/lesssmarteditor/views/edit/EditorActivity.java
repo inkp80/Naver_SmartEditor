@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -27,6 +26,15 @@ import com.naver.smarteditor.lesssmarteditor.views.map.SearchPlaceActivity;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.naver.smarteditor.lesssmarteditor.MyApplication.ADD_MODE;
+import static com.naver.smarteditor.lesssmarteditor.MyApplication.DOCUMENT_PARCEL;
+import static com.naver.smarteditor.lesssmarteditor.MyApplication.EDIT_MODE;
+import static com.naver.smarteditor.lesssmarteditor.MyApplication.MODE_FLAG;
+import static com.naver.smarteditor.lesssmarteditor.MyApplication.MAPINFO_PARCEL;
+import static com.naver.smarteditor.lesssmarteditor.MyApplication.REQ_ADD_DOCUMENT;
+import static com.naver.smarteditor.lesssmarteditor.MyApplication.REQ_CODE_MOV2_GALLERY;
+import static com.naver.smarteditor.lesssmarteditor.MyApplication.REQ_CODE_MOV2_SEARCH_PLACE;
+
 /**
  * Created by NAVER on 2017. 5. 11..
  */
@@ -35,10 +43,8 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
     private final String TAG = "EditorActivity";
     private boolean localLogPermission = true;
 
-    private final int REQ_CODE_MOV2_GALLERY = 100;
-    private final int REQ_CODE_MOV2_SEARCH_PLACE = 101;
-
-    private boolean EDIT_MODE = false;
+    private int currentDocumentId = -1;
+    private int EDITOR_MODE = ADD_MODE;
 
 
     EditContract.Presenter mPresenter;
@@ -72,7 +78,12 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         initRecyclerView();
         initDialog();
 
-
+        Intent intent = getIntent();
+        EDITOR_MODE = intent.getIntExtra(MODE_FLAG, ADD_MODE);
+        MyApplication.LogController.makeLog(TAG, "Editor Mode :" + String.valueOf(EDITOR_MODE), localLogPermission);
+        if(EDITOR_MODE == EDIT_MODE){
+            getParcel(intent);
+        }
 
 
         mButton.setOnClickListener(new View.OnClickListener() {
@@ -85,7 +96,12 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         mSaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mPresenter.saveDocumentToDataBase(mTitle.getText().toString());
+                if(EDITOR_MODE == ADD_MODE) {
+                    MyApplication.LogController.makeLog(TAG, "save", localLogPermission);
+                    mPresenter.saveDocumentToDataBase(mTitle.getText().toString());
+                } else if(EDITOR_MODE == EDIT_MODE){
+                    //TODO : update query
+                }
 //                mPresenter.loadDocumentFromDataBase(0);
                 //메인 액티비티로 재전송
                 //이때 화면에 pregress-bar를 보인다.
@@ -99,6 +115,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
     @Override
     public void onDestroy(){
         super.onDestroy();
+        mPresenter.clearComponent();
         mPresenter.detachView();
     }
 
@@ -169,7 +186,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
             if(resultCode == Activity.RESULT_OK) {
                 try {
                     Uri selectedImgUri = data.getData();
-                    mPresenter.addComponent(BaseComponent.TypE.IMG, selectedImgUri);
+                    mPresenter.addComponent(BaseComponent.TypE.IMG, selectedImgUri.toString());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -181,7 +198,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
                 try{
                     //TODO: parcel should declared with final
                     Bundle bundle = data.getExtras();
-                    PlaceItemParcelable passer = bundle.getParcelable("parcel");
+                    PlaceItemParcelable passer = bundle.getParcelable(MAPINFO_PARCEL);
                     mPresenter.addComponent(BaseComponent.TypE.MAP, passer);
 
                 } catch (Exception e) {
@@ -190,6 +207,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
                 }
             }
         }
+
     }
 
     @Override
@@ -201,7 +219,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
 
     @Override
     public void finishActivity() {
-        setResult(102);
+        setResult(REQ_ADD_DOCUMENT);
         finish();
     }
 
@@ -209,6 +227,16 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
 
         Intent intent = getIntent();
         Bundle bundle = getIntent().getExtras();
-        DocumentDataParcelable documentDataParcelable = bundle.getParcelable("docparcelable");
+        DocumentDataParcelable documentDataParcelable = bundle.getParcelable(DOCUMENT_PARCEL);
+    }
+
+    public void getParcel(Intent intent){
+        Bundle bundle = intent.getExtras();
+        DocumentDataParcelable parcelable = bundle.getParcelable(DOCUMENT_PARCEL);
+
+        mTitle.setText(parcelable.getTitle());
+        currentDocumentId = parcelable.getDoc_id();
+        String jsonComponent = parcelable.getComponentsJson();
+        mPresenter.loadComponent(currentDocumentId, jsonComponent);
     }
 }

@@ -126,4 +126,16 @@ public class EditorComponentRepository implements EditorComponentDataSource {
             }
         });
     }
+
+    @Override
+    public void loadComponents(int _id, String jsonComponents, final LoadComponentCallBack loadComponentCallBack) {
+        editComponentLocalDataSource.loadComponents(_id, jsonComponents, new LoadComponentCallBack() {
+            @Override
+            public void OnComponentLoaded(ArrayList<BaseComponent> components) {
+                if(loadComponentCallBack != null){
+                    loadComponentCallBack.OnComponentLoaded(components);
+                }
+            }
+        });
+    }
 }

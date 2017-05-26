@@ -9,9 +9,9 @@ import android.net.Uri;
 
 public class ImgComponent extends BaseComponent {
 
-    Uri imgUri;
+    String imgUri;
 
-    public ImgComponent(Uri uri){
+    public ImgComponent(String uri){
         this.componentType = TypE.IMG;
         imgUri = uri;
     }
@@ -21,11 +21,11 @@ public class ImgComponent extends BaseComponent {
         return this.componentType;
     }
 
-    public Uri getImgUri(){
+    public String getImgUri(){
         return imgUri;
     }
 
-    public void setImgUri(Uri uri){
+    public void setImgUri(String uri){
         imgUri = uri;
     }
 }

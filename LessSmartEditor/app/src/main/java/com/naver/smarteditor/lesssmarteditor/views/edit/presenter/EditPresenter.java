@@ -33,7 +33,16 @@ public class EditPresenter implements EditContract.Presenter, OnTextChangeListen
     }
 
     @Override
-    public void loadComponent() {
+    public void loadComponent(int doc_id, String jsonComponents) {
+        // 메인에서 전달 받은 String json을 Model에 넘겨 컴포넌트를 로드한다.
+
+        editComponentRepository.loadComponents(doc_id, jsonComponents, new EditorComponentDataSource.LoadComponentCallBack() {
+            @Override
+            public void OnComponentLoaded(ArrayList<BaseComponent> components) {
+                adapterModel.setComponent(components);
+                adapterView.notifyAdapter();
+            }
+        });
 
     }
 
@@ -100,5 +109,12 @@ public class EditPresenter implements EditContract.Presenter, OnTextChangeListen
 //                MyApplication.LogController.makeLog(TAG, "load from database success", localLogPermission);
 //            }
 //        });
+    }
+
+    @Override
+    public void clearComponent() {
+        editComponentRepository.clearComponents();
+        adapterModel.clearComponent();
+        adapterView.notifyAdapter();
     }
 }

@@ -2,6 +2,7 @@ package com.naver.smarteditor.lesssmarteditor.adpater.main;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.TypedValue;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -25,7 +26,7 @@ public class MainAdapter extends RecyclerView.Adapter<BasicViewHolder> implement
     private OnDocumentClickedListener onDocumentClickedListener;
     private List<DocumentData> mDocumentData;
 
-    public MainAdapter(Context context ){
+    public MainAdapter(Context context){
         this.mContext = context;
         mDocumentData = new ArrayList<>();
     }
@@ -34,6 +35,7 @@ public class MainAdapter extends RecyclerView.Adapter<BasicViewHolder> implement
     public BasicViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         TextView mTitle = new TextView(mContext);
+        mTitle.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 30);
         mTitle.setLayoutParams(lp);
         MainViewHolder mainViewHolder = new MainViewHolder(mTitle, onDocumentClickedListener);
 
@@ -60,7 +62,6 @@ public class MainAdapter extends RecyclerView.Adapter<BasicViewHolder> implement
 
     @Override
     public void notifyAdapter() {
-        MyApplication.LogController.makeLog("sdsds"," sdada",true);
         notifyDataSetChanged();
     }
 

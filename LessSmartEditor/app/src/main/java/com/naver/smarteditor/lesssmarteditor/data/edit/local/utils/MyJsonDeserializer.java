@@ -1,5 +1,7 @@
 package com.naver.smarteditor.lesssmarteditor.data.edit.local.utils;
 
+import android.net.Uri;
+
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -7,6 +9,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.naver.smarteditor.lesssmarteditor.MyApplication;
 import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
+import com.naver.smarteditor.lesssmarteditor.data.component.ImgComponent;
 import com.naver.smarteditor.lesssmarteditor.data.component.MapComponent;
 import com.naver.smarteditor.lesssmarteditor.data.component.TextComponent;
 
@@ -34,12 +37,19 @@ public class MyJsonDeserializer implements JsonDeserializer<BaseComponent> {
             typeModel = new TextComponent(null);
             JsonElement json_text = jsonObject.get("text");
             ((TextComponent) typeModel).setText(json_text.getAsString());
+
         } else if ("IMG".equals(type)) {
+            JsonElement imgUri = jsonObject.get("imgUri");
+            typeModel = new ImgComponent(imgUri.getAsString());
 
         } else if ("MAP".equals(type)) {
             MyApplication.LogController.makeLog("Deserializer type", "Map", true);
-            JsonElement json_name = jsonObject.get("placeName");
-            typeModel = new MapComponent("1", "1", "1", json_name.getAsString());
+
+            JsonElement placeName = jsonObject.get("placeName");
+            JsonElement placeAddress = jsonObject.get("placeAddress");
+            JsonElement placeCoords = jsonObject.get("placeCoords");
+            JsonElement placeMapImgUri = jsonObject.get("placeMapImgUri");
+            typeModel = new MapComponent(placeName.getAsString(), placeAddress.getAsString(), placeCoords.getAsString(), placeMapImgUri.getAsString());
         }
         // TODO : set properties of type model
 

@@ -54,6 +54,7 @@ public class MainPresenter implements MainContract.Presenter, OnDocumentClickedL
     @Override
     public void setMainAdapterView(MainAdapterContract.View adapter){
         this.adapterView = adapter;
+        setMainAdapterOnDocClickListener();
     }
 
     @Override
@@ -61,6 +62,10 @@ public class MainPresenter implements MainContract.Presenter, OnDocumentClickedL
         this.editComponentRepository = repository;
     }
 
+    @Override
+    public void setMainAdapterOnDocClickListener() {
+        adapterView.setDocumentOnClickedListener(this);
+    }
 
     @Override
     public void attachView(MainContract.View view) {

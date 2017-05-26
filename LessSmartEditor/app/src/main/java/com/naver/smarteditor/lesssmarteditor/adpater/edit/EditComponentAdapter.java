@@ -21,6 +21,7 @@ import com.naver.smarteditor.lesssmarteditor.data.component.MapComponent;
 import com.naver.smarteditor.lesssmarteditor.data.component.TextComponent;
 import com.naver.smarteditor.lesssmarteditor.listener.OnTextChangeListener;
 
+import java.net.URI;
 import java.util.ArrayList;
 
 /**

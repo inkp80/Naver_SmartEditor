@@ -23,9 +23,11 @@ public interface EditContract {
 
         void detachView();
 
+        void clearComponent();
+
         void addComponent(BaseComponent.TypE type, Object componentData);
 
-        void loadComponent();
+        void loadComponent(int _id, String jsonComponents);
 
         void setComponentAdatperModel(EditComponentAdapterContract.Model adapter);
 

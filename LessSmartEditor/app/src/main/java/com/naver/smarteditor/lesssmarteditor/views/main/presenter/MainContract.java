@@ -23,6 +23,8 @@ public interface MainContract {
 
         void setMainAdapterView(MainAdapterContract.View adapter);
 
+        void setMainAdapterOnDocClickListener();
+
         void setComponentDataSource(EditorComponentRepository repository);
 
         void attachView(View view);

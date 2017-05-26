@@ -34,6 +34,9 @@ public interface EditorComponentDataSource {
     void clearComponents();
 
     void saveDocument(String title, SaveToDatabaseCallBack saveToDatabaseCallBack);
+
+    void loadComponents(int _id, String jsonComponents, LoadComponentCallBack loadComponentCallBack);
+
     void loadDocument(int _id,LoadFromDatabaseCallBack loadFromDataBaseCallBack);
 
     void requestDocuments(LoadFromDatabaseCallBack loadFromDatabaseCallBack);

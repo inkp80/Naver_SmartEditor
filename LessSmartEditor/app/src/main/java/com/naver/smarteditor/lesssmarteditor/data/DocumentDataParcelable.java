@@ -53,4 +53,36 @@ public class DocumentDataParcelable implements Parcelable {
             return new DocumentDataParcelable[size];
         }
     };
+
+    public int getDoc_id() {
+        return doc_id;
+    }
+
+    public void setDoc_id(int doc_id) {
+        this.doc_id = doc_id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public String getComponentsJson() {
+        return componentsJson;
+    }
+
+    public void setComponentsJson(String componentsJson) {
+        this.componentsJson = componentsJson;
+    }
 }

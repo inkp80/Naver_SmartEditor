@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.naver.smarteditor.lesssmarteditor.MyApplication;
 import com.naver.smarteditor.lesssmarteditor.NaverPlaceService;
 import com.naver.smarteditor.lesssmarteditor.R;
 import com.naver.smarteditor.lesssmarteditor.SearchResultOnClickListener;
@@ -26,6 +27,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.naver.smarteditor.lesssmarteditor.MyApplication.MAPINFO_PARCEL;
+import static com.naver.smarteditor.lesssmarteditor.MyApplication.RETROFIT_FAIL400;
 import static com.naver.smarteditor.lesssmarteditor.util.map.MapUtils.buildCoords;
 import static com.naver.smarteditor.lesssmarteditor.util.map.MapUtils.buildStaticMapUrlWithCoords;
 
@@ -34,7 +37,6 @@ import static com.naver.smarteditor.lesssmarteditor.util.map.MapUtils.buildStati
  */
 
 public class SearchPlaceActivity extends AppCompatActivity {
-    final int REQUEST_FAIL_CODE400 = 400;
 
     Button mSearchPlaceButton;
     EditText mSearchTarget;
@@ -70,13 +72,17 @@ public class SearchPlaceActivity extends AppCompatActivity {
 
     public void requestSearchPlaceService(){
         String query = mSearchTarget.getText().toString();
+        if(query.length() == 0 || query == null){
+            //do nothing -
+            return;
+        }
         NaverPlaceService naverService = NaverPlaceService.retrofit.create(NaverPlaceService.class);
         Call<PlaceRequestResult> call = naverService.naverPlace(query);
 
         call.enqueue(new Callback<PlaceRequestResult>() {
             @Override
             public void onResponse(Call<PlaceRequestResult> call, Response<PlaceRequestResult> response) {
-                //Vaild check 필요하다.
+                //TODO : vaildation check
                 placeItemList = response.body().getPlaces();
                 renewingAdapter();
             }
@@ -115,7 +121,7 @@ public class SearchPlaceActivity extends AppCompatActivity {
                 PlaceItemParcelable passer = new PlaceItemParcelable(placeItemList.get(position).getPlaceName().toString(), placeItemList.get(position).getPlaceAddress().toString(), buildCoords(x,y).toString(), mapUri);
 
                 Intent intent = new Intent(SearchPlaceActivity.this, EditorActivity.class);
-                intent.putExtra("parcel", passer);
+                intent.putExtra(MAPINFO_PARCEL, passer);
 
                 setResult(RESULT_OK, intent);
                 finish();
@@ -125,7 +131,7 @@ public class SearchPlaceActivity extends AppCompatActivity {
     }
 
     public boolean checkResponseVaild(Response<PlaceRequestResult> response){
-        if(response.code() == REQUEST_FAIL_CODE400 ){
+        if(response.code() == RETROFIT_FAIL400 ){
             Log.d("HTTP protocol", "ERROR");
             return true;
         }

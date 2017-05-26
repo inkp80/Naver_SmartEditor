@@ -84,7 +84,7 @@ public class EditorComponentLocalDataSource implements EditorComponentDataSource
         }
 
         else if (type == BaseComponent.TypE.IMG){
-            ImgComponent imgComponent = new ImgComponent((Uri)componentData);
+            ImgComponent imgComponent = new ImgComponent((String)componentData);
             component = imgComponent;
         }
 
@@ -176,15 +176,6 @@ public class EditorComponentLocalDataSource implements EditorComponentDataSource
         Gson gson = gsonBuilder.create();
 
 
-//        BaseComponent myTypeModel = gson.fromJson(jsonStr, BaseComponent.class);
-//        MyApplication.LogController.makeLog(TAG, String.valueOf(myTypeModel.getComponentType().getTypeValue()), localLogPermission);
-
-//        JSONArray jsonArray = jsnobject.getJSONArray("locations");
-//        for (int i = 0; i < jsonArray.length(); i++) {
-//            JSONObject explrObject = jsonArray.getJSONObject(i);
-//        }
-
-
 
         for(int i=0; i < jsonArray.length(); i++){
             try{
@@ -222,6 +213,8 @@ public class EditorComponentLocalDataSource implements EditorComponentDataSource
 
     @Override
     public void requestDocuments(LoadFromDatabaseCallBack loadFromDatabaseCallBack) {
+
+        // request data from database
         String query = "SELECT * FROM " + EditorContract.ComponentEntry.TABLE_NAME;
         Cursor cursor = db.rawQuery(query, null);
         cursor.moveToNext();
@@ -240,5 +233,36 @@ public class EditorComponentLocalDataSource implements EditorComponentDataSource
         if(loadFromDatabaseCallBack != null){
             loadFromDatabaseCallBack.OnLoadFinished(DocList);
         }
+    }
+
+    @Override
+    public void loadComponents(int _id, String jsonComponents, LoadComponentCallBack loadComponentCallBack) {
+        //String to Json, Json to Object<BascComponents>;
+
+
+        JSONArray jsonArray = null;
+        try {
+            jsonArray = new JSONArray(jsonComponents);
+        } catch (Exception e){
+            MyApplication.LogController.makeLog(TAG, "JSON Error : string to json-array", localLogPermission);
+        }
+
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(BaseComponent.class, new MyJsonDeserializer());
+        Gson gson = gsonBuilder.create();
+
+        for(int i=0; i < jsonArray.length(); i++){
+            try{
+                JSONObject object = jsonArray.getJSONObject(i);
+                mComponents.add(gson.fromJson(object.toString(), BaseComponent.class));
+            } catch (Exception e){
+                MyApplication.LogController.makeLog(TAG, "FAIL : load components from json", localLogPermission);
+            }
+        }
+
+        if(loadComponentCallBack != null){
+            loadComponentCallBack.OnComponentLoaded(mComponents);
+        }
+
     }
 }

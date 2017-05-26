@@ -1,32 +1,30 @@
 package com.naver.smarteditor.lesssmarteditor.views.main;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
-import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
 import com.naver.smarteditor.lesssmarteditor.MyApplication;
 
 import com.naver.smarteditor.lesssmarteditor.R;
 import com.naver.smarteditor.lesssmarteditor.adpater.main.MainAdapter;
 import com.naver.smarteditor.lesssmarteditor.data.DocumentDataParcelable;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.EditorComponentRepository;
-import com.naver.smarteditor.lesssmarteditor.data.edit.local.utils.EditorContract;
-import com.naver.smarteditor.lesssmarteditor.data.edit.local.utils.EditorDbHelper;
 import com.naver.smarteditor.lesssmarteditor.views.edit.EditorActivity;
 import com.naver.smarteditor.lesssmarteditor.views.main.presenter.MainContract;
 import com.naver.smarteditor.lesssmarteditor.views.main.presenter.MainPresenter;
+
+import static com.naver.smarteditor.lesssmarteditor.MyApplication.ADD_MODE;
+import static com.naver.smarteditor.lesssmarteditor.MyApplication.DOCUMENT_PARCEL;
+import static com.naver.smarteditor.lesssmarteditor.MyApplication.EDIT_MODE;
+import static com.naver.smarteditor.lesssmarteditor.MyApplication.MODE_FLAG;
+import static com.naver.smarteditor.lesssmarteditor.MyApplication.REQ_ADD_DOCUMENT;
+import static com.naver.smarteditor.lesssmarteditor.MyApplication.REQ_CODE_UPDATE;
+import static com.naver.smarteditor.lesssmarteditor.MyApplication.REQ_EDIT_DOCUMENT;
 
 public class MainActivity extends AppCompatActivity implements MainContract.View{
 
@@ -34,9 +32,6 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     private boolean localLogPermission = true;
 
 
-    private final int REQ_CODE_UPDATE = 101;
-    private final int REQ_ADD_DOCUMENT = 102;
-    private final int REQ_EDIT_DOCUMENT = 103;
     private FloatingActionButton mAddDocumentButton;
 
     private MainPresenter mainPresenter;
@@ -74,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, EditorActivity.class);
+                intent.putExtra(MODE_FLAG, ADD_MODE);
                 startActivityForResult(intent, REQ_ADD_DOCUMENT);
             }
         });
@@ -85,6 +81,12 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         super.onDestroy();
         mainPresenter.detachView();
 
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        mainPresenter.requestDocList();
     }
 
     @Override
@@ -123,13 +125,11 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
 
     }
 
-    final String PARCELABLE = "docparcelable";
-    boolean EDITOR_FLAG = false;
     @Override
     public void passDataToEditor(DocumentDataParcelable documentDataParcelable) {
         Intent intent = new Intent(MainActivity.this, EditorActivity.class);
-        intent.putExtra(PARCELABLE, documentDataParcelable);
-        intent.putExtra("flag", EDITOR_FLAG);
+        intent.putExtra(DOCUMENT_PARCEL, documentDataParcelable);
+        intent.putExtra(MODE_FLAG, EDIT_MODE);
         startActivityForResult(intent, REQ_EDIT_DOCUMENT);
     }
 
