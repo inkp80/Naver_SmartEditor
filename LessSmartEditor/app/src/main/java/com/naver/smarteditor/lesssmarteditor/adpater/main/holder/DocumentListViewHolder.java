@@ -14,13 +14,13 @@ import com.naver.smarteditor.lesssmarteditor.listener.OnDocumentClickListener;
  * Created by NAVER on 2017. 5. 25..
  */
 
-public class MainViewHolder extends BasicViewHolder{
+public class DocumentListViewHolder extends BasicViewHolder{
 
     private TextView mTitleText;
     private DocumentData documentData;
     private OnDocumentClickListener onDocumentClickListener;
 
-    public MainViewHolder(View itemView, final OnDocumentClickListener onDocumentClickListener) {
+    public DocumentListViewHolder(View itemView, final OnDocumentClickListener onDocumentClickListener) {
         super(itemView);
         mTitleText = (TextView) itemView;
         this.onDocumentClickListener = onDocumentClickListener;

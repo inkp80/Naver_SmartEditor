@@ -21,15 +21,13 @@ public interface EditComponentAdapterContract {
 
         void notifyAdapter();
 
+        void reoderingComponent(int fromPosition, int toPosition);
+
     }
 
     interface Model extends BaseAdapterContract.Model {
 
         void setComponent(List<BaseComponent> components);
-
-        void editComponent(CharSequence s, int position);
-
-        BaseComponent getComponent(int position);
 
         void clearComponent();
 

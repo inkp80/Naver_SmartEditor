@@ -42,6 +42,8 @@ public interface EditorComponentDataSource {
 
     void convertJsonToComponents(String jsonComponents, LoadComponentCallBack loadComponentCallBack);
 
+    void changeComponentOrder(int from, int to, LoadComponentCallBack loadComponentCallBack);
+
 
 
     //database

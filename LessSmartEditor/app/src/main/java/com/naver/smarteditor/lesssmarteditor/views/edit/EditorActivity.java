@@ -1,14 +1,13 @@
 package com.naver.smarteditor.lesssmarteditor.views.edit;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,7 +16,8 @@ import android.widget.Toast;
 import com.naver.smarteditor.lesssmarteditor.MyApplication;
 import com.naver.smarteditor.lesssmarteditor.R;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.EditComponentAdapter;
-import com.naver.smarteditor.lesssmarteditor.data.DocumentData;
+import com.naver.smarteditor.lesssmarteditor.adpater.edit.Utils.ComponentTouchEventListener;
+import com.naver.smarteditor.lesssmarteditor.adpater.edit.Utils.SimpleTouchItemHelperCallback;
 import com.naver.smarteditor.lesssmarteditor.data.DocumentDataParcelable;
 import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
 import com.naver.smarteditor.lesssmarteditor.data.api.naver_map.PlaceItemParcelable;
@@ -25,11 +25,10 @@ import com.naver.smarteditor.lesssmarteditor.data.edit.local.EditorComponentRepo
 import com.naver.smarteditor.lesssmarteditor.dialog.SelectComponentDialog;
 import com.naver.smarteditor.lesssmarteditor.views.edit.presenter.EditContract;
 import com.naver.smarteditor.lesssmarteditor.views.edit.presenter.EditPresenter;
-import com.naver.smarteditor.lesssmarteditor.views.main.MainActivity;
+import com.naver.smarteditor.lesssmarteditor.views.main.DocumentListActivity;
 import com.naver.smarteditor.lesssmarteditor.views.map.SearchPlaceActivity;
 
 import java.util.Calendar;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -99,7 +98,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         mBtLoadDocument.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(EditorActivity.this, MainActivity.class);
+                Intent intent = new Intent(EditorActivity.this, DocumentListActivity.class);
 //                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
             }
@@ -169,6 +168,14 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         mEditorRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mEditorRecyclerView.setAdapter(mAdapter);
         mEditorRecyclerView.setItemViewCacheSize(100);
+
+
+
+        ItemTouchHelper.Callback callback =  new SimpleTouchItemHelperCallback(mAdapter, (ComponentTouchEventListener)mPresenter);
+        ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
+        touchHelper.attachToRecyclerView(mEditorRecyclerView);
+
+
     }
 
     private void initPresenter(){

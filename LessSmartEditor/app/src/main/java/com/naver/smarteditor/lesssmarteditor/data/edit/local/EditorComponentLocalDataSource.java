@@ -23,7 +23,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
+
+import static java.util.Collections.*;
 
 /**
  * Created by NAVER on 2017. 5. 21..
@@ -50,6 +53,8 @@ public class EditorComponentLocalDataSource implements EditorComponentDataSource
         db = mDbHelper.getWritableDatabase();
     }
 
+
+    //components
     @Override
     public void setComponents(ArrayList<BaseComponent> components, LoadComponentCallBack loadComponentCallBack) {
         this.mComponents = components;
@@ -57,7 +62,6 @@ public class EditorComponentLocalDataSource implements EditorComponentDataSource
             loadComponentCallBack.OnComponentLoaded(components);
         }
     }
-
 
     @Override
     public void addComponent(BaseComponent.TypE type, Object componentData, LoadComponentCallBack loadComponentCallBack) {
@@ -112,6 +116,35 @@ public class EditorComponentLocalDataSource implements EditorComponentDataSource
         mComponents = new ArrayList<>();
     }
 
+    @Override
+    public void deleteComponent(int position, LoadComponentCallBack loadComponentCallBack) {
+        mComponents.remove(position);
+        if(loadComponentCallBack != null){
+            loadComponentCallBack.OnComponentLoaded(mComponents);
+        }
+    }
+
+
+    @Override
+    public void changeComponentOrder(int from, int to, LoadComponentCallBack loadComponentCallBack) {
+        if (from < to) {
+            for (int i = from; i < to; i++) {
+                swap(mComponents, i, i + 1);
+            }
+        } else {
+            for (int i = from; i > to; i--) {
+                swap(mComponents, i, i - 1);
+            }
+        }
+
+        if(loadComponentCallBack != null){
+            loadComponentCallBack.OnComponentLoaded(mComponents);
+        }
+    }
+
+
+
+    //database
     @Override
     public void saveDocumentToDatabase(String title, SaveToDatabaseCallBack saveToDatabaseCallBack) {
         //TODO : asynTask - save to database
@@ -184,13 +217,6 @@ public class EditorComponentLocalDataSource implements EditorComponentDataSource
 
     }
 
-    @Override
-    public void deleteComponent(int position, LoadComponentCallBack loadComponentCallBack) {
-        mComponents.remove(position);
-        if(loadComponentCallBack != null){
-            loadComponentCallBack.OnComponentLoaded(mComponents);
-        }
-    }
 
     @Override
     public void updateDocumentInDatabase(int doc_id, UpdateToDatabaseCallBack updateToDatabaseCallBack) {

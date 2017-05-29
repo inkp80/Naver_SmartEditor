@@ -1,13 +1,10 @@
 package com.naver.smarteditor.lesssmarteditor.views.edit.presenter;
 
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.EditComponentAdapterContract;
-import com.naver.smarteditor.lesssmarteditor.data.DocumentData;
 import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.EditorComponentRepository;
 import com.naver.smarteditor.lesssmarteditor.views.basic.BaseView;
 import com.naver.smarteditor.lesssmarteditor.views.basic.presenter.BasePresenter;
-
-import java.util.List;
 
 /**
  * Created by NAVER on 2017. 5. 21..
@@ -32,7 +29,6 @@ public interface EditContract {
         void setComponentDataSource(EditorComponentRepository repository);
 
 
-
         //components
         void addComponent(BaseComponent.TypE type, Object componentData);
         void deleteComponent(int doc_id);
@@ -45,7 +41,5 @@ public interface EditContract {
 
         //utils
         void getComponentsFromJson(String jsonComponents);
-
-
     }
 }

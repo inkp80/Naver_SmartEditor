@@ -135,4 +135,17 @@ public class EditorComponentRepository implements EditorComponentDataSource {
         });
 
     }
+
+
+    @Override
+    public void changeComponentOrder(int from, int to, final LoadComponentCallBack loadComponentCallBack) {
+        editComponentLocalDataSource.changeComponentOrder(from, to, new LoadComponentCallBack() {
+            @Override
+            public void OnComponentLoaded(ArrayList<BaseComponent> components) {
+                if(loadComponentCallBack != null){
+                    loadComponentCallBack.OnComponentLoaded(components);
+                }
+            }
+        });
+    }
 }

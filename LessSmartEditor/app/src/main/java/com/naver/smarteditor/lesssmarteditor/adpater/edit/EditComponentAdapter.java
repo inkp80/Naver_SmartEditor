@@ -5,8 +5,6 @@ import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.util.TypedValue;
-import android.view.Gravity;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -16,7 +14,6 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.naver.smarteditor.lesssmarteditor.MyApplication;
-import com.naver.smarteditor.lesssmarteditor.adpater.basic.holder.BasicViewHolder;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.holder.ComponentViewHolder;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.holder.ImgComponentViewHolder;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.holder.MapComponentViewHolder;
@@ -28,7 +25,6 @@ import com.naver.smarteditor.lesssmarteditor.data.component.TextComponent;
 import com.naver.smarteditor.lesssmarteditor.listener.OnComponentMenuClickListener;
 import com.naver.smarteditor.lesssmarteditor.listener.OnTextChangeListener;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +32,9 @@ import java.util.List;
  * Created by NAVER on 2017. 5. 21..
  */
 
-public class EditComponentAdapter extends RecyclerView.Adapter<ComponentViewHolder> implements EditComponentAdapterContract.Model, EditComponentAdapterContract.View, OnComponentMenuClickListener{
+public class EditComponentAdapter extends RecyclerView.Adapter<ComponentViewHolder>
+        implements EditComponentAdapterContract.Model, EditComponentAdapterContract.View,
+        OnComponentMenuClickListener {
 
     private final String TAG = "EditComponentAdapter";
     private boolean localLogPermission = true;
@@ -48,7 +46,7 @@ public class EditComponentAdapter extends RecyclerView.Adapter<ComponentViewHold
     private OnTextChangeListener onTextChangeListener;
     private List<BaseComponent> mComponents;
 
-    public EditComponentAdapter(Context context){
+    public EditComponentAdapter(Context context) {
         this.mContext = context;
         mComponents = new ArrayList<>();
         requestManager = Glide.with(context);
@@ -56,23 +54,23 @@ public class EditComponentAdapter extends RecyclerView.Adapter<ComponentViewHold
 
     @Override
     public ComponentViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        
+
         RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         BaseComponent.TypE ViewHolderType = BaseComponent.getType(viewType);
 
 
-        switch (ViewHolderType){
+        switch (ViewHolderType) {
             case TEXT:
                 EditText et = new EditText(mContext);
                 et.setLayoutParams(lp);
                 TextComponentViewHolder textComponentViewHolder = new TextComponentViewHolder(et, onTextChangeListener);
                 return textComponentViewHolder;
-            case IMG :
+            case IMG:
                 ImageView img = new ImageView(mContext);
                 img.setLayoutParams(lp);
                 ImgComponentViewHolder imgComponentViewHolder = new ImgComponentViewHolder(img);
                 return imgComponentViewHolder;
-            case MAP :
+            case MAP:
                 TextView placeName = new TextView(mContext);
                 ImageView mapImg = new ImageView(mContext);
                 placeName.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
@@ -104,28 +102,27 @@ public class EditComponentAdapter extends RecyclerView.Adapter<ComponentViewHold
         holder.setDataPositionOnAdapter(position);
         holder.setOnComponentContextMenuClickListener(this);
 
-        switch (thisComponentType){
-            case TEXT :
+        switch (thisComponentType) {
+            case TEXT:
                 TextComponent thisTextComponent = (TextComponent) mComponents.get(position);
                 TextComponentViewHolder textComponentViewHolder = (TextComponentViewHolder) holder;
                 textComponentViewHolder.removeWatcher();
                 textComponentViewHolder.setText(thisTextComponent.getText());
                 textComponentViewHolder.onBind(position);
                 break;
-            case IMG :
+            case IMG:
                 ImgComponent thisImgComponent = (ImgComponent) mComponents.get(position);
                 ImgComponentViewHolder imgComponentViewHolder = (ImgComponentViewHolder) holder;
                 requestManager.load(thisImgComponent.getImgUri()).into(imgComponentViewHolder.getImageView());
                 break;
-            case MAP :
+            case MAP:
                 MapComponent thisMapComponent = (MapComponent) mComponents.get(position);
                 MapComponentViewHolder mapComponentViewHolder = (MapComponentViewHolder) holder;
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     mapComponentViewHolder.getTextView().setText(Html.fromHtml("<b>" + thisMapComponent.getPlaceName() + "</b>", Html.FROM_HTML_MODE_COMPACT));
                     mapComponentViewHolder.getTextView().append("\n" + thisMapComponent.getPlaceAddress());
-                }
-                else{
+                } else {
                     mapComponentViewHolder.getTextView().setText(Html.fromHtml("<b>" + thisMapComponent.getPlaceName() + "</b>"));
                     mapComponentViewHolder.getTextView().append("\n" + thisMapComponent.getPlaceAddress());
                 }
@@ -171,22 +168,21 @@ public class EditComponentAdapter extends RecyclerView.Adapter<ComponentViewHold
         return thisComponent.getComponentType().getTypeValue();
     }
 
+
+    //AdapterModel & View
     @Override
     public void setComponent(List<BaseComponent> components) {
         mComponents = new ArrayList<>(components);
     }
 
     @Override
-    public void editComponent(CharSequence s, int position) {
-    }
-
-    @Override
-    public BaseComponent getComponent(int position) {
-        return mComponents.get(position);
-    }
-
-    @Override
     public void clearComponent() {
         mComponents.clear();
     }
+
+    @Override
+    public void reoderingComponent(int fromPosition, int toPosition) {
+        notifyItemMoved(fromPosition, toPosition);
+    }
+
 }

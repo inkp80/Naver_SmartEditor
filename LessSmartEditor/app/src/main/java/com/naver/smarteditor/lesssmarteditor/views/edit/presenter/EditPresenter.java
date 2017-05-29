@@ -2,7 +2,7 @@ package com.naver.smarteditor.lesssmarteditor.views.edit.presenter;
 
 import com.naver.smarteditor.lesssmarteditor.MyApplication;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.EditComponentAdapterContract;
-import com.naver.smarteditor.lesssmarteditor.data.DocumentData;
+import com.naver.smarteditor.lesssmarteditor.adpater.edit.Utils.ComponentTouchEventListener;
 import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.EditorComponentDataSource;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.EditorComponentRepository;
@@ -10,16 +10,12 @@ import com.naver.smarteditor.lesssmarteditor.listener.OnComponentMenuClickListen
 import com.naver.smarteditor.lesssmarteditor.listener.OnTextChangeListener;
 
 import java.util.ArrayList;
-import java.util.List;
-
-import static com.naver.smarteditor.lesssmarteditor.MyApplication.REQ_ADD_DOCUMENT;
-import static com.naver.smarteditor.lesssmarteditor.MyApplication.REQ_UPDATE_DOCUMENT;
 
 /**
  * Created by NAVER on 2017. 5. 21..
  */
 
-public class EditPresenter implements EditContract.Presenter, OnTextChangeListener, OnComponentMenuClickListener{
+public class EditPresenter implements EditContract.Presenter, OnTextChangeListener, OnComponentMenuClickListener, ComponentTouchEventListener {
     private final String TAG = "EditPresenter";
     private boolean localLogPermission = true;
 
@@ -58,7 +54,6 @@ public class EditPresenter implements EditContract.Presenter, OnTextChangeListen
     }
 
 
-
     //Component 관련
     @Override
     public void addComponent(BaseComponent.TypE type, Object componentData){
@@ -90,6 +85,20 @@ public class EditPresenter implements EditContract.Presenter, OnTextChangeListen
         adapterModel.clearComponent();
         adapterView.notifyAdapter();
     }
+
+    //item touch helper : 어뎁터 이벤트 감지
+    @Override
+    public boolean OnComponentMove(final int from, final int to) {
+        editComponentRepository.changeComponentOrder(from, to, new EditorComponentDataSource.LoadComponentCallBack() {
+            @Override
+            public void OnComponentLoaded(ArrayList<BaseComponent> components) {
+                adapterModel.setComponent(components);
+                adapterView.reoderingComponent(from, to);
+            }
+        });
+        return true;
+    }
+
 
     @Override
     public void OnComponentMenuClick(int position) {
@@ -146,4 +155,6 @@ public class EditPresenter implements EditContract.Presenter, OnTextChangeListen
         });
 
     }
+
+
 }

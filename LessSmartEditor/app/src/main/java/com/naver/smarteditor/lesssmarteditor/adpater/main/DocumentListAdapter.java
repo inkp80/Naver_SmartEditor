@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.naver.smarteditor.lesssmarteditor.adpater.basic.holder.BasicViewHolder;
-import com.naver.smarteditor.lesssmarteditor.adpater.main.holder.MainViewHolder;
+import com.naver.smarteditor.lesssmarteditor.adpater.main.holder.DocumentListViewHolder;
 import com.naver.smarteditor.lesssmarteditor.data.DocumentData;
 import com.naver.smarteditor.lesssmarteditor.listener.OnDocumentClickListener;
 
@@ -18,13 +18,13 @@ import java.util.List;
  * Created by NAVER on 2017. 5. 25..
  */
 
-public class MainAdapter extends RecyclerView.Adapter<BasicViewHolder> implements MainAdapterContract.Model, MainAdapterContract.View {
+public class DocumentListAdapter extends RecyclerView.Adapter<BasicViewHolder> implements DocumentListAdapterContract.Model, DocumentListAdapterContract.View {
 
     private Context mContext;
     private OnDocumentClickListener onDocumentClickListener;
     private List<DocumentData> mDocumentData;
 
-    public MainAdapter(Context context){
+    public DocumentListAdapter(Context context){
         this.mContext = context;
         mDocumentData = new ArrayList<>();
     }
@@ -36,13 +36,13 @@ public class MainAdapter extends RecyclerView.Adapter<BasicViewHolder> implement
         mTitle.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 30);
         mTitle.setPadding(10,10,10,10);
         mTitle.setLayoutParams(lp);
-        MainViewHolder mainViewHolder = new MainViewHolder(mTitle, onDocumentClickListener);
-        return mainViewHolder;
+        DocumentListViewHolder documentListViewHolder = new DocumentListViewHolder(mTitle, onDocumentClickListener);
+        return documentListViewHolder;
     }
 
     @Override
     public void onBindViewHolder(BasicViewHolder holder, int position) {
-        MainViewHolder thisViewHolder = (MainViewHolder) holder;
+        DocumentListViewHolder thisViewHolder = (DocumentListViewHolder) holder;
         thisViewHolder.setTitleTextView(mDocumentData.get(position).getTitle());
         thisViewHolder.bindDocumentData(mDocumentData.get(position));
     }

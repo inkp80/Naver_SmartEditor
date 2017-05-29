@@ -1,6 +1,6 @@
 package com.naver.smarteditor.lesssmarteditor.views.main.presenter;
 
-import com.naver.smarteditor.lesssmarteditor.adpater.main.MainAdapterContract;
+import com.naver.smarteditor.lesssmarteditor.adpater.main.DocumentListAdapterContract;
 import com.naver.smarteditor.lesssmarteditor.data.DocumentData;
 import com.naver.smarteditor.lesssmarteditor.data.DocumentDataParcelable;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.EditorComponentDataSource;
@@ -13,15 +13,15 @@ import java.util.List;
  * Created by NAVER on 2017. 5. 24..
  */
 
-public class MainPresenter implements MainContract.Presenter, OnDocumentClickListener {
+public class DocumentListPresenter implements DocumentListContract.Presenter, OnDocumentClickListener {
 
-    private MainContract.View view;
-    private MainAdapterContract.Model adapterModel;
-    private MainAdapterContract.View adapterView;
+    private DocumentListContract.View view;
+    private DocumentListAdapterContract.Model adapterModel;
+    private DocumentListAdapterContract.View adapterView;
 
     private EditorComponentRepository editComponentRepository;
 
-    public MainPresenter() {
+    public DocumentListPresenter() {
 
     }
 
@@ -46,12 +46,12 @@ public class MainPresenter implements MainContract.Presenter, OnDocumentClickLis
     }
 
     @Override
-    public void setMainAdapterModel(MainAdapterContract.Model adapter) {
+    public void setMainAdapterModel(DocumentListAdapterContract.Model adapter) {
         this.adapterModel = adapter;
     }
 
     @Override
-    public void setMainAdapterView(MainAdapterContract.View adapter){
+    public void setMainAdapterView(DocumentListAdapterContract.View adapter){
         this.adapterView = adapter;
         adapterView.setDocumentOnClickedListener(this);
     }
@@ -63,7 +63,7 @@ public class MainPresenter implements MainContract.Presenter, OnDocumentClickLis
 
 
     @Override
-    public void attachView(MainContract.View view) {
+    public void attachView(DocumentListContract.View view) {
         this.view = view;
     }
 

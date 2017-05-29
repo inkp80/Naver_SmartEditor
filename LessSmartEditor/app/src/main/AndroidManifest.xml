@@ -21,7 +21,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".views.main.MainActivity"></activity>
+        <activity android:name=".views.main.DocumentListActivity"></activity>
 
         <activity android:name=".views.map.SearchPlaceActivity"></activity>
 

@@ -10,7 +10,7 @@ import java.util.List;
  * Created by NAVER on 2017. 5. 25..
  */
 
-public interface MainAdapterContract {
+public interface DocumentListAdapterContract {
 
     interface View extends BaseAdapterContract.View {
         void notifyAdapter();
