@@ -1,4 +1,4 @@
-package com.naver.smarteditor.lesssmarteditor.util.map;
+package com.naver.smarteditor.lesssmarteditor.views.map.utils;
 
 import android.net.Uri;
 

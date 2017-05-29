@@ -35,7 +35,7 @@ public class MainPresenter implements MainContract.Presenter, OnDocumentClickLis
     @Override
     public void requestDocList() {
 
-        editComponentRepository.getDocumentsList(new EditorComponentDataSource.LoadFromDatabaseCallBack() {
+        editComponentRepository.getDocumentsListFromDatabase(new EditorComponentDataSource.LoadFromDatabaseCallBack() {
             @Override
             public void OnLoadFinished(List<DocumentData> data) {
                 adapterModel.setComponent(data);

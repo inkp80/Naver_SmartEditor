@@ -34,10 +34,9 @@ public class MainAdapter extends RecyclerView.Adapter<BasicViewHolder> implement
         RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         TextView mTitle = new TextView(mContext);
         mTitle.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 30);
+        mTitle.setPadding(10,10,10,10);
         mTitle.setLayoutParams(lp);
         MainViewHolder mainViewHolder = new MainViewHolder(mTitle, onDocumentClickListener);
-
-
         return mainViewHolder;
     }
 
@@ -73,8 +72,4 @@ public class MainAdapter extends RecyclerView.Adapter<BasicViewHolder> implement
         this.onDocumentClickListener = onDocumentClickListener;
     }
 
-    @Override
-    public void clearComponent() {
-        this.mDocumentData.clear();
-    }
 }

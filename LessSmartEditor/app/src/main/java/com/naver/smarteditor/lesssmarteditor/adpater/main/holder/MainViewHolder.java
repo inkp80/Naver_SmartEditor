@@ -1,5 +1,7 @@
 package com.naver.smarteditor.lesssmarteditor.adpater.main.holder;
 
+import android.os.Build;
+import android.text.Html;
 import android.view.View;
 import android.widget.TextView;
 
@@ -41,7 +43,7 @@ public class MainViewHolder extends BasicViewHolder{
     }
 
     public void setTitleTextView(String title){
-        mTitleText.setText(title);
+       mTitleText.setText(title);
     }
 
     @Override

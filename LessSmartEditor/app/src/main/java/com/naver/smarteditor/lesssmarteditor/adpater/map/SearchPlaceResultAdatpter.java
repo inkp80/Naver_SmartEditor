@@ -1,7 +1,9 @@
 package com.naver.smarteditor.lesssmarteditor.adpater.map;
 
 import android.content.Context;
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +41,15 @@ public class SearchPlaceResultAdatpter extends RecyclerView.Adapter<SearchPlaceR
 
     @Override
     public void onBindViewHolder(PlaceViewHolder holder, int position) {
-        holder.placeName.setText(places.get(position).getPlaceName());
+
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            holder.placeName.setText(Html.fromHtml(places.get(position).getPlaceName(), Html.FROM_HTML_MODE_COMPACT));
+        }
+        else{
+            holder.placeName.setText(Html.fromHtml(places.get(position).getPlaceName()));
+        }
+
         holder.placeAddress.setText(places.get(position).getPlaceAddress());
         holder.katechMapX = places.get(position).getKatechMapX();
         holder.katechMapY = places.get(position).getKatechMapY();

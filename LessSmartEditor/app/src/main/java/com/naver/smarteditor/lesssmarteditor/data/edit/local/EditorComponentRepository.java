@@ -2,7 +2,6 @@ package com.naver.smarteditor.lesssmarteditor.data.edit.local;
 
 import android.content.Context;
 
-import com.naver.smarteditor.lesssmarteditor.MyApplication;
 import com.naver.smarteditor.lesssmarteditor.data.DocumentData;
 import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
 
@@ -74,8 +73,8 @@ public class EditorComponentRepository implements EditorComponentDataSource {
     }
 
     @Override
-    public void saveDocument(String title, final SaveToDatabaseCallBack saveToDatabaseCallBack) {
-        editComponentLocalDataSource.saveDocument(title, new SaveToDatabaseCallBack() {
+    public void saveDocumentToDatabase(String title, final SaveToDatabaseCallBack saveToDatabaseCallBack) {
+        editComponentLocalDataSource.saveDocumentToDatabase(title, new SaveToDatabaseCallBack() {
             @Override
             public void OnSaveFinished() {
                 if(saveToDatabaseCallBack != null) {
@@ -88,8 +87,8 @@ public class EditorComponentRepository implements EditorComponentDataSource {
 
 
     @Override
-    public void getDocumentsList(final LoadFromDatabaseCallBack loadFromDatabaseCallBack) {
-        editComponentLocalDataSource.getDocumentsList(new LoadFromDatabaseCallBack() {
+    public void getDocumentsListFromDatabase(final LoadFromDatabaseCallBack loadFromDatabaseCallBack) {
+        editComponentLocalDataSource.getDocumentsListFromDatabase(new LoadFromDatabaseCallBack() {
             @Override
             public void OnLoadFinished(List<DocumentData> data) {
                 if(loadFromDatabaseCallBack != null){
@@ -100,8 +99,8 @@ public class EditorComponentRepository implements EditorComponentDataSource {
     }
 
     @Override
-    public void loadComponents(String jsonComponents, final LoadComponentCallBack loadComponentCallBack) {
-        editComponentLocalDataSource.loadComponents(jsonComponents, new LoadComponentCallBack() {
+    public void convertJsonToComponents(String jsonComponents, final LoadComponentCallBack loadComponentCallBack) {
+        editComponentLocalDataSource.convertJsonToComponents(jsonComponents, new LoadComponentCallBack() {
             @Override
             public void OnComponentLoaded(ArrayList<BaseComponent> components) {
                 if(loadComponentCallBack != null){
@@ -125,8 +124,8 @@ public class EditorComponentRepository implements EditorComponentDataSource {
     }
 
     @Override
-    public void updateDocument(int doc_id, final UpdateToDatabaseCallBack updateToDatabaseCallBack) {
-        editComponentLocalDataSource.updateDocument(doc_id, new UpdateToDatabaseCallBack() {
+    public void updateDocumentInDatabase(int doc_id, final UpdateToDatabaseCallBack updateToDatabaseCallBack) {
+        editComponentLocalDataSource.updateDocumentInDatabase(doc_id, new UpdateToDatabaseCallBack() {
             @Override
             public void OnUpdateFinished() {
                 if(updateToDatabaseCallBack != null){

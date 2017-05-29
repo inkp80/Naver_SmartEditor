@@ -40,14 +40,14 @@ public interface EditorComponentDataSource {
 
     void clearComponents();
 
-    void loadComponents(String jsonComponents, LoadComponentCallBack loadComponentCallBack);
+    void convertJsonToComponents(String jsonComponents, LoadComponentCallBack loadComponentCallBack);
 
 
 
     //database
-    void saveDocument(String title, SaveToDatabaseCallBack saveToDatabaseCallBack);
+    void saveDocumentToDatabase(String title, SaveToDatabaseCallBack saveToDatabaseCallBack);
 
-    void updateDocument(int doc_id, UpdateToDatabaseCallBack updateToDatabaseCallBack);
+    void updateDocumentInDatabase(int doc_id, UpdateToDatabaseCallBack updateToDatabaseCallBack);
 
-    void getDocumentsList(LoadFromDatabaseCallBack loadFromDatabaseCallBack);
+    void getDocumentsListFromDatabase(LoadFromDatabaseCallBack loadFromDatabaseCallBack);
 }

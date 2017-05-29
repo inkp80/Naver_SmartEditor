@@ -19,6 +19,5 @@ public interface MainAdapterContract {
 
     interface Model extends BaseAdapterContract.Model {
         void setComponent(List<DocumentData> docs);
-        void clearComponent();
     }
 }

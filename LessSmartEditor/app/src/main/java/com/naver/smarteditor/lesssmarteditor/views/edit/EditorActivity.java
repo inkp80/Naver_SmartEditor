@@ -1,19 +1,23 @@
 package com.naver.smarteditor.lesssmarteditor.views.edit;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.naver.smarteditor.lesssmarteditor.MyApplication;
 import com.naver.smarteditor.lesssmarteditor.R;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.EditComponentAdapter;
+import com.naver.smarteditor.lesssmarteditor.data.DocumentData;
 import com.naver.smarteditor.lesssmarteditor.data.DocumentDataParcelable;
 import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
 import com.naver.smarteditor.lesssmarteditor.data.api.naver_map.PlaceItemParcelable;
@@ -21,7 +25,11 @@ import com.naver.smarteditor.lesssmarteditor.data.edit.local.EditorComponentRepo
 import com.naver.smarteditor.lesssmarteditor.dialog.SelectComponentDialog;
 import com.naver.smarteditor.lesssmarteditor.views.edit.presenter.EditContract;
 import com.naver.smarteditor.lesssmarteditor.views.edit.presenter.EditPresenter;
+import com.naver.smarteditor.lesssmarteditor.views.main.MainActivity;
 import com.naver.smarteditor.lesssmarteditor.views.map.SearchPlaceActivity;
+
+import java.util.Calendar;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -48,26 +56,29 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
     EditContract.Presenter mPresenter;
     EditComponentAdapter mAdapter;
 
+
     @BindView(R.id.editor_et_title)
-    EditText mTitle;
+    EditText mTxtTitle;
+    @BindView(R.id.editor_bt_loaddocument)
+    Button mBtLoadDocument;
     @BindView(R.id.editor_bt_save)
-    Button mSaveButton;
+    Button mBtSaveButton;
     @BindView(R.id.editor_bt_addcomponent)
-    Button mButton;
+    Button mBtAddComponent;
     @BindView(R.id.editor_recyclerview)
     RecyclerView mEditorRecyclerView;
 
     private SelectComponentDialog mSelectComponentDialog;
 
 
-    View.OnClickListener txtButtonListener;
-    View.OnClickListener imgButtonListener;
-    View.OnClickListener mapButtonListener;
+    View.OnClickListener dialogAddTxtButtonListener;
+    View.OnClickListener dialogImgButtonListener;
+    View.OnClickListener dialogMapButtonListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_editor_view);
+        setContentView(R.layout.activity_editor);
         ButterKnife.bind(this);
 
 
@@ -78,18 +89,28 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
 
         checkEditorMode();
 
-        mButton.setOnClickListener(new View.OnClickListener() {
+        mBtAddComponent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mSelectComponentDialog.show();
             }
         });
 
-        mSaveButton.setOnClickListener(new View.OnClickListener() {
+        mBtLoadDocument.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent intent = new Intent(EditorActivity.this, MainActivity.class);
+//                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+            }
+        });
+
+        mBtSaveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(EditorActivity.this, String.valueOf(Calendar.getInstance().getTime())+"\n저장되었습니다.", Toast.LENGTH_SHORT).show();
                 if(EDITOR_MODE == NEW_DOCUMENT_MODE) {
-                    mPresenter.saveDocumentToDataBase(mTitle.getText().toString());
+                    mPresenter.saveDocumentToDataBase(mTxtTitle.getText().toString());
                 } else if(EDITOR_MODE == EDIT_DOCUMENT_MODE){
                     //TODO : update query, while show progress-bar
                     mPresenter.updateDocumentOnDatabase(currentDocumentId);
@@ -161,7 +182,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
     private void initDialog(){
         //TODO: rename & restructuring
 
-        txtButtonListener = new View.OnClickListener() {
+        dialogAddTxtButtonListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //ADD TEXT COMPONENT TO EDITOR
@@ -170,7 +191,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
             }
         };
 
-        imgButtonListener = new View.OnClickListener() {
+        dialogImgButtonListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 getImgSrcFromGallery();
@@ -178,7 +199,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
             }
         };
 
-        mapButtonListener = new View.OnClickListener() {
+        dialogMapButtonListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 getMapSrcFromNaverPlaceAPI();
@@ -186,7 +207,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
             }
         };
 
-        mSelectComponentDialog = new SelectComponentDialog(this, txtButtonListener, imgButtonListener, mapButtonListener);
+        mSelectComponentDialog = new SelectComponentDialog(this, dialogAddTxtButtonListener, dialogImgButtonListener, dialogMapButtonListener);
     }
 
     private void getImgSrcFromGallery(){
@@ -201,6 +222,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         startActivityForResult(intent, REQ_MOV2_SEARCH_PLACE);
     }
     //---
+
 
 
     @Override
@@ -223,6 +245,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         MyApplication.LogController.makeLog(TAG, "Editor Mode :" + String.valueOf(EDITOR_MODE), localLogPermission);
 
         if(EDITOR_MODE == EDIT_DOCUMENT_MODE){
+            mPresenter.clearComponents();
             DocumentDataParcelable documentDataParcelable = getDocumentDataFromParcelable(intent);
             loadDocument(documentDataParcelable);
         } else if (EDITOR_MODE == NEW_DOCUMENT_MODE){
@@ -237,8 +260,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
     }
 
     private void loadDocument(DocumentDataParcelable documentDataParcelable){
-
-        mTitle.setText(documentDataParcelable.getTitle());
+        mTxtTitle.setText(documentDataParcelable.getTitle());
         currentDocumentId = documentDataParcelable.getDoc_id();
         requestLoadDocumentComponents(documentDataParcelable);
     }
@@ -246,8 +268,9 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
     private void requestLoadDocumentComponents(DocumentDataParcelable documentDataParcelable){
 
         String jsonComponent = documentDataParcelable.getComponentsJson();
-        mPresenter.loadComponentsFromJson(jsonComponent);
+        mPresenter.getComponentsFromJson(jsonComponent);
     }
+
 
 
 }

@@ -33,9 +33,9 @@ public class MapComponentViewHolder extends ComponentViewHolder{
         this.onComponentMenuClickListener = onComponentContextMenuClickListener;
     }
 
-    public ViewGroup getRootView(){
-        return placeLinearLayout;
-    }
+//    public ViewGroup getRootView(){
+//        return placeLinearLayout;
+//    }
 
     public ImageView getImageView(){
         return placeMapImg;

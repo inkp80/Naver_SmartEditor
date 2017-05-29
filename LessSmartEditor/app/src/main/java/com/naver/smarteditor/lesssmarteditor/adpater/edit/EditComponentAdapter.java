@@ -1,7 +1,12 @@
 package com.naver.smarteditor.lesssmarteditor.adpater.edit;
 
 import android.content.Context;
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
+import android.util.TypedValue;
+import android.view.Gravity;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -25,6 +30,7 @@ import com.naver.smarteditor.lesssmarteditor.listener.OnTextChangeListener;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by NAVER on 2017. 5. 21..
@@ -35,16 +41,12 @@ public class EditComponentAdapter extends RecyclerView.Adapter<ComponentViewHold
     private final String TAG = "EditComponentAdapter";
     private boolean localLogPermission = true;
 
-    private final int TEXT_COMPONENT = 0;
-    private final int IMG_COMPONENT = 1;
-    private final int MAP_COMPONENT = 2;
-
     private RequestManager requestManager;
 
     private Context mContext;
     private OnComponentMenuClickListener onComponentMenuClickListener;
     private OnTextChangeListener onTextChangeListener;
-    private ArrayList<BaseComponent> mComponents;
+    private List<BaseComponent> mComponents;
 
     public EditComponentAdapter(Context context){
         this.mContext = context;
@@ -56,37 +58,34 @@ public class EditComponentAdapter extends RecyclerView.Adapter<ComponentViewHold
     public ComponentViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         
         RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        if(viewType == TEXT_COMPONENT){
-            EditText et = new EditText(mContext);
-            et.setLayoutParams(lp);
-            TextComponentViewHolder textComponentViewHolder = new TextComponentViewHolder(et, onTextChangeListener);
-            return textComponentViewHolder;
-        }
+        BaseComponent.TypE ViewHolderType = BaseComponent.getType(viewType);
 
-        switch (viewType){
-            case TEXT_COMPONENT :
+
+        switch (ViewHolderType){
+            case TEXT:
                 EditText et = new EditText(mContext);
                 et.setLayoutParams(lp);
                 TextComponentViewHolder textComponentViewHolder = new TextComponentViewHolder(et, onTextChangeListener);
                 return textComponentViewHolder;
-            case IMG_COMPONENT :
+            case IMG :
                 ImageView img = new ImageView(mContext);
                 img.setLayoutParams(lp);
                 ImgComponentViewHolder imgComponentViewHolder = new ImgComponentViewHolder(img);
                 return imgComponentViewHolder;
-            case MAP_COMPONENT :
-                TextView text = new TextView(mContext);
+            case MAP :
+                TextView placeName = new TextView(mContext);
                 ImageView mapImg = new ImageView(mContext);
-                text.setLayoutParams(lp);
-                mapImg.setLayoutParams(lp);
+                placeName.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
 
                 LinearLayout linearLayout = new LinearLayout(mContext);
                 LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                placeName.setLayoutParams(llp);
+                mapImg.setLayoutParams(llp);
+
                 linearLayout.setOrientation(LinearLayout.VERTICAL);
                 linearLayout.setLayoutParams(llp);
-
                 linearLayout.addView(mapImg);
-                linearLayout.addView(text);
+                linearLayout.addView(placeName);
 
                 MapComponentViewHolder mapComponentViewHolder = new MapComponentViewHolder(linearLayout);
                 return mapComponentViewHolder;
@@ -101,29 +100,36 @@ public class EditComponentAdapter extends RecyclerView.Adapter<ComponentViewHold
     @Override
     public void onBindViewHolder(ComponentViewHolder holder, int position) {
 
-        int thisComponentType = mComponents.get(position).getComponentType().getTypeValue();
+        BaseComponent.TypE thisComponentType = mComponents.get(position).getComponentType();
         holder.setDataPositionOnAdapter(position);
         holder.setOnComponentContextMenuClickListener(this);
 
         switch (thisComponentType){
-            case TEXT_COMPONENT :
+            case TEXT :
                 TextComponent thisTextComponent = (TextComponent) mComponents.get(position);
-
                 TextComponentViewHolder textComponentViewHolder = (TextComponentViewHolder) holder;
                 textComponentViewHolder.removeWatcher();
                 textComponentViewHolder.setText(thisTextComponent.getText());
                 textComponentViewHolder.onBind(position);
                 break;
-            case IMG_COMPONENT :
-                MyApplication.LogController.makeLog(TAG, "IMG_Comp, Binding", localLogPermission);
+            case IMG :
                 ImgComponent thisImgComponent = (ImgComponent) mComponents.get(position);
                 ImgComponentViewHolder imgComponentViewHolder = (ImgComponentViewHolder) holder;
                 requestManager.load(thisImgComponent.getImgUri()).into(imgComponentViewHolder.getImageView());
                 break;
-            case MAP_COMPONENT :
+            case MAP :
                 MapComponent thisMapComponent = (MapComponent) mComponents.get(position);
                 MapComponentViewHolder mapComponentViewHolder = (MapComponentViewHolder) holder;
-                mapComponentViewHolder.getTextView().setText(thisMapComponent.getPlaceName());
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    mapComponentViewHolder.getTextView().setText(Html.fromHtml("<b>" + thisMapComponent.getPlaceName() + "</b>", Html.FROM_HTML_MODE_COMPACT));
+                    mapComponentViewHolder.getTextView().append("\n" + thisMapComponent.getPlaceAddress());
+                }
+                else{
+                    mapComponentViewHolder.getTextView().setText(Html.fromHtml("<b>" + thisMapComponent.getPlaceName() + "</b>"));
+                    mapComponentViewHolder.getTextView().append("\n" + thisMapComponent.getPlaceAddress());
+                }
+
                 requestManager.load(thisMapComponent.getPlaceMapImgUri()).into(mapComponentViewHolder.getImageView());
                 break;
             default:
@@ -166,7 +172,7 @@ public class EditComponentAdapter extends RecyclerView.Adapter<ComponentViewHold
     }
 
     @Override
-    public void setComponent(ArrayList<BaseComponent> components) {
+    public void setComponent(List<BaseComponent> components) {
         mComponents = new ArrayList<>(components);
     }
 

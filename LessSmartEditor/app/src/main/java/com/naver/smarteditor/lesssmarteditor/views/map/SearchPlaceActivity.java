@@ -10,7 +10,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.naver.smarteditor.lesssmarteditor.MyApplication;
 import com.naver.smarteditor.lesssmarteditor.NaverPlaceService;
 import com.naver.smarteditor.lesssmarteditor.R;
 import com.naver.smarteditor.lesssmarteditor.SearchResultOnClickListener;
@@ -29,8 +28,8 @@ import retrofit2.Response;
 
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.MAPINFO_PARCEL;
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.RETROFIT_FAIL400;
-import static com.naver.smarteditor.lesssmarteditor.util.map.MapUtils.buildCoords;
-import static com.naver.smarteditor.lesssmarteditor.util.map.MapUtils.buildStaticMapUrlWithCoords;
+import static com.naver.smarteditor.lesssmarteditor.views.map.utils.MapUtils.buildCoords;
+import static com.naver.smarteditor.lesssmarteditor.views.map.utils.MapUtils.buildStaticMapUrlWithCoords;
 
 /**
  * Created by NAVER on 2017. 5. 17..
@@ -115,10 +114,14 @@ public class SearchPlaceActivity extends AppCompatActivity {
         mResultViewAdapter.setOnResultClickedListener(new SearchResultOnClickListener() {
             @Override
             public void OnClickListener(View v, int x, int y, int position) {
-//                setStaticMapToComponent(x, y);
                 String mapUri = getStaticMapUri(x, y);
 
-                PlaceItemParcelable passer = new PlaceItemParcelable(placeItemList.get(position).getPlaceName().toString(), placeItemList.get(position).getPlaceAddress().toString(), buildCoords(x,y).toString(), mapUri);
+                PlaceItemParcelable passer = new PlaceItemParcelable(
+                        placeItemList.get(position).getPlaceName().toString(),
+                        placeItemList.get(position).getPlaceAddress().toString(),
+                        buildCoords(x,y).toString(),
+                        mapUri
+                );
 
                 Intent intent = new Intent(SearchPlaceActivity.this, EditorActivity.class);
                 intent.putExtra(MAPINFO_PARCEL, passer);

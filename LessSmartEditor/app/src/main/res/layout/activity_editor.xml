@@ -27,11 +27,22 @@
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/editor_bt_addcomponent"
-        android:text="Add Component"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/editor_bt_loaddocument"
+            android:text="LOAD Document"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <Button
+            android:id="@+id/editor_bt_addcomponent"
+            android:layout_weight="1"
+            android:text="Add Component"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
 
 
     <android.support.v7.widget.RecyclerView

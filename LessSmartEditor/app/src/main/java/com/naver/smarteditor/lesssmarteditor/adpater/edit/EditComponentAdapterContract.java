@@ -6,6 +6,7 @@ import com.naver.smarteditor.lesssmarteditor.listener.OnComponentMenuClickListen
 import com.naver.smarteditor.lesssmarteditor.listener.OnTextChangeListener;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by NAVER on 2017. 5. 21..
@@ -24,7 +25,7 @@ public interface EditComponentAdapterContract {
 
     interface Model extends BaseAdapterContract.Model {
 
-        void setComponent(ArrayList<BaseComponent> components);
+        void setComponent(List<BaseComponent> components);
 
         void editComponent(CharSequence s, int position);
 

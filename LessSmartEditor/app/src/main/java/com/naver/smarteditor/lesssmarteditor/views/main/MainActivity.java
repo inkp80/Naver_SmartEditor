@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -30,9 +31,6 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     private final String TAG = "MainActivity";
     private boolean localLogPermission = true;
 
-
-    private FloatingActionButton mAddDocumentButton;
-
     private MainPresenter mainPresenter;
     private MainAdapter mainAdapter;
 
@@ -45,34 +43,32 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         setContentView(R.layout.activity_main);
 
         //init recyclerview
+        initRecyclerView();
+
+        //init presenter
+        initPresenter();
+
+        mainPresenter.requestDocList();
+    }
+
+
+    private void initRecyclerView(){
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+
         mainAdapter = new MainAdapter(this);
         recyclerView = (RecyclerView) findViewById(R.id.main_rv_list);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setLayoutManager(layoutManager);
+        addRecyclerViewBorder(layoutManager);
         recyclerView.setAdapter(mainAdapter);
+    }
 
-
-        //init presenter
+    private void initPresenter(){
         mainPresenter = new MainPresenter();
         mainPresenter.setMainAdapterModel(mainAdapter);
         mainPresenter.setMainAdapterView(mainAdapter);
         mainPresenter.attachView(this);
         mainPresenter.setComponentDataSource(EditorComponentRepository.getInstance(this));
-
-
-        mainPresenter.requestDocList();
-
-
-        mAddDocumentButton = (FloatingActionButton) findViewById(R.id.fab);
-        mAddDocumentButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, EditorActivity.class);
-                intent.putExtra(EDITOR_MODE, NEW_DOCUMENT_MODE);
-                startActivityForResult(intent, REQ_ADD_DOCUMENT);
-            }
-        });
-
     }
 
     @Override
@@ -88,37 +84,21 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         mainPresenter.requestDocList();
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == REQ_UPDATE_DOCUMENT){
-            if(resultCode == RESULT_OK){
-                try {
-                    mainPresenter.requestDocList();
-                } catch (Exception e){
-
-                }
-            }
-        }
-
-
-        if(requestCode == REQ_ADD_DOCUMENT){
-            if(resultCode == RESULT_OK){
-                try {
-                    MyApplication.LogController.makeLog(TAG, "onresult", localLogPermission);
-                    mainPresenter.requestDocList();
-                } catch (Exception e) {
-
-                }
-            }
-        }
-    }
 
     @Override
     public void passDocumentDataToEditor(DocumentDataParcelable documentDataParcelable) {
         Intent intent = new Intent(MainActivity.this, EditorActivity.class);
         intent.putExtra(DOCUMENT_PARCEL, documentDataParcelable);
         intent.putExtra(EDITOR_MODE, EDIT_DOCUMENT_MODE);
-        startActivityForResult(intent, REQ_UPDATE_DOCUMENT);
+        startActivity(intent);
     }
+
+    private void addRecyclerViewBorder(LinearLayoutManager layoutManager){
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
+                layoutManager.getOrientation());
+        recyclerView.addItemDecoration(dividerItemDecoration);
+    }
+
+
 
 }

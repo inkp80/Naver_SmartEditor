@@ -113,7 +113,7 @@ public class EditorComponentLocalDataSource implements EditorComponentDataSource
     }
 
     @Override
-    public void saveDocument(String title, SaveToDatabaseCallBack saveToDatabaseCallBack) {
+    public void saveDocumentToDatabase(String title, SaveToDatabaseCallBack saveToDatabaseCallBack) {
         //TODO : asynTask - save to database
         String jsonStr = new Gson().toJson(mComponents);
 
@@ -132,7 +132,7 @@ public class EditorComponentLocalDataSource implements EditorComponentDataSource
     }
 
     @Override
-    public void getDocumentsList(LoadFromDatabaseCallBack loadFromDatabaseCallBack) {
+    public void getDocumentsListFromDatabase(LoadFromDatabaseCallBack loadFromDatabaseCallBack) {
 
         // request data from database
         String query = "SELECT * FROM " + EditorContract.ComponentEntry.TABLE_NAME;
@@ -144,7 +144,7 @@ public class EditorComponentLocalDataSource implements EditorComponentDataSource
         while (cursor.moveToNext()) {
             int doc_id = cursor.getInt(EditorContract.COL_ID);
             String title = cursor.getString(EditorContract.COL_TITLE);
-            MyApplication.LogController.makeLog(TAG, title, localLogPermission);
+//            MyApplication.LogController.makeLog(TAG, title, localPermission);
             String timeStamp = cursor.getString(EditorContract.COL_TIMESTAMP);
             String jsonObject = cursor.getString(EditorContract.COL_COMPONENTS_JSON);
             DocumentData data = new DocumentData(doc_id, title,timeStamp, jsonObject);
@@ -156,9 +156,7 @@ public class EditorComponentLocalDataSource implements EditorComponentDataSource
     }
 
     @Override
-    public void loadComponents(String jsonComponents, LoadComponentCallBack loadComponentCallBack) {
-        //String to Json, Json to Object<BascComponents>;
-
+    public void convertJsonToComponents(String jsonComponents, LoadComponentCallBack loadComponentCallBack) {
 
         JSONArray jsonArray = null;
         try {
@@ -195,7 +193,7 @@ public class EditorComponentLocalDataSource implements EditorComponentDataSource
     }
 
     @Override
-    public void updateDocument(int doc_id, UpdateToDatabaseCallBack updateToDatabaseCallBack) {
+    public void updateDocumentInDatabase(int doc_id, UpdateToDatabaseCallBack updateToDatabaseCallBack) {
 
         String jsonStr = new Gson().toJson(mComponents);
         String query = "UPDATE " + EditorContract.ComponentEntry.TABLE_NAME
