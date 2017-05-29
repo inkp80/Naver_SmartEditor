@@ -49,7 +49,7 @@ public interface EditorComponentDataSource {
     //database
     void saveDocumentToDatabase(String title, SaveToDatabaseCallBack saveToDatabaseCallBack);
 
-    void updateDocumentInDatabase(int doc_id, UpdateToDatabaseCallBack updateToDatabaseCallBack);
+    void updateDocumentInDatabase(String title, int doc_id, UpdateToDatabaseCallBack updateToDatabaseCallBack);
 
     void getDocumentsListFromDatabase(LoadFromDatabaseCallBack loadFromDatabaseCallBack);
 }

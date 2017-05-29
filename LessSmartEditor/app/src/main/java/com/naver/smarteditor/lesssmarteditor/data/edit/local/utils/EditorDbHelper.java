@@ -38,7 +38,7 @@ public class EditorDbHelper extends SQLiteOpenHelper {
         String CREATE_SQL = "create table " + TABLE_NAME + "("
                 + " _id integer PRIMARY KEY autoincrement, "
                 + EditorContract.ComponentEntry.COLUMN_TITLE + " text, "
-                + EditorContract.ComponentEntry.COLUMN_TIMESTAMP + " text, "
+                + EditorContract.ComponentEntry.COLUMN_TIMESTAMP + " long, "
                 + EditorContract.ComponentEntry.COLUNM_COMPONENTS_JSON + " text)";
 
         try {

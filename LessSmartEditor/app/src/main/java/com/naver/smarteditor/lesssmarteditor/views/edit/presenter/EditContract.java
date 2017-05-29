@@ -36,7 +36,7 @@ public interface EditContract {
 
         //database
         void saveDocumentToDataBase(String title);
-        void updateDocumentOnDatabase(int doc_id);
+        void updateDocumentOnDatabase(String title, int doc_id);
 
 
         //utils

@@ -133,8 +133,8 @@ public class EditPresenter implements EditContract.Presenter, OnTextChangeListen
     }
 
     @Override
-    public void updateDocumentOnDatabase(int doc_id) {
-        editComponentRepository.updateDocumentInDatabase(doc_id, new EditorComponentDataSource.UpdateToDatabaseCallBack() {
+    public void updateDocumentOnDatabase(String title, int doc_id) {
+        editComponentRepository.updateDocumentInDatabase(title, doc_id, new EditorComponentDataSource.UpdateToDatabaseCallBack() {
             @Override
             public void OnUpdateFinished() {
 //                view.finishActivity(REQ_UPDATE_DOCUMENT);

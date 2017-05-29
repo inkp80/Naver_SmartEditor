@@ -151,7 +151,7 @@ public class EditorComponentLocalDataSource implements EditorComponentDataSource
         String jsonStr = new Gson().toJson(mComponents);
 
         String query = "INSERT INTO "+ EditorContract.ComponentEntry.TABLE_NAME + "(" + EditorContract.ComponentEntry.COLUMN_TITLE + "," +EditorContract.ComponentEntry.COLUMN_TIMESTAMP+
-                ", "+EditorContract.ComponentEntry.COLUNM_COMPONENTS_JSON + ") values ('"+title+"', '"+Calendar.getInstance().toString()+"', '"+jsonStr+"');";
+                ", "+EditorContract.ComponentEntry.COLUNM_COMPONENTS_JSON + ") values ('"+title+"', '"+ Calendar.getInstance().getTimeInMillis() + "', '"+jsonStr+"');";
         try {
             db.execSQL(query);
             MyApplication.LogController.makeLog(TAG, "Database processing was Successfully done",localLogPermission);
@@ -168,7 +168,10 @@ public class EditorComponentLocalDataSource implements EditorComponentDataSource
     public void getDocumentsListFromDatabase(LoadFromDatabaseCallBack loadFromDatabaseCallBack) {
 
         // request data from database
-        String query = "SELECT * FROM " + EditorContract.ComponentEntry.TABLE_NAME;
+        String query = "SELECT * " +
+                "FROM " + EditorContract.ComponentEntry.TABLE_NAME
+                + " order by (" + EditorContract.ComponentEntry.COLUMN_TIMESTAMP + ");";
+
         Cursor cursor = db.rawQuery(query, null);
         cursor.moveToNext();
 
@@ -177,7 +180,6 @@ public class EditorComponentLocalDataSource implements EditorComponentDataSource
         while (cursor.moveToNext()) {
             int doc_id = cursor.getInt(EditorContract.COL_ID);
             String title = cursor.getString(EditorContract.COL_TITLE);
-//            MyApplication.LogController.makeLog(TAG, title, localPermission);
             String timeStamp = cursor.getString(EditorContract.COL_TIMESTAMP);
             String jsonObject = cursor.getString(EditorContract.COL_COMPONENTS_JSON);
             DocumentData data = new DocumentData(doc_id, title,timeStamp, jsonObject);
@@ -219,11 +221,12 @@ public class EditorComponentLocalDataSource implements EditorComponentDataSource
 
 
     @Override
-    public void updateDocumentInDatabase(int doc_id, UpdateToDatabaseCallBack updateToDatabaseCallBack) {
+    public void updateDocumentInDatabase(String title, int doc_id, UpdateToDatabaseCallBack updateToDatabaseCallBack) {
+
 
         String jsonStr = new Gson().toJson(mComponents);
         String query = "UPDATE " + EditorContract.ComponentEntry.TABLE_NAME
-                + " SET " + EditorContract.ComponentEntry.COLUMN_TIMESTAMP + "='" + Calendar.getInstance().toString() + "',"
+                + " SET " + EditorContract.ComponentEntry.COLUMN_TITLE + "='" + title + "'," + EditorContract.ComponentEntry.COLUMN_TIMESTAMP + "='" + Calendar.getInstance().getTimeInMillis() + "',"
                 + EditorContract.ComponentEntry.COLUNM_COMPONENTS_JSON + "='" + jsonStr + "' where _id = " + String.valueOf(doc_id) + ";";
 
         try {

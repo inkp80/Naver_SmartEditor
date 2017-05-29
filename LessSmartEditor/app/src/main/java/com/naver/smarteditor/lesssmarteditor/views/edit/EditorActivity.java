@@ -112,7 +112,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
                     mPresenter.saveDocumentToDataBase(mTxtTitle.getText().toString());
                 } else if(EDITOR_MODE == EDIT_DOCUMENT_MODE){
                     //TODO : update query, while show progress-bar
-                    mPresenter.updateDocumentOnDatabase(currentDocumentId);
+                    mPresenter.updateDocumentOnDatabase(mTxtTitle.getText().toString(), currentDocumentId);
 
                 }
             }

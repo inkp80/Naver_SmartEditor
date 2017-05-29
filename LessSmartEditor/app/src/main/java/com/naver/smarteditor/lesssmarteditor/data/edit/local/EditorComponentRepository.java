@@ -124,8 +124,8 @@ public class EditorComponentRepository implements EditorComponentDataSource {
     }
 
     @Override
-    public void updateDocumentInDatabase(int doc_id, final UpdateToDatabaseCallBack updateToDatabaseCallBack) {
-        editComponentLocalDataSource.updateDocumentInDatabase(doc_id, new UpdateToDatabaseCallBack() {
+    public void updateDocumentInDatabase(String title, int doc_id, final UpdateToDatabaseCallBack updateToDatabaseCallBack) {
+        editComponentLocalDataSource.updateDocumentInDatabase(title, doc_id, new UpdateToDatabaseCallBack() {
             @Override
             public void OnUpdateFinished() {
                 if(updateToDatabaseCallBack != null){
