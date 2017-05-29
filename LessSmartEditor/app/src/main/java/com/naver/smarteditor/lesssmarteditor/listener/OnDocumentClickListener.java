@@ -7,6 +7,6 @@ import com.naver.smarteditor.lesssmarteditor.data.DocumentDataParcelable;
  * Created by NAVER on 2017. 5. 25..
  */
 
-public interface OnDocumentClickedListener {
+public interface OnDocumentClickListener {
     void OnClick(DocumentDataParcelable documentDataParcelable);
 }

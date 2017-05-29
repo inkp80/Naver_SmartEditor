@@ -5,7 +5,7 @@ import com.naver.smarteditor.lesssmarteditor.data.DocumentData;
 import com.naver.smarteditor.lesssmarteditor.data.DocumentDataParcelable;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.EditorComponentDataSource;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.EditorComponentRepository;
-import com.naver.smarteditor.lesssmarteditor.listener.OnDocumentClickedListener;
+import com.naver.smarteditor.lesssmarteditor.listener.OnDocumentClickListener;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ import java.util.List;
  * Created by NAVER on 2017. 5. 24..
  */
 
-public class MainPresenter implements MainContract.Presenter, OnDocumentClickedListener {
+public class MainPresenter implements MainContract.Presenter, OnDocumentClickListener {
 
     private MainContract.View view;
     private MainAdapterContract.Model adapterModel;

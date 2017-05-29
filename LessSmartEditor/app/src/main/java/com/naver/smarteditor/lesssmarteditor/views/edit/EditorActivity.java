@@ -29,7 +29,6 @@ import butterknife.ButterKnife;
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.NEW_DOCUMENT_MODE;
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.DOCUMENT_PARCEL;
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.EDIT_DOCUMENT_MODE;
-import static com.naver.smarteditor.lesssmarteditor.MyApplication.MODE_FLAG;
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.MAPINFO_PARCEL;
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.REQ_MOV2_GALLERY;
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.REQ_MOV2_SEARCH_PLACE;
@@ -220,7 +219,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
 
     private void checkEditorMode(){
         Intent intent = getIntent();
-        EDITOR_MODE = intent.getIntExtra(MODE_FLAG, NEW_DOCUMENT_MODE);
+        EDITOR_MODE = intent.getIntExtra(MyApplication.EDITOR_MODE, NEW_DOCUMENT_MODE);
         MyApplication.LogController.makeLog(TAG, "Editor Mode :" + String.valueOf(EDITOR_MODE), localLogPermission);
 
         if(EDITOR_MODE == EDIT_DOCUMENT_MODE){

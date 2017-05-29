@@ -9,12 +9,13 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.naver.smarteditor.lesssmarteditor.adpater.basic.holder.BasicViewHolder;
+import com.naver.smarteditor.lesssmarteditor.listener.OnComponentMenuClickListener;
 
 /**
  * Created by NAVER on 2017. 5. 22..
  */
 
-public class MapComponentViewHolder extends BasicViewHolder{
+public class MapComponentViewHolder extends ComponentViewHolder{
     private TextView placeTextInfo;
     private ImageView placeMapImg;
     private LinearLayout placeLinearLayout;
@@ -27,8 +28,9 @@ public class MapComponentViewHolder extends BasicViewHolder{
         placeTextInfo = (TextView) placeLinearLayout.getChildAt(1);
     }
 
-    public void setMapImg(Uri uri){
-//        Glide.with(this).
+    @Override
+    public void setOnComponentContextMenuClickListener(OnComponentMenuClickListener onComponentContextMenuClickListener) {
+        this.onComponentMenuClickListener = onComponentContextMenuClickListener;
     }
 
     public ViewGroup getRootView(){
@@ -41,5 +43,15 @@ public class MapComponentViewHolder extends BasicViewHolder{
 
     public TextView getTextView(){
         return placeTextInfo;
+    }
+
+    @Override
+    public void setDataPositionOnAdapter(int position) {
+        this.position = position;
+    }
+
+    @Override
+    public int getDataPositionOnAdapter(){
+        return this.position;
     }
 }

@@ -112,7 +112,15 @@ public class EditorComponentRepository implements EditorComponentDataSource {
     }
 
     @Override
-    public void deleteComponent(int position) {
+    public void deleteComponent(int position, final LoadComponentCallBack loadComponentCallBack) {
+        editComponentLocalDataSource.deleteComponent(position, new LoadComponentCallBack() {
+            @Override
+            public void OnComponentLoaded(ArrayList<BaseComponent> components) {
+                if(loadComponentCallBack != null){
+                    loadComponentCallBack.OnComponentLoaded(components);
+                }
+            }
+        });
 
     }
 

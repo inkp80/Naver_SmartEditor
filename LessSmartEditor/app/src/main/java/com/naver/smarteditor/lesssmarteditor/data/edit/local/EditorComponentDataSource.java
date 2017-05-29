@@ -34,7 +34,7 @@ public interface EditorComponentDataSource {
 
     void setComponents(ArrayList<BaseComponent> components, LoadComponentCallBack loadComponentCallBack);
 
-    void deleteComponent(int position);
+    void deleteComponent(int position, LoadComponentCallBack loadComponentCallBack);
 
     void updateEditTextComponent(CharSequence s, int position, LoadComponentCallBack loadComponentCallBack);
 

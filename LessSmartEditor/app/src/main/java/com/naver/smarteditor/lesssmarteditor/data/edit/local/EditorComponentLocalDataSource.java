@@ -187,7 +187,11 @@ public class EditorComponentLocalDataSource implements EditorComponentDataSource
     }
 
     @Override
-    public void deleteComponent(int position) {
+    public void deleteComponent(int position, LoadComponentCallBack loadComponentCallBack) {
+        mComponents.remove(position);
+        if(loadComponentCallBack != null){
+            loadComponentCallBack.OnComponentLoaded(mComponents);
+        }
     }
 
     @Override

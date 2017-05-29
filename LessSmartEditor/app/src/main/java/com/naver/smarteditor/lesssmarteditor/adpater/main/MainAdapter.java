@@ -6,12 +6,10 @@ import android.util.TypedValue;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.naver.smarteditor.lesssmarteditor.MyApplication;
 import com.naver.smarteditor.lesssmarteditor.adpater.basic.holder.BasicViewHolder;
 import com.naver.smarteditor.lesssmarteditor.adpater.main.holder.MainViewHolder;
 import com.naver.smarteditor.lesssmarteditor.data.DocumentData;
-import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
-import com.naver.smarteditor.lesssmarteditor.listener.OnDocumentClickedListener;
+import com.naver.smarteditor.lesssmarteditor.listener.OnDocumentClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +21,7 @@ import java.util.List;
 public class MainAdapter extends RecyclerView.Adapter<BasicViewHolder> implements MainAdapterContract.Model, MainAdapterContract.View {
 
     private Context mContext;
-    private OnDocumentClickedListener onDocumentClickedListener;
+    private OnDocumentClickListener onDocumentClickListener;
     private List<DocumentData> mDocumentData;
 
     public MainAdapter(Context context){
@@ -37,7 +35,7 @@ public class MainAdapter extends RecyclerView.Adapter<BasicViewHolder> implement
         TextView mTitle = new TextView(mContext);
         mTitle.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 30);
         mTitle.setLayoutParams(lp);
-        MainViewHolder mainViewHolder = new MainViewHolder(mTitle, onDocumentClickedListener);
+        MainViewHolder mainViewHolder = new MainViewHolder(mTitle, onDocumentClickListener);
 
 
         return mainViewHolder;
@@ -71,8 +69,8 @@ public class MainAdapter extends RecyclerView.Adapter<BasicViewHolder> implement
     }
 
     @Override
-    public void setDocumentOnClickedListener(OnDocumentClickedListener onDocumentClickedListener) {
-        this.onDocumentClickedListener = onDocumentClickedListener;
+    public void setDocumentOnClickedListener(OnDocumentClickListener onDocumentClickListener) {
+        this.onDocumentClickListener = onDocumentClickListener;
     }
 
     @Override

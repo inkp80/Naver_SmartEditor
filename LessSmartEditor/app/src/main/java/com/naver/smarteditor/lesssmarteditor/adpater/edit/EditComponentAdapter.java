@@ -12,6 +12,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.naver.smarteditor.lesssmarteditor.MyApplication;
 import com.naver.smarteditor.lesssmarteditor.adpater.basic.holder.BasicViewHolder;
+import com.naver.smarteditor.lesssmarteditor.adpater.edit.holder.ComponentViewHolder;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.holder.ImgComponentViewHolder;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.holder.MapComponentViewHolder;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.holder.TextComponentViewHolder;
@@ -19,6 +20,7 @@ import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
 import com.naver.smarteditor.lesssmarteditor.data.component.ImgComponent;
 import com.naver.smarteditor.lesssmarteditor.data.component.MapComponent;
 import com.naver.smarteditor.lesssmarteditor.data.component.TextComponent;
+import com.naver.smarteditor.lesssmarteditor.listener.OnComponentMenuClickListener;
 import com.naver.smarteditor.lesssmarteditor.listener.OnTextChangeListener;
 
 import java.net.URI;
@@ -28,7 +30,7 @@ import java.util.ArrayList;
  * Created by NAVER on 2017. 5. 21..
  */
 
-public class EditComponentAdapter extends RecyclerView.Adapter<BasicViewHolder> implements EditComponentAdapterContract.Model, EditComponentAdapterContract.View{
+public class EditComponentAdapter extends RecyclerView.Adapter<ComponentViewHolder> implements EditComponentAdapterContract.Model, EditComponentAdapterContract.View, OnComponentMenuClickListener{
 
     private final String TAG = "EditComponentAdapter";
     private boolean localLogPermission = true;
@@ -40,6 +42,7 @@ public class EditComponentAdapter extends RecyclerView.Adapter<BasicViewHolder> 
     private RequestManager requestManager;
 
     private Context mContext;
+    private OnComponentMenuClickListener onComponentMenuClickListener;
     private OnTextChangeListener onTextChangeListener;
     private ArrayList<BaseComponent> mComponents;
 
@@ -50,7 +53,7 @@ public class EditComponentAdapter extends RecyclerView.Adapter<BasicViewHolder> 
     }
 
     @Override
-    public BasicViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ComponentViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         
         RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         if(viewType == TEXT_COMPONENT){
@@ -96,9 +99,11 @@ public class EditComponentAdapter extends RecyclerView.Adapter<BasicViewHolder> 
     }
 
     @Override
-    public void onBindViewHolder(BasicViewHolder holder, int position) {
+    public void onBindViewHolder(ComponentViewHolder holder, int position) {
 
         int thisComponentType = mComponents.get(position).getComponentType().getTypeValue();
+        holder.setDataPositionOnAdapter(position);
+        holder.setOnComponentContextMenuClickListener(this);
 
         switch (thisComponentType){
             case TEXT_COMPONENT :
@@ -132,9 +137,20 @@ public class EditComponentAdapter extends RecyclerView.Adapter<BasicViewHolder> 
     }
 
     @Override
+    public void OnComponentMenuClick(int position) {
+        onComponentMenuClickListener.OnComponentMenuClick(position);
+    }
+
+    @Override
     public void setOnTextChangeListener(OnTextChangeListener onTextChangeListener) {
         this.onTextChangeListener = onTextChangeListener;
     }
+
+    @Override
+    public void setOnComponentClickListener(OnComponentMenuClickListener onComponentClickListener) {
+        this.onComponentMenuClickListener = onComponentClickListener;
+    }
+
 
     @Override
     public void notifyAdapter() {

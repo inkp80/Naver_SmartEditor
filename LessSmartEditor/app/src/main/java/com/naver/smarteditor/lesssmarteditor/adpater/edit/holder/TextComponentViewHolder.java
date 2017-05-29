@@ -2,23 +2,32 @@ package com.naver.smarteditor.lesssmarteditor.adpater.edit.holder;
 
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.ContextMenu;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
-import com.naver.smarteditor.lesssmarteditor.adpater.basic.holder.BasicViewHolder;
+
+import com.naver.smarteditor.lesssmarteditor.listener.OnComponentMenuClickListener;
 import com.naver.smarteditor.lesssmarteditor.listener.OnTextChangeListener;
+
+import static com.naver.smarteditor.lesssmarteditor.MyApplication.COMPONENT_MENU_CANCEL;
+import static com.naver.smarteditor.lesssmarteditor.MyApplication.COMPONENT_MENU_DELETE;
 
 /**
  * Created by NAVER on 2017. 5. 22..
  */
 
-public class TextComponentViewHolder extends BasicViewHolder {
+public class TextComponentViewHolder extends ComponentViewHolder implements View.OnCreateContextMenuListener {
 
 
     private EditText et;
     private final OnTextChangeListener onTextChangeListener;
     private TextWatcher textWatcher;
-    //memory leak..
+
+
+    //memory leak..?
 
     public TextComponentViewHolder(View itemView, final OnTextChangeListener onTextChangeListener) {
         super(itemView);
@@ -26,12 +35,17 @@ public class TextComponentViewHolder extends BasicViewHolder {
         this.onTextChangeListener = onTextChangeListener;
     }
 
-    public void setText(String text){
+
+    public void setText(String text) {
         et.setText(text);
     }
 
-    public void onBind(final int position){
+    @Override
+    public void setOnComponentContextMenuClickListener(OnComponentMenuClickListener onComponentContextMenuClickListener) {
+        this.onComponentMenuClickListener = onComponentContextMenuClickListener;
+    }
 
+    public void onBind(final int position) {
 
         et.addTextChangedListener(textWatcher = new TextWatcher() {
             @Override
@@ -52,9 +66,19 @@ public class TextComponentViewHolder extends BasicViewHolder {
 
     }
 
-    public void removeWatcher(){
-        et.removeTextChangedListener(textWatcher);
+
+    @Override
+    public void setDataPositionOnAdapter(int position) {
+        this.position = position;
     }
 
+    @Override
+    public int getDataPositionOnAdapter(){
+        return this.position;
+    }
+
+    public void removeWatcher() {
+        et.removeTextChangedListener(textWatcher);
+    }
 }
 

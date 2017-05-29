@@ -7,10 +7,15 @@ import android.view.View;
  * Created by NAVER on 2017. 5. 21..
  */
 
-public class BasicViewHolder extends RecyclerView.ViewHolder{
+abstract public class BasicViewHolder extends RecyclerView.ViewHolder{
+    public int position;
 
     public BasicViewHolder(View itemView) {
         super(itemView);
     }
+
+    abstract public int getDataPositionOnAdapter();
+    abstract public void setDataPositionOnAdapter(int position);
+
 }
 

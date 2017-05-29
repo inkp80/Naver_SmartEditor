@@ -21,7 +21,7 @@ import com.naver.smarteditor.lesssmarteditor.views.main.presenter.MainPresenter;
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.NEW_DOCUMENT_MODE;
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.DOCUMENT_PARCEL;
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.EDIT_DOCUMENT_MODE;
-import static com.naver.smarteditor.lesssmarteditor.MyApplication.MODE_FLAG;
+import static com.naver.smarteditor.lesssmarteditor.MyApplication.EDITOR_MODE;
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.REQ_ADD_DOCUMENT;
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.REQ_UPDATE_DOCUMENT;
 
@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, EditorActivity.class);
-                intent.putExtra(MODE_FLAG, NEW_DOCUMENT_MODE);
+                intent.putExtra(EDITOR_MODE, NEW_DOCUMENT_MODE);
                 startActivityForResult(intent, REQ_ADD_DOCUMENT);
             }
         });
@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     public void passDocumentDataToEditor(DocumentDataParcelable documentDataParcelable) {
         Intent intent = new Intent(MainActivity.this, EditorActivity.class);
         intent.putExtra(DOCUMENT_PARCEL, documentDataParcelable);
-        intent.putExtra(MODE_FLAG, EDIT_DOCUMENT_MODE);
+        intent.putExtra(EDITOR_MODE, EDIT_DOCUMENT_MODE);
         startActivityForResult(intent, REQ_UPDATE_DOCUMENT);
     }
 

@@ -5,6 +5,7 @@ import com.naver.smarteditor.lesssmarteditor.adpater.edit.EditComponentAdapterCo
 import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.EditorComponentDataSource;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.EditorComponentRepository;
+import com.naver.smarteditor.lesssmarteditor.listener.OnComponentMenuClickListener;
 import com.naver.smarteditor.lesssmarteditor.listener.OnTextChangeListener;
 
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ import static com.naver.smarteditor.lesssmarteditor.MyApplication.REQ_UPDATE_DOC
  * Created by NAVER on 2017. 5. 21..
  */
 
-public class EditPresenter implements EditContract.Presenter, OnTextChangeListener{
+public class EditPresenter implements EditContract.Presenter, OnTextChangeListener, OnComponentMenuClickListener{
     private final String TAG = "EditPresenter";
     private boolean localLogPermission = true;
 
@@ -46,6 +47,7 @@ public class EditPresenter implements EditContract.Presenter, OnTextChangeListen
     public void setComponentAdapterView(EditComponentAdapterContract.View adapter) {
         this.adapterView = adapter;
         this.adapterView.setOnTextChangeListener(this);
+        this.adapterView.setOnComponentClickListener(this);
     }
 
     @Override
@@ -81,6 +83,29 @@ public class EditPresenter implements EditContract.Presenter, OnTextChangeListen
         adapterView.notifyAdapter();
     }
 
+    @Override
+    public void OnComponentMenuClick(int position) {
+        editComponentRepository.deleteComponent(position, new EditorComponentDataSource.LoadComponentCallBack() {
+            @Override
+            public void OnComponentLoaded(ArrayList<BaseComponent> components) {
+                adapterModel.setComponent(components);
+                adapterView.notifyAdapter();
+            }
+        });
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int position) {
+        editComponentRepository.updateEditTextComponent(s, position, new EditorComponentDataSource.LoadComponentCallBack(){
+            @Override
+            public void OnComponentLoaded(ArrayList<BaseComponent> components){
+                if(components != null) {
+                    adapterModel.setComponent(components);
+                }
+            }
+        });
+
+    }
 
     //문서 데이터베이스 관련 동작
     @Override
@@ -107,19 +132,6 @@ public class EditPresenter implements EditContract.Presenter, OnTextChangeListen
 
 
     //utils
-    @Override
-    public void onTextChanged(CharSequence s, int position) {
-        editComponentRepository.updateEditTextComponent(s, position, new EditorComponentDataSource.LoadComponentCallBack(){
-            @Override
-            public void OnComponentLoaded(ArrayList<BaseComponent> components){
-                if(components != null) {
-                    adapterModel.setComponent(components);
-                }
-            }
-        });
-
-    }
-
     @Override
     public void loadComponentsFromJson(String jsonComponents) {
         // 메인에서 전달 받은 String json을 Model에 넘겨 컴포넌트를 로드한다.
