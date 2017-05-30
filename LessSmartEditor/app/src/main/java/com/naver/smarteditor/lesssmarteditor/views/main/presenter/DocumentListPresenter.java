@@ -1,6 +1,7 @@
 package com.naver.smarteditor.lesssmarteditor.views.main.presenter;
 
 import com.naver.smarteditor.lesssmarteditor.adpater.main.DocumentListAdapterContract;
+import com.naver.smarteditor.lesssmarteditor.adpater.main.util.DocumentTouchEventListener;
 import com.naver.smarteditor.lesssmarteditor.data.DocumentData;
 import com.naver.smarteditor.lesssmarteditor.data.DocumentDataParcelable;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.EditorComponentDataSource;
@@ -13,7 +14,7 @@ import java.util.List;
  * Created by NAVER on 2017. 5. 24..
  */
 
-public class DocumentListPresenter implements DocumentListContract.Presenter, OnDocumentClickListener {
+public class DocumentListPresenter implements DocumentListContract.Presenter, OnDocumentClickListener, DocumentTouchEventListener {
 
     private DocumentListContract.View view;
     private DocumentListAdapterContract.Model adapterModel;
@@ -28,17 +29,16 @@ public class DocumentListPresenter implements DocumentListContract.Presenter, On
 
     @Override
     public void OnClick(DocumentDataParcelable documentDataParcelable) {
-        view.passDocumentDataToEditor(documentDataParcelable);
+        view.editThisDocument(documentDataParcelable);
     }
 
 
     @Override
     public void requestDocList() {
-
         editComponentRepository.getDocumentsListFromDatabase(new EditorComponentDataSource.LoadFromDatabaseCallBack() {
             @Override
             public void OnLoadFinished(List<DocumentData> data) {
-                adapterModel.setComponent(data);
+                adapterModel.setDocumentList(data);
                 adapterView.notifyAdapter();
             }
 
@@ -70,5 +70,18 @@ public class DocumentListPresenter implements DocumentListContract.Presenter, On
     @Override
     public void detachView() {
         this.view = null;
+    }
+
+
+    @Override
+    public void OnItemDismiss(DocumentData documentData) {
+        editComponentRepository.deleteDocumentInDatabase(documentData.get_id(), new EditorComponentDataSource.LoadFromDatabaseCallBack() {
+            @Override
+            public void OnLoadFinished(List<DocumentData> data) {
+                    adapterModel.setDocumentList(data);
+                    adapterView.notifyAdapter();
+            }
+        });
+
     }
 }

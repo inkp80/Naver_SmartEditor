@@ -1,4 +1,4 @@
-package com.naver.smarteditor.lesssmarteditor.adpater.edit.Utils;
+package com.naver.smarteditor.lesssmarteditor.adpater.edit.util;
 
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -9,12 +9,12 @@ import com.naver.smarteditor.lesssmarteditor.adpater.edit.EditComponentAdapter;
  * Created by NAVER on 2017. 5. 29..
  */
 
-public class SimpleTouchItemHelperCallback extends ItemTouchHelper.Callback {
+public class ComponentTouchItemHelperCallback extends ItemTouchHelper.Callback {
 
     private EditComponentAdapter mAdapter;
     private ComponentTouchEventListener mItemTouchHelper;
 
-    public SimpleTouchItemHelperCallback(EditComponentAdapter adapter, ComponentTouchEventListener componentTouchEventListener){
+    public ComponentTouchItemHelperCallback(EditComponentAdapter adapter, ComponentTouchEventListener componentTouchEventListener){
         this.mAdapter = adapter;
         this.mItemTouchHelper = componentTouchEventListener;
     }

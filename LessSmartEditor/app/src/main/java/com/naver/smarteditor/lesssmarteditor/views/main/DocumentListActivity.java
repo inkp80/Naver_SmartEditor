@@ -6,9 +6,12 @@ import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 
 import com.naver.smarteditor.lesssmarteditor.R;
 import com.naver.smarteditor.lesssmarteditor.adpater.main.DocumentListAdapter;
+import com.naver.smarteditor.lesssmarteditor.adpater.main.util.DocumentTouchEventListener;
+import com.naver.smarteditor.lesssmarteditor.adpater.main.util.DocumentTouchItemHelperCallback;
 import com.naver.smarteditor.lesssmarteditor.data.DocumentDataParcelable;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.EditorComponentRepository;
 import com.naver.smarteditor.lesssmarteditor.views.edit.EditorActivity;
@@ -35,11 +38,12 @@ public class DocumentListActivity extends AppCompatActivity implements DocumentL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        documentListAdapter = new DocumentListAdapter(this);
+        //init presenter
+        initPresenter();
         //init recyclerview
         initRecyclerView();
 
-        //init presenter
-        initPresenter();
 
         documentListPresenter.requestDocList();
     }
@@ -48,12 +52,16 @@ public class DocumentListActivity extends AppCompatActivity implements DocumentL
     private void initRecyclerView(){
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
 
-        documentListAdapter = new DocumentListAdapter(this);
         recyclerView = (RecyclerView) findViewById(R.id.main_rv_list);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
         addRecyclerViewBorder(layoutManager);
         recyclerView.setAdapter(documentListAdapter);
+
+
+        ItemTouchHelper.Callback callback = new DocumentTouchItemHelperCallback(documentListAdapter, documentListPresenter);
+        ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
+        touchHelper.attachToRecyclerView(recyclerView);
     }
 
     private void initPresenter(){
@@ -79,7 +87,7 @@ public class DocumentListActivity extends AppCompatActivity implements DocumentL
 
 
     @Override
-    public void passDocumentDataToEditor(DocumentDataParcelable documentDataParcelable) {
+    public void editThisDocument(DocumentDataParcelable documentDataParcelable) {
         Intent intent = new Intent(DocumentListActivity.this, EditorActivity.class);
         intent.putExtra(DOCUMENT_PARCEL, documentDataParcelable);
         intent.putExtra(EDITOR_MODE, EDIT_DOCUMENT_MODE);

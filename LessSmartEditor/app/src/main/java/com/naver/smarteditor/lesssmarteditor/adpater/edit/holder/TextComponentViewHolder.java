@@ -2,32 +2,23 @@ package com.naver.smarteditor.lesssmarteditor.adpater.edit.holder;
 
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.ContextMenu;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
 
-import com.naver.smarteditor.lesssmarteditor.listener.OnComponentMenuClickListener;
+import com.naver.smarteditor.lesssmarteditor.listener.OnComponentLongClickListener;
 import com.naver.smarteditor.lesssmarteditor.listener.OnTextChangeListener;
-
-import static com.naver.smarteditor.lesssmarteditor.MyApplication.COMPONENT_MENU_CANCEL;
-import static com.naver.smarteditor.lesssmarteditor.MyApplication.COMPONENT_MENU_DELETE;
 
 /**
  * Created by NAVER on 2017. 5. 22..
  */
 
-public class TextComponentViewHolder extends ComponentViewHolder implements View.OnCreateContextMenuListener {
+public class TextComponentViewHolder extends ComponentViewHolder {
 
 
     private EditText et;
     private final OnTextChangeListener onTextChangeListener;
     private TextWatcher textWatcher;
-
-
-    //memory leak..?
 
     public TextComponentViewHolder(View itemView, final OnTextChangeListener onTextChangeListener) {
         super(itemView);
@@ -40,10 +31,6 @@ public class TextComponentViewHolder extends ComponentViewHolder implements View
         et.setText(text);
     }
 
-    @Override
-    public void setOnComponentContextMenuClickListener(OnComponentMenuClickListener onComponentContextMenuClickListener) {
-        this.onComponentMenuClickListener = onComponentContextMenuClickListener;
-    }
 
     public void onBind(final int position) {
 
@@ -79,6 +66,16 @@ public class TextComponentViewHolder extends ComponentViewHolder implements View
 
     public void removeWatcher() {
         et.removeTextChangedListener(textWatcher);
+    }
+
+    public EditText getEditTextView(){
+        return this.et;
+    }
+
+
+    @Override
+    public void setOnComponentLongClickListener(OnComponentLongClickListener onComponentLongClickListener) {
+        this.onComponentLongClickListener = onComponentLongClickListener;
     }
 }
 

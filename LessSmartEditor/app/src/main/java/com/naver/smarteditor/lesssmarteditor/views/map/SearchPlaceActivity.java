@@ -9,7 +9,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
+import com.naver.smarteditor.lesssmarteditor.MyApplication;
 import com.naver.smarteditor.lesssmarteditor.NaverPlaceService;
 import com.naver.smarteditor.lesssmarteditor.R;
 import com.naver.smarteditor.lesssmarteditor.SearchResultOnClickListener;
@@ -28,6 +30,7 @@ import retrofit2.Response;
 
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.MAPINFO_PARCEL;
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.RETROFIT_FAIL400;
+import static com.naver.smarteditor.lesssmarteditor.MyApplication.RETROFIT_SUCCESS;
 import static com.naver.smarteditor.lesssmarteditor.views.map.utils.MapUtils.buildCoords;
 import static com.naver.smarteditor.lesssmarteditor.views.map.utils.MapUtils.buildStaticMapUrlWithCoords;
 
@@ -36,6 +39,8 @@ import static com.naver.smarteditor.lesssmarteditor.views.map.utils.MapUtils.bui
  */
 
 public class SearchPlaceActivity extends AppCompatActivity {
+    private final String TAG = "SearchPlaceActivity";
+    private boolean localLogPermission = true;
 
     Button mSearchPlaceButton;
     EditText mSearchTarget;
@@ -72,7 +77,7 @@ public class SearchPlaceActivity extends AppCompatActivity {
     public void requestSearchPlaceService(){
         String query = mSearchTarget.getText().toString();
         if(query.length() == 0 || query == null){
-            //do nothing -
+            //do nothing - 요청이 없음
             return;
         }
         NaverPlaceService naverService = NaverPlaceService.retrofit.create(NaverPlaceService.class);
@@ -81,14 +86,17 @@ public class SearchPlaceActivity extends AppCompatActivity {
         call.enqueue(new Callback<PlaceRequestResult>() {
             @Override
             public void onResponse(Call<PlaceRequestResult> call, Response<PlaceRequestResult> response) {
-                //TODO : vaildation check
                 placeItemList = response.body().getPlaces();
+                if(placeItemList.size() == 0){
+                    Toast.makeText(SearchPlaceActivity.this, "결과 없음", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 renewingAdapter();
             }
 
             @Override
             public void onFailure(Call<PlaceRequestResult> call, Throwable t) {
-                //TODO: 예외 처리 -
+                Toast.makeText(SearchPlaceActivity.this, String.valueOf(t.getCause()), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -135,9 +143,15 @@ public class SearchPlaceActivity extends AppCompatActivity {
 
     public boolean checkResponseVaild(Response<PlaceRequestResult> response){
         if(response.code() == RETROFIT_FAIL400 ){
-            Log.d("HTTP protocol", "ERROR");
+            MyApplication.LogController.makeLog(TAG, "CODE 400", localLogPermission);
+            Toast.makeText(this, "연결 실패 : 네트워크 상태를 확인하세요.", Toast.LENGTH_SHORT).show();
+            return false;
+        } else if(response.code() == RETROFIT_SUCCESS){
             return true;
+        } else {
+            Toast.makeText(this, "연결 실패", Toast.LENGTH_SHORT).show();
+            MyApplication.LogController.makeLog(TAG, "CODE " + String.valueOf(response.code()), localLogPermission);
+            return false;
         }
-        return false;
     }
 }

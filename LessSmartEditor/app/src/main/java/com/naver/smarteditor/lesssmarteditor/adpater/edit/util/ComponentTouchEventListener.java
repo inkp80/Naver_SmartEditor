@@ -1,4 +1,4 @@
-package com.naver.smarteditor.lesssmarteditor.adpater.edit.Utils;
+package com.naver.smarteditor.lesssmarteditor.adpater.edit.util;
 
 /**
  * Created by NAVER on 2017. 5. 29..

@@ -1,52 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <EditText
-            android:hint="Title : "
             android:id="@+id/editor_et_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:paddingLeft="8dp"
+            android:hint="Title : "
+            android:maxLength="5"
             android:maxLines="1"
-            />
+            android:paddingLeft="8dp" />
+
         <Button
             android:id="@+id/editor_bt_save"
-            android:text="save"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            />
+            android:text="save" />
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/editor_bt_newdocument"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="new document" />
+
         <Button
             android:id="@+id/editor_bt_loaddocument"
-            android:text="LOAD Document"
-            android:layout_weight="1"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="LOAD Document" />
+
         <Button
             android:id="@+id/editor_bt_addcomponent"
-            android:layout_weight="1"
-            android:text="Add Component"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Add Component" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/editor_component_menu"
+        android:visibility="gone"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+        <Button
+            android:layout_weight="1"
+            android:id="@+id/editor_bt_delete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="delete" />
+
+        <Button
+            android:layout_weight="1"
+            android:id="@+id/editor_bt_cancel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="cancel" />
     </LinearLayout>
 
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/editor_recyclerview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    </android.support.v7.widget.RecyclerView>
+        android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
 
 </LinearLayout>

@@ -13,7 +13,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".views.edit.EditorActivity">
+        <activity android:name=".views.edit.EditorActivity" android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -21,9 +21,11 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".views.main.DocumentListActivity"></activity>
+        <activity android:name=".views.main.DocumentListActivity"
+            android:screenOrientation="portrait"></activity>
 
-        <activity android:name=".views.map.SearchPlaceActivity"></activity>
+        <activity android:name=".views.map.SearchPlaceActivity"
+            android:screenOrientation="portrait"></activity>
 
     </application>
 

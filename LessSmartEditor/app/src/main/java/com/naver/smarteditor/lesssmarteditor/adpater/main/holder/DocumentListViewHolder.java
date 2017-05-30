@@ -46,6 +46,10 @@ public class DocumentListViewHolder extends BasicViewHolder{
        mTitleText.setText(title);
     }
 
+    public DocumentData getDocumentData(){
+        return documentData;
+    }
+
     @Override
     public void setDataPositionOnAdapter(int position) {
         this.position = position;

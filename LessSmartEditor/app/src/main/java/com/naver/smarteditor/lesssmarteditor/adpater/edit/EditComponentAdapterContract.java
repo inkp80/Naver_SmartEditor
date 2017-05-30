@@ -2,7 +2,7 @@ package com.naver.smarteditor.lesssmarteditor.adpater.edit;
 
 import com.naver.smarteditor.lesssmarteditor.adpater.basic.BaseAdapterContract;
 import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
-import com.naver.smarteditor.lesssmarteditor.listener.OnComponentMenuClickListener;
+import com.naver.smarteditor.lesssmarteditor.listener.OnComponentLongClickListener;
 import com.naver.smarteditor.lesssmarteditor.listener.OnTextChangeListener;
 
 import java.util.ArrayList;
@@ -17,11 +17,13 @@ public interface EditComponentAdapterContract {
 
         void setOnTextChangeListener(OnTextChangeListener onTextChangeListener);
 
-        void setOnComponentClickListener(OnComponentMenuClickListener onComponentClickListener);
-
         void notifyAdapter();
 
-        void reoderingComponent(int fromPosition, int toPosition);
+        void swapComponent(int fromPosition, int toPosition);
+
+        void setFocus();
+
+        void setOnComponentLongClickListener(OnComponentLongClickListener onComponentLongClickListener);
 
     }
 

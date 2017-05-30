@@ -52,4 +52,6 @@ public interface EditorComponentDataSource {
     void updateDocumentInDatabase(String title, int doc_id, UpdateToDatabaseCallBack updateToDatabaseCallBack);
 
     void getDocumentsListFromDatabase(LoadFromDatabaseCallBack loadFromDatabaseCallBack);
+
+    void deleteDocumentInDatabase(int doc_id, LoadFromDatabaseCallBack loadFromDatabaseCallBack);
 }

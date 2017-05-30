@@ -66,20 +66,14 @@ public class EditorComponentLocalDataSource implements EditorComponentDataSource
     @Override
     public void addComponent(BaseComponent.TypE type, Object componentData, LoadComponentCallBack loadComponentCallBack) {
         BaseComponent component = null;
-        //TODO: check type then add to list
-
 
         if(type == BaseComponent.TypE.TEXT){
             TextComponent textComponent = new TextComponent(null);
             component = textComponent;
-        }
-
-        else if (type == BaseComponent.TypE.IMG){
+        } else if (type == BaseComponent.TypE.IMG){
             ImgComponent imgComponent = new ImgComponent((String)componentData);
             component = imgComponent;
-        }
-
-        else if(type == BaseComponent.TypE.MAP){
+        } else if(type == BaseComponent.TypE.MAP){
             PlaceItemParcelable passer = (PlaceItemParcelable) componentData;
             MapComponent mapComponent = new MapComponent(passer.getPlaceName(), passer.getPlaceAddress(), passer.getPlaceCoords(), passer.getPlaceUri());
             component = mapComponent;
@@ -148,45 +142,11 @@ public class EditorComponentLocalDataSource implements EditorComponentDataSource
     @Override
     public void saveDocumentToDatabase(String title, SaveToDatabaseCallBack saveToDatabaseCallBack) {
         //TODO : asynTask - save to database
-        String jsonStr = new Gson().toJson(mComponents);
 
-        String query = "INSERT INTO "+ EditorContract.ComponentEntry.TABLE_NAME + "(" + EditorContract.ComponentEntry.COLUMN_TITLE + "," +EditorContract.ComponentEntry.COLUMN_TIMESTAMP+
-                ", "+EditorContract.ComponentEntry.COLUNM_COMPONENTS_JSON + ") values ('"+title+"', '"+ Calendar.getInstance().getTimeInMillis() + "', '"+jsonStr+"');";
-        try {
-            db.execSQL(query);
-            MyApplication.LogController.makeLog(TAG, "Database processing was Successfully done",localLogPermission);
-        } catch (Exception e){
-            MyApplication.LogController.makeLog(TAG, "Error : Database insert", localLogPermission);
-        }
+        insertIntoDatabase(title, mComponents);
 
         if(saveToDatabaseCallBack != null) {
             saveToDatabaseCallBack.OnSaveFinished();
-        }
-    }
-
-    @Override
-    public void getDocumentsListFromDatabase(LoadFromDatabaseCallBack loadFromDatabaseCallBack) {
-
-        // request data from database
-        String query = "SELECT * " +
-                "FROM " + EditorContract.ComponentEntry.TABLE_NAME
-                + " order by (" + EditorContract.ComponentEntry.COLUMN_TIMESTAMP + ");";
-
-        Cursor cursor = db.rawQuery(query, null);
-        cursor.moveToNext();
-
-        List<DocumentData> DocList = new ArrayList<>();
-
-        while (cursor.moveToNext()) {
-            int doc_id = cursor.getInt(EditorContract.COL_ID);
-            String title = cursor.getString(EditorContract.COL_TITLE);
-            String timeStamp = cursor.getString(EditorContract.COL_TIMESTAMP);
-            String jsonObject = cursor.getString(EditorContract.COL_COMPONENTS_JSON);
-            DocumentData data = new DocumentData(doc_id, title,timeStamp, jsonObject);
-            DocList.add(data);
-        }
-        if(loadFromDatabaseCallBack != null){
-            loadFromDatabaseCallBack.OnLoadFinished(DocList);
         }
     }
 
@@ -219,24 +179,98 @@ public class EditorComponentLocalDataSource implements EditorComponentDataSource
 
     }
 
+    @Override
+    public void getDocumentsListFromDatabase(LoadFromDatabaseCallBack loadFromDatabaseCallBack) {
+
+        List<DocumentData> docList = converCursorToList(readFromLocalDatabase());
+        Collections.reverse(docList);
+
+        if(loadFromDatabaseCallBack != null){
+            loadFromDatabaseCallBack.OnLoadFinished(docList);
+        }
+    }
+
 
     @Override
     public void updateDocumentInDatabase(String title, int doc_id, UpdateToDatabaseCallBack updateToDatabaseCallBack) {
+        updateDatabase(title, doc_id, mComponents);
+        if(updateToDatabaseCallBack != null){
+            updateToDatabaseCallBack.OnUpdateFinished();
+        }
+    }
+
+    @Override
+    public void deleteDocumentInDatabase(int doc_id, LoadFromDatabaseCallBack loadFromDatabaseCallBack) {
+        deleteFromLocalDatabase(doc_id);
+        List<DocumentData> docList = converCursorToList(readFromLocalDatabase());
+        Collections.reverse(docList);
+
+        if(loadFromDatabaseCallBack != null){
+            loadFromDatabaseCallBack.OnLoadFinished(docList);
+        }
+    }
 
 
-        String jsonStr = new Gson().toJson(mComponents);
+
+
+
+    private void insertIntoDatabase(String title, List<BaseComponent> components){
+        String jsonStr = new Gson().toJson(components);
+
+        String query = "INSERT INTO "+ EditorContract.ComponentEntry.TABLE_NAME + "(" + EditorContract.ComponentEntry.COLUMN_TITLE + "," +EditorContract.ComponentEntry.COLUMN_TIMESTAMP+
+                ", "+EditorContract.ComponentEntry.COLUNM_COMPONENTS_JSON + ") values ('"+title+"', '"+ Calendar.getInstance().getTimeInMillis() + "', '"+jsonStr+"');";
+        try {
+            db.execSQL(query);
+            MyApplication.LogController.makeLog(TAG, "Database processing was Successfully done",localLogPermission);
+        } catch (Exception e){
+            MyApplication.LogController.makeLog(TAG, "Error : Database insert", localLogPermission);
+        }
+    }
+
+    private Cursor readFromLocalDatabase() {
+        String querySelete = "SELECT * " +
+                "FROM " + EditorContract.ComponentEntry.TABLE_NAME
+                + " order by (" + EditorContract.ComponentEntry.COLUMN_TIMESTAMP + ")";
+
+        Cursor cursor = db.rawQuery(querySelete, null);
+        return cursor;
+    }
+
+    private void deleteFromLocalDatabase(int docId){
+        String query = "DELETE FROM " + EditorContract.ComponentEntry.TABLE_NAME + " WHERE _id ='" + String.valueOf(docId) +"'";
+        try{
+            db.execSQL(query);
+        } catch (Exception e){
+            MyApplication.LogController.makeLog(TAG, "Error : Database delete", localLogPermission);
+        }
+    }
+
+    private void updateDatabase(String title, int docId, List<BaseComponent> components){
+        String jsonStr = new Gson().toJson(components);
         String query = "UPDATE " + EditorContract.ComponentEntry.TABLE_NAME
                 + " SET " + EditorContract.ComponentEntry.COLUMN_TITLE + "='" + title + "'," + EditorContract.ComponentEntry.COLUMN_TIMESTAMP + "='" + Calendar.getInstance().getTimeInMillis() + "',"
-                + EditorContract.ComponentEntry.COLUNM_COMPONENTS_JSON + "='" + jsonStr + "' where _id = " + String.valueOf(doc_id) + ";";
+                + EditorContract.ComponentEntry.COLUNM_COMPONENTS_JSON + "='" + jsonStr + "' where _id = " + String.valueOf(docId) + ";";
 
         try {
             db.execSQL(query);
         } catch (Exception e) {
             MyApplication.LogController.makeLog(TAG, "DB ERROR :" + e, localLogPermission);
         }
-
-        if(updateToDatabaseCallBack != null){
-            updateToDatabaseCallBack.OnUpdateFinished();
-        }
     }
+
+
+    private List<DocumentData> converCursorToList(Cursor cursor){
+        List<DocumentData> DocList = new ArrayList<>();
+
+        while (cursor.moveToNext()) {
+            int _id = cursor.getInt(EditorContract.COL_ID);
+            String title = cursor.getString(EditorContract.COL_TITLE);
+            String timeStamp = cursor.getString(EditorContract.COL_TIMESTAMP);
+            String jsonObject = cursor.getString(EditorContract.COL_COMPONENTS_JSON);
+            DocumentData data = new DocumentData(_id, title,timeStamp, jsonObject);
+            DocList.add(data);
+        }
+        return DocList;
+    }
+
 }

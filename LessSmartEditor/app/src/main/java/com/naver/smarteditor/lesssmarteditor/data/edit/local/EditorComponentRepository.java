@@ -148,4 +148,16 @@ public class EditorComponentRepository implements EditorComponentDataSource {
             }
         });
     }
+
+    @Override
+    public void deleteDocumentInDatabase(int doc_id, final LoadFromDatabaseCallBack loadFromDatabaseCallBack) {
+        editComponentLocalDataSource.deleteDocumentInDatabase(doc_id, new LoadFromDatabaseCallBack() {
+            @Override
+            public void OnLoadFinished(List<DocumentData> data) {
+                if(loadFromDatabaseCallBack != null){
+                    loadFromDatabaseCallBack.OnLoadFinished(data);
+                }
+            }
+        });
+    }
 }

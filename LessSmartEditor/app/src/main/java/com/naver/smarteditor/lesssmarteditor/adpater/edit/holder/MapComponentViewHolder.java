@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.naver.smarteditor.lesssmarteditor.adpater.basic.holder.BasicViewHolder;
-import com.naver.smarteditor.lesssmarteditor.listener.OnComponentMenuClickListener;
+import com.naver.smarteditor.lesssmarteditor.listener.OnComponentLongClickListener;
 
 /**
  * Created by NAVER on 2017. 5. 22..
@@ -28,15 +28,6 @@ public class MapComponentViewHolder extends ComponentViewHolder{
         placeTextInfo = (TextView) placeLinearLayout.getChildAt(1);
     }
 
-    @Override
-    public void setOnComponentContextMenuClickListener(OnComponentMenuClickListener onComponentContextMenuClickListener) {
-        this.onComponentMenuClickListener = onComponentContextMenuClickListener;
-    }
-
-//    public ViewGroup getRootView(){
-//        return placeLinearLayout;
-//    }
-
     public ImageView getImageView(){
         return placeMapImg;
     }
@@ -53,5 +44,11 @@ public class MapComponentViewHolder extends ComponentViewHolder{
     @Override
     public int getDataPositionOnAdapter(){
         return this.position;
+    }
+
+
+    @Override
+    public void setOnComponentLongClickListener(OnComponentLongClickListener onComponentLongClickListener) {
+        this.onComponentLongClickListener = onComponentLongClickListener;
     }
 }

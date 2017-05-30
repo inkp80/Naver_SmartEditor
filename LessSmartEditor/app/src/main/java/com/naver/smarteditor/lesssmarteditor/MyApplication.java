@@ -18,6 +18,7 @@ public class MyApplication extends Application {
 
 
     public static final int RETROFIT_FAIL400 = 400;
+    public static final int RETROFIT_SUCCESS = 200;
 
     public static final int EDIT_DOCUMENT_MODE = 13;
     public static final int NEW_DOCUMENT_MODE = 11;
@@ -35,14 +36,15 @@ public class MyApplication extends Application {
     public static final int COMPONENT_MENU_DELETE = 19;
     public static final int COMPONENT_MENU_CANCEL = 21;
 
-    private static boolean globalLogPermission = true;
+
 
     public static class LogController{
+        private static boolean globalLogPermission = true;
         public static void setGlobalPermission(boolean state){
-            MyApplication.globalLogPermission = state;
+            LogController.globalLogPermission = state;
         }
 
-        public static boolean isGlobalPermissionVaild(){
+        private static boolean isGlobalPermissionVaild(){
             if(globalLogPermission){
                 return true;
             } else {

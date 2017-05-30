@@ -18,6 +18,6 @@ public interface DocumentListAdapterContract {
     }
 
     interface Model extends BaseAdapterContract.Model {
-        void setComponent(List<DocumentData> docs);
+        void setDocumentList(List<DocumentData> docs);
     }
 }

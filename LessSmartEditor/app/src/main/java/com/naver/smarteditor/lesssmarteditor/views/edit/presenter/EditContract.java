@@ -15,6 +15,7 @@ public interface EditContract {
     interface View extends BaseView{
         void waitForDbProcessing();
         void finishActivity(int REQ_CODE);
+        void setMenuForSelectedComponent(int position);
     }
 
     interface Presenter extends BasePresenter{

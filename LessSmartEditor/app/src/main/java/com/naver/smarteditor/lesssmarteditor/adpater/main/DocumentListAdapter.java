@@ -63,7 +63,7 @@ public class DocumentListAdapter extends RecyclerView.Adapter<BasicViewHolder> i
     }
 
     @Override
-    public void setComponent(List<DocumentData> docs) {
+    public void setDocumentList(List<DocumentData> docs) {
         this.mDocumentData = docs;
     }
 
