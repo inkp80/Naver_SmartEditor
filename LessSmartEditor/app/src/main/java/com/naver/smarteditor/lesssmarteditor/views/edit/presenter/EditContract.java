@@ -1,5 +1,7 @@
 package com.naver.smarteditor.lesssmarteditor.views.edit.presenter;
 
+import android.view.View;
+
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.EditComponentAdapterContract;
 import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.EditorComponentRepository;
@@ -14,8 +16,8 @@ public interface EditContract {
 
     interface View extends BaseView{
         void waitForDbProcessing();
-        void finishActivity(int REQ_CODE);
-        void setMenuForSelectedComponent(int position);
+        void setMenuForSelectedComponent(int position, android.view.View selectedComponent);
+        void scrollToNewComponent(int position);
     }
 
     interface Presenter extends BasePresenter{

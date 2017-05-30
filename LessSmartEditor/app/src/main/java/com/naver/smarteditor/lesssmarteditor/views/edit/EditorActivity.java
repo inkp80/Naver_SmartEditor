@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -62,10 +63,11 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
     private int EDITOR_MODE = NEW_DOCUMENT_MODE;
 
 
-    EditContract.Presenter mPresenter;
-    EditComponentAdapter mAdapter;
+    private EditContract.Presenter mPresenter;
+    private EditComponentAdapter mAdapter;
 
-    private int focusing = -1;
+    private int focusingComponentIndex;
+    private View focusingComponentView;
     private InputMethodManager inputMethodManager;
 
 
@@ -88,6 +90,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
     Button mBtAddComponent;
     @BindView(R.id.editor_recyclerview)
     RecyclerView mEditorRecyclerView;
+
 
     private SelectComponentDialog mSelectComponentDialog;
 
@@ -112,7 +115,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         initEditorMenu();
         initDialog();
         checkEditorMode();
-        setTitleLengthLimit();
+        setTitleLengthLimit(10);
 
         initComponentMenu();
     }
@@ -160,6 +163,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
     //Init & default setup method for Activity
     private void initRecyclerView() {
         mEditorRecyclerView = (RecyclerView) findViewById(R.id.editor_recyclerview);
+        mEditorRecyclerView.setPadding(10, 10, 10, 10);
         mEditorRecyclerView.setHasFixedSize(true);
         mEditorRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mEditorRecyclerView.setAdapter(mAdapter);
@@ -237,24 +241,25 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         dialog.show();
     }
 
-    @Override
-    public void finishActivity(int REQ_CODE) {
-        setResult(REQ_CODE);
-        finish();
-    }
 
     @Override
-    public void setMenuForSelectedComponent(int position) {
-        focusing = position;
+    public void setMenuForSelectedComponent(int position, View selectedComponent) {
+        focusingComponentIndex = position;
+        focusingComponentView = selectedComponent;
         showComponentMenu();
     }
 
+    @Override
+    public void scrollToNewComponent(int position) {
+        mEditorRecyclerView.smoothScrollToPosition(position);
+        mEditorRecyclerView.requestChildFocus(mEditorRecyclerView.getChildAt(position), getCurrentFocus());
+    }
 
     //activity
     @Override
     public void onBackPressed() {
         if(checkComponentMenuIsActive()){
-            clearComponentMenu();
+            removeFocusFromComponent();
             backKeyTime = 0;
             return;
         }
@@ -339,9 +344,9 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         }
     }
 
-    private void setTitleLengthLimit() {
+    private void setTitleLengthLimit(int lengthLimit) {
         InputFilter[] f = new InputFilter[]{
-                new TitleFilter(getBaseContext(), 20)
+                new TitleFilter(getBaseContext(), lengthLimit)
         };
 
         mTxtTitle.setFilters(f);
@@ -353,23 +358,24 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         mBtCancelMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                hideComponentMenu();
+                removeFocusFromComponent();
             }
         });
 
         mBtDeleteComponent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mPresenter.deleteComponent(focusing);
+                mPresenter.deleteComponent(focusingComponentIndex);
                 hideComponentMenu();
-                focusing = -1;
             }
         });
     }
 
-    private void clearComponentMenu() {
+    private void removeFocusFromComponent() {
         hideComponentMenu();
-        focusing = -1;
+        focusingComponentView.setBackgroundColor(Color.parseColor("#FAFAFA"));
+        focusingComponentView = null;
+        focusingComponentIndex = -1;
     }
 
     private void hideComponentMenu() {
@@ -414,4 +420,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         EDITOR_MODE = NEW_DOCUMENT_MODE;
         currentDocumentId = -1;
     }
+
+
+
 }

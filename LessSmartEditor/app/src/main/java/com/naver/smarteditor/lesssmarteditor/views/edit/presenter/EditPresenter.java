@@ -1,5 +1,7 @@
 package com.naver.smarteditor.lesssmarteditor.views.edit.presenter;
 
+import android.view.View;
+
 import com.naver.smarteditor.lesssmarteditor.MyApplication;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.EditComponentAdapterContract;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.util.ComponentTouchEventListener;
@@ -64,6 +66,7 @@ public class EditPresenter implements EditContract.Presenter, OnTextChangeListen
                 if(components != null) {
                     adapterModel.setComponent(components);
                     adapterView.notifyAdapter();
+                    view.scrollToNewComponent(components.size());
                     if(type == BaseComponent.TypE.TEXT){
                         adapterView.setFocus();
                     }
@@ -125,9 +128,7 @@ public class EditPresenter implements EditContract.Presenter, OnTextChangeListen
         editComponentRepository.saveDocumentToDatabase(title, new EditorComponentDataSource.SaveToDatabaseCallBack() {
             @Override
             public void OnSaveFinished() {
-                MyApplication.LogController.makeLog(TAG, "DB request success", localLogPermission);
-//                editComponentRepository.clearComponents();
-//                view.finishActivity(REQ_ADD_DOCUMENT);
+                MyApplication.LogController.makeLog(TAG, "DB request success : INSERT", localLogPermission);
             }
         });
     }
@@ -137,7 +138,7 @@ public class EditPresenter implements EditContract.Presenter, OnTextChangeListen
         editComponentRepository.updateDocumentInDatabase(title, doc_id, new EditorComponentDataSource.UpdateToDatabaseCallBack() {
             @Override
             public void OnUpdateFinished() {
-//                view.finishActivity(REQ_UPDATE_DOCUMENT);
+                MyApplication.LogController.makeLog(TAG, "DB request success : UPDATE", localLogPermission);
             }
         });
     }
@@ -158,7 +159,7 @@ public class EditPresenter implements EditContract.Presenter, OnTextChangeListen
 
 
     @Override
-    public void OnComponentLongClick(int position) {
-        view.setMenuForSelectedComponent(position);
+    public void OnComponentLongClick(int position, View thisView) {
+        view.setMenuForSelectedComponent(position, thisView);
     }
 }

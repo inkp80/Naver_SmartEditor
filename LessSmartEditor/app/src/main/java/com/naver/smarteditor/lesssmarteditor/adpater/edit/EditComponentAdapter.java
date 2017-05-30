@@ -165,7 +165,7 @@ public class EditComponentAdapter extends RecyclerView.Adapter<ComponentViewHold
 
     @Override
     public void setFocus(){
-        //....
+
     }
 
     //Create ViewHolders
@@ -211,8 +211,8 @@ public class EditComponentAdapter extends RecyclerView.Adapter<ComponentViewHold
     }
 
     @Override
-    public void OnComponentLongClick(int position) {
-        onComponentLongClickListener.OnComponentLongClick(position);
+    public void OnComponentLongClick(int position, View thisView) {
+        onComponentLongClickListener.OnComponentLongClick(position, thisView);
     }
 
 

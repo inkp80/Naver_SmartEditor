@@ -24,10 +24,12 @@ abstract public class ComponentViewHolder extends BasicViewHolder {
 
     public ComponentViewHolder(final View itemView) {
         super(itemView);
+        itemView.setPadding(10,10,10,10);
         itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                onComponentLongClickListener.OnComponentLongClick(getDataPositionOnAdapter());
+                itemView.setBackgroundColor(Color.LTGRAY);
+                onComponentLongClickListener.OnComponentLongClick(getDataPositionOnAdapter(), itemView);
                 return false;
             }
         });
