@@ -30,7 +30,7 @@ public interface EditorComponentDataSource {
 
 
     //component
-    void addComponent(BaseComponent.TypE type, Object componentData, LoadComponentCallBack loadComponentCallBack);
+    void addComponentToDocument(BaseComponent.TypE type, Object componentData, LoadComponentCallBack loadComponentCallBack);
 
     void setComponents(ArrayList<BaseComponent> components, LoadComponentCallBack loadComponentCallBack);
 

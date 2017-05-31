@@ -26,6 +26,7 @@ public interface DocumentListContract {
 
         void setComponentDataSource(EditorComponentRepository repository);
 
-        void requestDocList();
+        //TODO: 작명 개선
+        void requestDocumentsFromLocal();
     }
 }

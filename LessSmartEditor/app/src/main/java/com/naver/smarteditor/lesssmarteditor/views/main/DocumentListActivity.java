@@ -10,7 +10,6 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 
 import com.naver.smarteditor.lesssmarteditor.R;
 import com.naver.smarteditor.lesssmarteditor.adpater.main.DocumentListAdapter;
-import com.naver.smarteditor.lesssmarteditor.adpater.main.util.DocumentTouchEventListener;
 import com.naver.smarteditor.lesssmarteditor.adpater.main.util.DocumentTouchItemHelperCallback;
 import com.naver.smarteditor.lesssmarteditor.data.DocumentDataParcelable;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.EditorComponentRepository;
@@ -45,7 +44,7 @@ public class DocumentListActivity extends AppCompatActivity implements DocumentL
         initRecyclerView();
 
 
-        documentListPresenter.requestDocList();
+        documentListPresenter.requestDocumentsFromLocal();
     }
 
 
@@ -82,7 +81,7 @@ public class DocumentListActivity extends AppCompatActivity implements DocumentL
     @Override
     protected void onResume(){
         super.onResume();
-        documentListPresenter.requestDocList();
+        documentListPresenter.requestDocumentsFromLocal();
     }
 
 

@@ -64,7 +64,7 @@ public class EditorComponentLocalDataSource implements EditorComponentDataSource
     }
 
     @Override
-    public void addComponent(BaseComponent.TypE type, Object componentData, LoadComponentCallBack loadComponentCallBack) {
+    public void addComponentToDocument(BaseComponent.TypE type, Object componentData, LoadComponentCallBack loadComponentCallBack) {
         BaseComponent component = null;
 
         if(type == BaseComponent.TypE.TEXT){

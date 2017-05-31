@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,7 +13,7 @@ import android.widget.Toast;
 import com.naver.smarteditor.lesssmarteditor.MyApplication;
 import com.naver.smarteditor.lesssmarteditor.NaverPlaceService;
 import com.naver.smarteditor.lesssmarteditor.R;
-import com.naver.smarteditor.lesssmarteditor.SearchResultOnClickListener;
+import com.naver.smarteditor.lesssmarteditor.listener.OnPlaceItemClickListener;
 import com.naver.smarteditor.lesssmarteditor.adpater.map.SearchPlaceResultAdatpter;
 import com.naver.smarteditor.lesssmarteditor.data.api.naver_map.PlaceItem;
 import com.naver.smarteditor.lesssmarteditor.data.api.naver_map.PlaceItemParcelable;
@@ -119,7 +118,7 @@ public class SearchPlaceActivity extends AppCompatActivity {
 
     public void initAdapter(){
         mResultViewAdapter = new SearchPlaceResultAdatpter(this);
-        mResultViewAdapter.setOnResultClickedListener(new SearchResultOnClickListener() {
+        mResultViewAdapter.setOnResultClickedListener(new OnPlaceItemClickListener() {
             @Override
             public void OnClickListener(View v, int x, int y, int position) {
                 String mapUri = getStaticMapUri(x, y);

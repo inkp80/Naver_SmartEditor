@@ -83,43 +83,10 @@ public class EditComponentAdapter extends RecyclerView.Adapter<ComponentViewHold
     @Override
     public void onBindViewHolder(ComponentViewHolder holder, int position) {
         //TODO : viewholder - bindView() 구현 Abstract
-        BaseComponent.TypE thisComponentType = mComponents.get(position).getComponentType();
         holder.setDataPositionOnAdapter(position);
         holder.setOnComponentLongClickListener(this);
+        holder.bindView(mComponents.get(position));
 
-        switch (thisComponentType) {
-            case TEXT:
-                TextComponent thisTextComponent = (TextComponent) mComponents.get(position);
-                TextComponentViewHolder textComponentViewHolder = (TextComponentViewHolder) holder;
-                textComponentViewHolder.removeWatcher();
-                textComponentViewHolder.setText(thisTextComponent.getText());
-                textComponentViewHolder.onBind(position);
-                break;
-            case IMG:
-                ImgComponent thisImgComponent = (ImgComponent) mComponents.get(position);
-                ImgComponentViewHolder imgComponentViewHolder = (ImgComponentViewHolder) holder;
-                requestManager.load(thisImgComponent.getImgUri())
-                        .override(600, 600)
-                        .into(imgComponentViewHolder.getImageView());
-                break;
-            case MAP:
-                MapComponent thisMapComponent = (MapComponent) mComponents.get(position);
-                MapComponentViewHolder mapComponentViewHolder = (MapComponentViewHolder) holder;
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    mapComponentViewHolder.getTextView().setText(Html.fromHtml("<b>" + thisMapComponent.getPlaceName() + "</b>", Html.FROM_HTML_MODE_COMPACT));
-                    mapComponentViewHolder.getTextView().append("\n" + thisMapComponent.getPlaceAddress());
-                } else {
-                    mapComponentViewHolder.getTextView().setText(Html.fromHtml("<b>" + thisMapComponent.getPlaceName() + "</b>"));
-                    mapComponentViewHolder.getTextView().append("\n" + thisMapComponent.getPlaceAddress());
-                }
-                requestManager.load(thisMapComponent.getPlaceMapImgUri())
-                        .override(600, 600)
-                        .into(mapComponentViewHolder.getImageView());
-                break;
-            default:
-                break;
-        }
     }
 
     @Override
@@ -169,10 +136,11 @@ public class EditComponentAdapter extends RecyclerView.Adapter<ComponentViewHold
     }
 
     //Create ViewHolders
+    //factory pattern - ?
     private ImgComponentViewHolder createImageViewholder(RecyclerView.LayoutParams lp){
         ImageView img = new ImageView(mContext);
         img.setLayoutParams(lp);
-        ImgComponentViewHolder imgComponentViewHolder = new ImgComponentViewHolder(img);
+        ImgComponentViewHolder imgComponentViewHolder = new ImgComponentViewHolder(img, requestManager);
         return imgComponentViewHolder;
     }
 
@@ -193,7 +161,7 @@ public class EditComponentAdapter extends RecyclerView.Adapter<ComponentViewHold
         linearLayout.addView(mapImg);
         linearLayout.addView(placeName);
 
-        MapComponentViewHolder mapComponentViewHolder = new MapComponentViewHolder(linearLayout);
+        MapComponentViewHolder mapComponentViewHolder = new MapComponentViewHolder(linearLayout, requestManager);
         return mapComponentViewHolder;
     }
 
