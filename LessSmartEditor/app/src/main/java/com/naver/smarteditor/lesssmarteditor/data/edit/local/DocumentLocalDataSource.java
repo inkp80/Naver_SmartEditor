@@ -141,6 +141,7 @@ public class DocumentLocalDataSource implements DocumentDataSource {
     //database
     @Override
     public void saveDocumentToDatabase(String title, SaveToDatabaseCallBack saveToDatabaseCallBack) {
+        MyApplication.LogController.makeLog(TAG, "DOC ID: "+currentDocumentId, localLogPermission);
 
         if (title.length() == 0) {
             title = "제목 없음";
@@ -162,6 +163,7 @@ public class DocumentLocalDataSource implements DocumentDataSource {
 
             //TODO : set value inserted;
         } else {
+            MyApplication.LogController.makeLog(TAG, "updating", localLogPermission);
             updateDatabase(title, currentDocumentId, mComponents);
             if (saveToDatabaseCallBack != null) {
                 saveToDatabaseCallBack.OnSaveFinished();
