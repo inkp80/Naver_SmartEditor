@@ -29,7 +29,6 @@ abstract public class ComponentViewHolder extends BasicViewHolder {
         itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                itemView.setBackgroundColor(Color.LTGRAY);
                 onComponentLongClickListener.OnComponentLongClick(getDataPositionOnAdapter(), itemView);
                 return false;
             }

@@ -8,7 +8,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import com.naver.smarteditor.lesssmarteditor.MyApplication;
-import com.naver.smarteditor.lesssmarteditor.data.DocumentData;
+import com.naver.smarteditor.lesssmarteditor.data.Document;
 import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
 import com.naver.smarteditor.lesssmarteditor.data.component.ImgComponent;
 import com.naver.smarteditor.lesssmarteditor.data.component.MapComponent;
@@ -32,23 +32,17 @@ import static java.util.Collections.*;
  * Created by NAVER on 2017. 5. 21..
  */
 
-public class EditorComponentLocalDataSource implements EditorComponentDataSource {
-    private final String TAG = "EditorComponentLocalDataSource";
+public class DocumentLocalDataSource implements DocumentDataSource {
+    private final String TAG = "DocumentLocalDataSource";
     private boolean localLogPermission = true;
     private EditorDbHelper mDbHelper;
     private SQLiteDatabase db;
-    private Context mContext;
 
 
+    List<BaseComponent> mComponents;
 
-
-    ArrayList<BaseComponent> mComponents;
-
-    public EditorComponentLocalDataSource(Context context){
-
+    public DocumentLocalDataSource(Context context){
         mComponents = new ArrayList<>();
-
-        this.mContext = context;
         mDbHelper = new EditorDbHelper(context);
         db = mDbHelper.getWritableDatabase();
     }
@@ -56,7 +50,7 @@ public class EditorComponentLocalDataSource implements EditorComponentDataSource
 
     //components
     @Override
-    public void setComponents(ArrayList<BaseComponent> components, LoadComponentCallBack loadComponentCallBack) {
+    public void replaceDocumentComponents(List<BaseComponent> components, LoadComponentCallBack loadComponentCallBack) {
         this.mComponents = components;
         if(loadComponentCallBack != null) {
             loadComponentCallBack.OnComponentLoaded(components);
@@ -65,10 +59,11 @@ public class EditorComponentLocalDataSource implements EditorComponentDataSource
 
     @Override
     public void addComponentToDocument(BaseComponent.TypE type, Object componentData, LoadComponentCallBack loadComponentCallBack) {
+        //TODO : Factory pattern
         BaseComponent component = null;
 
         if(type == BaseComponent.TypE.TEXT){
-            TextComponent textComponent = new TextComponent(null);
+            TextComponent textComponent = new TextComponent("");
             component = textComponent;
         } else if (type == BaseComponent.TypE.IMG){
             ImgComponent imgComponent = new ImgComponent((String)componentData);
@@ -92,7 +87,6 @@ public class EditorComponentLocalDataSource implements EditorComponentDataSource
         if(loadComponentCallBack != null) {
             loadComponentCallBack.OnComponentLoaded(mComponents);
         }
-
     }
 
     @Override
@@ -105,13 +99,13 @@ public class EditorComponentLocalDataSource implements EditorComponentDataSource
     }
 
     @Override
-    public void clearComponents() {
+    public void clearDocumentComponents() {
         mComponents.clear();
         mComponents = new ArrayList<>();
     }
 
     @Override
-    public void deleteComponent(int position, LoadComponentCallBack loadComponentCallBack) {
+    public void deleteDocumentComponent(int position, LoadComponentCallBack loadComponentCallBack) {
         mComponents.remove(position);
         if(loadComponentCallBack != null){
             loadComponentCallBack.OnComponentLoaded(mComponents);
@@ -120,7 +114,7 @@ public class EditorComponentLocalDataSource implements EditorComponentDataSource
 
 
     @Override
-    public void changeComponentOrder(int from, int to, LoadComponentCallBack loadComponentCallBack) {
+    public void swapDocumentComponent(int from, int to, LoadComponentCallBack loadComponentCallBack) {
         if (from < to) {
             for (int i = from; i < to; i++) {
                 swap(mComponents, i, i + 1);
@@ -141,12 +135,51 @@ public class EditorComponentLocalDataSource implements EditorComponentDataSource
     //database
     @Override
     public void saveDocumentToDatabase(String title, SaveToDatabaseCallBack saveToDatabaseCallBack) {
+
         //TODO : asynTask - save to database
+        if(title.length() == 0){
+            title = "제목 없음";
+        }
+        if(checkDocumentComponentValidate() == false){
+            if(saveToDatabaseCallBack != null){
+                saveToDatabaseCallBack.OnSaveFailed();
+            }
+            return;
+        }
 
         insertIntoDatabase(title, mComponents);
-
         if(saveToDatabaseCallBack != null) {
             saveToDatabaseCallBack.OnSaveFinished();
+        }
+    }
+
+    private boolean checkDocumentComponentValidate(){
+        List<BaseComponent> components = new ArrayList<>();
+        MyApplication.LogController.makeLog(TAG, String.valueOf(mComponents.size()), localLogPermission);
+        for(BaseComponent baseComponent : mComponents){
+            BaseComponent.TypE type = baseComponent.getComponentType();
+            switch(type){
+                case TEXT:
+                    TextComponent thisTexComponent = (TextComponent) baseComponent;
+                    if(thisTexComponent.getText().length() == 0){
+                        break;
+                    }
+                    components.add(baseComponent);
+                    break;
+                case IMG:
+                    components.add(baseComponent);
+                    break;
+                case MAP:
+                    components.add(baseComponent);
+                    break;
+                default:
+                    break;
+            }
+        }
+        if(components.size() == 0){
+            return false;
+        } else {
+            return true;
         }
     }
 
@@ -179,10 +212,11 @@ public class EditorComponentLocalDataSource implements EditorComponentDataSource
 
     }
 
+
     @Override
     public void getDocumentsListFromDatabase(LoadFromDatabaseCallBack loadFromDatabaseCallBack) {
 
-        List<DocumentData> docList = converCursorToList(readFromLocalDatabase());
+        List<Document> docList = converCursorToList(readFromLocalDatabase());
         Collections.reverse(docList);
 
         if(loadFromDatabaseCallBack != null){
@@ -191,8 +225,9 @@ public class EditorComponentLocalDataSource implements EditorComponentDataSource
     }
 
 
+    //database
     @Override
-    public void updateDocumentInDatabase(String title, int doc_id, UpdateToDatabaseCallBack updateToDatabaseCallBack) {
+    public void updateDocumentFromDatabase(String title, int doc_id, UpdateToDatabaseCallBack updateToDatabaseCallBack) {
         updateDatabase(title, doc_id, mComponents);
         if(updateToDatabaseCallBack != null){
             updateToDatabaseCallBack.OnUpdateFinished();
@@ -200,9 +235,9 @@ public class EditorComponentLocalDataSource implements EditorComponentDataSource
     }
 
     @Override
-    public void deleteDocumentInDatabase(int doc_id, LoadFromDatabaseCallBack loadFromDatabaseCallBack) {
+    public void deleteDocumentFromDatabase(int doc_id, LoadFromDatabaseCallBack loadFromDatabaseCallBack) {
         deleteFromLocalDatabase(doc_id);
-        List<DocumentData> docList = converCursorToList(readFromLocalDatabase());
+        List<Document> docList = converCursorToList(readFromLocalDatabase());
         Collections.reverse(docList);
 
         if(loadFromDatabaseCallBack != null){
@@ -211,9 +246,7 @@ public class EditorComponentLocalDataSource implements EditorComponentDataSource
     }
 
 
-
-
-
+    //DB CRUD
     private void insertIntoDatabase(String title, List<BaseComponent> components){
         String jsonStr = new Gson().toJson(components);
 
@@ -258,16 +291,15 @@ public class EditorComponentLocalDataSource implements EditorComponentDataSource
         }
     }
 
-
-    private List<DocumentData> converCursorToList(Cursor cursor){
-        List<DocumentData> DocList = new ArrayList<>();
+    private List<Document> converCursorToList(Cursor cursor){
+        List<Document> DocList = new ArrayList<>();
 
         while (cursor.moveToNext()) {
             int _id = cursor.getInt(EditorContract.COL_ID);
             String title = cursor.getString(EditorContract.COL_TITLE);
             String timeStamp = cursor.getString(EditorContract.COL_TIMESTAMP);
             String jsonObject = cursor.getString(EditorContract.COL_COMPONENTS_JSON);
-            DocumentData data = new DocumentData(_id, title,timeStamp, jsonObject);
+            Document data = new Document(_id, title,timeStamp, jsonObject);
             DocList.add(data);
         }
         return DocList;

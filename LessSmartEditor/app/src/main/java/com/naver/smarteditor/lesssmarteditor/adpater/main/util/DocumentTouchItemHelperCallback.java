@@ -3,11 +3,8 @@ package com.naver.smarteditor.lesssmarteditor.adpater.main.util;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 
-import com.naver.smarteditor.lesssmarteditor.adpater.edit.EditComponentAdapter;
-import com.naver.smarteditor.lesssmarteditor.adpater.edit.util.ComponentTouchEventListener;
 import com.naver.smarteditor.lesssmarteditor.adpater.main.DocumentListAdapter;
 import com.naver.smarteditor.lesssmarteditor.adpater.main.holder.DocumentListViewHolder;
-import com.naver.smarteditor.lesssmarteditor.data.DocumentData;
 
 /**
  * Created by NAVER on 2017. 5. 30..
@@ -47,7 +44,7 @@ public class DocumentTouchItemHelperCallback extends ItemTouchHelper.Callback {
 
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-        mItemTouchHelper.OnItemDismiss(((DocumentListViewHolder)viewHolder).getDocumentData());
+        mItemTouchHelper.OnItemDismiss(((DocumentListViewHolder)viewHolder).getDocument());
     }
 
 }

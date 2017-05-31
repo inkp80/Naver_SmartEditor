@@ -7,17 +7,17 @@ import android.os.Parcelable;
  * Created by macbook on 2017. 5. 25..
  */
 
-public class DocumentDataParcelable implements Parcelable {
+public class DocumentParcelable implements Parcelable {
     int doc_id;
     String title;
     String timestamp;
     String componentsJson;
 
-    public DocumentDataParcelable(Parcel in){
+    public DocumentParcelable(Parcel in){
         readFromParcel(in);
     }
 
-    public DocumentDataParcelable(int doc_id, String title, String timestamp, String componentsJson){
+    public DocumentParcelable(int doc_id, String title, String timestamp, String componentsJson){
         this.doc_id = doc_id;
         this.title = title;
         this.timestamp = timestamp;
@@ -45,12 +45,12 @@ public class DocumentDataParcelable implements Parcelable {
     }
 
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
-        public DocumentDataParcelable createFromParcel(Parcel in){
-            return new DocumentDataParcelable(in);
+        public DocumentParcelable createFromParcel(Parcel in){
+            return new DocumentParcelable(in);
         }
 
-        public DocumentDataParcelable[] newArray(int size){
-            return new DocumentDataParcelable[size];
+        public DocumentParcelable[] newArray(int size){
+            return new DocumentParcelable[size];
         }
     };
 

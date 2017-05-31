@@ -25,10 +25,10 @@ import com.naver.smarteditor.lesssmarteditor.R;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.EditComponentAdapter;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.util.ComponentTouchEventListener;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.util.ComponentTouchItemHelperCallback;
-import com.naver.smarteditor.lesssmarteditor.data.DocumentDataParcelable;
+import com.naver.smarteditor.lesssmarteditor.data.DocumentParcelable;
 import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
 import com.naver.smarteditor.lesssmarteditor.data.api.naver_map.PlaceItemParcelable;
-import com.naver.smarteditor.lesssmarteditor.data.edit.local.EditorComponentRepository;
+import com.naver.smarteditor.lesssmarteditor.data.edit.local.DocumentRepository;
 import com.naver.smarteditor.lesssmarteditor.views.edit.dialog.SelectComponentDialog;
 import com.naver.smarteditor.lesssmarteditor.views.edit.presenter.EditContract;
 import com.naver.smarteditor.lesssmarteditor.views.edit.presenter.EditPresenter;
@@ -36,8 +36,6 @@ import com.naver.smarteditor.lesssmarteditor.views.edit.utils.ClearCachesTask;
 import com.naver.smarteditor.lesssmarteditor.views.edit.utils.TitleFilter;
 import com.naver.smarteditor.lesssmarteditor.views.main.DocumentListActivity;
 import com.naver.smarteditor.lesssmarteditor.views.map.SearchPlaceActivity;
-
-import java.util.Calendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -115,9 +113,9 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         initEditorMenu();
         initDialog();
         checkEditorMode();
-        setTitleLengthLimit(10);
+        setTitleLengthLimit(30);
 
-        initComponentMenu();
+        initComponentOption();
     }
 
 
@@ -130,7 +128,6 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        //TODO: handling data
         if(resultCode == RESULT_OK) {
             if(requestCode == REQ_MOV2_GALLERY){
                 try {
@@ -141,7 +138,6 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
                 }
             } else if(requestCode == REQ_MOV2_SEARCH_PLACE) {
                 try {
-                    //TODO: parcel should declared with final
                     Bundle bundle = data.getExtras();
                     PlaceItemParcelable passer = bundle.getParcelable(MAPINFO_PARCEL);
                     mPresenter.addComponentToDocument(BaseComponent.TypE.MAP, passer);
@@ -175,12 +171,10 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         mPresenter.attachView(this);
         mPresenter.setComponentAdapterView(mAdapter);
         mPresenter.setComponentAdatperModel(mAdapter);
-        mPresenter.setComponentDataSource(EditorComponentRepository.getInstance(this));
+        mPresenter.setComponentDataSource(DocumentRepository.getInstance(this));
     }
 
     private void initDialog() {
-        //TODO: rename & restructuring
-
         dialogAddTxtButtonListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -220,7 +214,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         Intent intent = new Intent(this, SearchPlaceActivity.class);
         startActivityForResult(intent, REQ_MOV2_SEARCH_PLACE);
     }
-    //---
+    ////////////////////////////////////////////////////////////////////////////////////
 
 
     //View action
@@ -230,16 +224,37 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         ProgressDialog dialog = ProgressDialog.show(EditorActivity.this, "", "잠시만 기다려 주세요 ...", true);
         dialog.show();
     }
-
+    ////////////////////////////////////////////////////////////////////////////////////
 
 
     //TODO: focus 관련 동작 여기서
     @Override
     public void setFocusForSelectedComponent(int componentIndex, View selectedComponent) {
+        if(selectedComponent == focusingComponentView) {
+            return;
+        }
+        MyApplication.LogController.makeLog(TAG, String.valueOf(componentIndex), localLogPermission);
         removeFocusFromCurrentComponent();
         focusingComponentIndex = componentIndex;
         focusingComponentView = selectedComponent;
-        showComponentMenu();
+        focusingComponentView.setBackgroundColor(Color.LTGRAY);
+        showComponentOption();
+    }
+
+    private void removeFocusFromCurrentComponent() {
+        hideComponentOption();
+        if(focusingComponentView != null) {
+            focusingComponentView.setBackgroundColor(Color.parseColor("#FAFAFA"));
+        }
+        focusingComponentView = null;
+        focusingComponentIndex = -1;
+    }
+
+    private boolean checkComponentIsFocused(){
+        if(mComponentMenu.getVisibility() == View.VISIBLE)
+            return true;
+        else
+            return false;
     }
 
     @Override
@@ -248,20 +263,21 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         mEditorRecyclerView.requestChildFocus(mEditorRecyclerView.getChildAt(componentPosition), getCurrentFocus());
     }
 
+
+    ////////////////////////////////////////////////////////////////////////////////////
+
     //activity
     @Override
     public void onBackPressed() {
-        if(checkComponentMenuIsActive()){
+        if(checkComponentIsFocused()){
             removeFocusFromCurrentComponent();
             backKeyTime = 0;
             return;
         }
 
-        Toast toast;
         if (System.currentTimeMillis() > backKeyTime + 2000) {
             backKeyTime = System.currentTimeMillis();
-            toast = Toast.makeText(this, "\'뒤로\' 한번 더 누르시면 종료됩니다.", Toast.LENGTH_SHORT);
-            toast.show();
+            Toast.makeText(this, "\'뒤로\' 한번 더 누르시면 종료됩니다.", Toast.LENGTH_SHORT).show();
             return;
         }
         if (System.currentTimeMillis() <= backKeyTime + 2000) {
@@ -291,8 +307,6 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         mBtSaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(EditorActivity.this, String.valueOf(Calendar.getInstance().getTime()) + "\n저장되었습니다.", Toast.LENGTH_SHORT).show();
-
                 if (EDITOR_MODE == NEW_DOCUMENT_MODE) {
                     mPresenter.saveDocumentToDataBase(mTxtTitle.getText().toString());
                 } else if (EDITOR_MODE == EDIT_DOCUMENT_MODE) {
@@ -314,28 +328,13 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
                         .setPositiveButton("YES", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                removeFocusFromCurrentComponent();
                                 createNewDocument();
                             }
                         });
                 ab.show();
             }
         });
-    }
-
-
-    //TODO : Remove Edit-Mode intent data from DocListActivity
-    private void checkEditorMode() {
-        Intent intent = getIntent();
-        EDITOR_MODE = intent.getIntExtra(MyApplication.EDITOR_MODE, NEW_DOCUMENT_MODE);
-        MyApplication.LogController.makeLog(TAG, "Editor Mode :" + String.valueOf(EDITOR_MODE), localLogPermission);
-
-        if (EDITOR_MODE == EDIT_DOCUMENT_MODE) {
-            mPresenter.clearCurrentDocument();
-            DocumentDataParcelable documentDataParcelable = getDocumentDataFromParcelable(intent);
-            initDocument(documentDataParcelable);
-        } else if (EDITOR_MODE == NEW_DOCUMENT_MODE) {
-            MyApplication.LogController.makeLog(TAG, "Editor Mode :" + String.valueOf(NEW_DOCUMENT_MODE), localLogPermission);
-        }
     }
 
     private void setTitleLengthLimit(int lengthLimit) {
@@ -345,10 +344,12 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
 
         mTxtTitle.setFilters(f);
     }
+    ////////////////////////////////////////////////////////////////////////////////////
 
 
-    //componentMenu
-    private void initComponentMenu() {
+
+    //componentOption : Sliding menu which showing in View when DocumentComponent selected by long click
+    private void initComponentOption() {
         mBtCancelMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -360,63 +361,71 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
             @Override
             public void onClick(View v) {
                 mPresenter.deleteComponentFromDocument(focusingComponentIndex);
-                hideComponentMenu();
+                removeFocusFromCurrentComponent();
+                hideComponentOption();
             }
         });
     }
 
-    private void removeFocusFromCurrentComponent() {
-        hideComponentMenu();
-        focusingComponentView.setBackgroundColor(Color.parseColor("#FAFAFA"));
-        focusingComponentView = null;
-        focusingComponentIndex = -1;
-    }
-
-    private void hideComponentMenu() {
+    private void hideComponentOption() {
         mComponentMenu.setVisibility(GONE);
     }
 
-    private void showComponentMenu() {
+    private void showComponentOption() {
         mComponentMenu.setVisibility(View.VISIBLE);
     }
 
-    private boolean checkComponentMenuIsActive(){
-        if(mComponentMenu.getVisibility() == View.VISIBLE)
-            return true;
-        else
-            return false;
-    }
-
-
-    private DocumentDataParcelable getDocumentDataFromParcelable(Intent intent) {
+    private DocumentParcelable getDocumentDataFromParcelable(Intent intent) {
         Bundle bundle = intent.getExtras();
-        DocumentDataParcelable documentDataParcelable = bundle.getParcelable(DOCUMENT_PARCEL);
-        return documentDataParcelable;
+        DocumentParcelable documentParcelable = bundle.getParcelable(DOCUMENT_PARCEL);
+        return documentParcelable;
     }
+    ////////////////////////////////////////////////////////////////////////////////////
+
+
 
 
     //TODO : 구조 개선, 작명
     //doc List Activity => View로 => Presenter로 => Model 가공 => View로
-    private void initDocument(DocumentDataParcelable documentDataParcelable) {
-        mTxtTitle.setText(documentDataParcelable.getTitle());
-        currentDocumentId = documentDataParcelable.getDoc_id();
-        requestDocumentBody(documentDataParcelable);
+    private void initDocument(DocumentParcelable documentParcelable) {
+        mTxtTitle.setText(documentParcelable.getTitle());
+        currentDocumentId = documentParcelable.getDoc_id();
+        requestDocumentBody(documentParcelable);
     }
 
-    private void requestDocumentBody(DocumentDataParcelable documentDataParcelable) {
-        String jsonComponent = documentDataParcelable.getComponentsJson();
+
+    //TODO : Remove Edit-Mode intent data from DocListActivity
+    private void checkEditorMode() {
+        Intent intent = getIntent();
+        EDITOR_MODE = intent.getIntExtra(MyApplication.EDITOR_MODE, NEW_DOCUMENT_MODE);
+        MyApplication.LogController.makeLog(TAG, "Editor Mode :" + String.valueOf(EDITOR_MODE), localLogPermission);
+
+        if (EDITOR_MODE == EDIT_DOCUMENT_MODE) {
+            mPresenter.clearCurrentDocument();
+            DocumentParcelable documentParcelable = getDocumentDataFromParcelable(intent);
+            initDocument(documentParcelable);
+        } else if (EDITOR_MODE == NEW_DOCUMENT_MODE) {
+            MyApplication.LogController.makeLog(TAG, "Editor Mode :" + String.valueOf(NEW_DOCUMENT_MODE), localLogPermission);
+        }
+    }
+
+    private void requestDocumentBody(DocumentParcelable documentParcelable) {
+        String jsonComponent = documentParcelable.getComponentsJson();
         mPresenter.getComponentsFromJson(jsonComponent);
     }
 
     //TODO : createNewDocument, 이미 비어있다면 새로 만들 필요가 없다.. 초기화로는?
     private void createNewDocument() {
         mTxtTitle.setText("");
-        mTxtTitle.setHint("Title");
+        mTxtTitle.setHint("제목 없음");
         mPresenter.clearCurrentDocument();
         EDITOR_MODE = NEW_DOCUMENT_MODE;
         currentDocumentId = -1;
     }
 
 
-
+    @Override
+    public void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
 }

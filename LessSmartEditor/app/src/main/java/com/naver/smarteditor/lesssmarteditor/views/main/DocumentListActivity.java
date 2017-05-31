@@ -11,8 +11,8 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import com.naver.smarteditor.lesssmarteditor.R;
 import com.naver.smarteditor.lesssmarteditor.adpater.main.DocumentListAdapter;
 import com.naver.smarteditor.lesssmarteditor.adpater.main.util.DocumentTouchItemHelperCallback;
-import com.naver.smarteditor.lesssmarteditor.data.DocumentDataParcelable;
-import com.naver.smarteditor.lesssmarteditor.data.edit.local.EditorComponentRepository;
+import com.naver.smarteditor.lesssmarteditor.data.DocumentParcelable;
+import com.naver.smarteditor.lesssmarteditor.data.edit.local.DocumentRepository;
 import com.naver.smarteditor.lesssmarteditor.views.edit.EditorActivity;
 import com.naver.smarteditor.lesssmarteditor.views.main.presenter.DocumentListContract;
 import com.naver.smarteditor.lesssmarteditor.views.main.presenter.DocumentListPresenter;
@@ -68,7 +68,7 @@ public class DocumentListActivity extends AppCompatActivity implements DocumentL
         documentListPresenter.setMainAdapterModel(documentListAdapter);
         documentListPresenter.setMainAdapterView(documentListAdapter);
         documentListPresenter.attachView(this);
-        documentListPresenter.setComponentDataSource(EditorComponentRepository.getInstance(this));
+        documentListPresenter.setComponentDataSource(DocumentRepository.getInstance(this));
     }
 
     @Override
@@ -86,9 +86,9 @@ public class DocumentListActivity extends AppCompatActivity implements DocumentL
 
 
     @Override
-    public void editThisDocument(DocumentDataParcelable documentDataParcelable) {
+    public void editSelectedDocument(DocumentParcelable documentParcelable) {
         Intent intent = new Intent(DocumentListActivity.this, EditorActivity.class);
-        intent.putExtra(DOCUMENT_PARCEL, documentDataParcelable);
+        intent.putExtra(DOCUMENT_PARCEL, documentParcelable);
         intent.putExtra(EDITOR_MODE, EDIT_DOCUMENT_MODE);
         startActivity(intent);
     }

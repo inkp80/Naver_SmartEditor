@@ -76,6 +76,7 @@ public class SearchPlaceActivity extends AppCompatActivity {
     public void requestSearchPlaceService(){
         String query = mSearchTarget.getText().toString();
         if(query.length() == 0 || query == null){
+            Toast.makeText(this, "검색 내용을 입력해주세요.", Toast.LENGTH_SHORT).show();
             //do nothing - 요청이 없음
             return;
         }
@@ -120,7 +121,7 @@ public class SearchPlaceActivity extends AppCompatActivity {
         mResultViewAdapter = new SearchPlaceResultAdatpter(this);
         mResultViewAdapter.setOnResultClickedListener(new OnPlaceItemClickListener() {
             @Override
-            public void OnClickListener(View v, int x, int y, int position) {
+            public void OnPlaceItemClick(View v, int x, int y, int position) {
                 String mapUri = getStaticMapUri(x, y);
 
                 PlaceItemParcelable passer = new PlaceItemParcelable(

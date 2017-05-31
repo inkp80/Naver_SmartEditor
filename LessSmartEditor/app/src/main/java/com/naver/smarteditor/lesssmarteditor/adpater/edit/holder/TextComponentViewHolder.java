@@ -1,17 +1,14 @@
 package com.naver.smarteditor.lesssmarteditor.adpater.edit.holder;
 
-import android.content.Context;
-import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 
 
 import com.naver.smarteditor.lesssmarteditor.data.component.TextComponent;
 import com.naver.smarteditor.lesssmarteditor.listener.OnComponentLongClickListener;
-import com.naver.smarteditor.lesssmarteditor.listener.OnTextChangeListener;
+import com.naver.smarteditor.lesssmarteditor.listener.OnEditTextComponentChangeListener;
 
 /**
  * Created by NAVER on 2017. 5. 22..
@@ -21,13 +18,13 @@ public class TextComponentViewHolder extends ComponentViewHolder {
 
 
     private EditText et;
-    private final OnTextChangeListener onTextChangeListener;
+    private final OnEditTextComponentChangeListener onEditTextComponentChangeListener;
     private TextWatcher textWatcher;
 
-    public TextComponentViewHolder(View itemView, final OnTextChangeListener onTextChangeListener) {
+    public TextComponentViewHolder(View itemView, final OnEditTextComponentChangeListener onEditTextComponentChangeListener) {
         super(itemView);
         this.et = (EditText) itemView;
-        this.onTextChangeListener = onTextChangeListener;
+        this.onEditTextComponentChangeListener = onEditTextComponentChangeListener;
     }
 
 
@@ -46,7 +43,7 @@ public class TextComponentViewHolder extends ComponentViewHolder {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                onTextChangeListener.onTextChanged(s, position);
+                onEditTextComponentChangeListener.onEditTextComponentTextChange(s, position);
             }
 
             @Override

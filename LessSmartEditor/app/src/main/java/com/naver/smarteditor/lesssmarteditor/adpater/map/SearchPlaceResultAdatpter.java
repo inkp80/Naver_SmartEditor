@@ -90,7 +90,7 @@ public class SearchPlaceResultAdatpter extends RecyclerView.Adapter<SearchPlaceR
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mSearchResultItemOnClickListener.OnClickListener(itemView, katechMapX, katechMapY, postion);
+                    mSearchResultItemOnClickListener.OnPlaceItemClick(itemView, katechMapX, katechMapY, postion);
                 }
             });
         }

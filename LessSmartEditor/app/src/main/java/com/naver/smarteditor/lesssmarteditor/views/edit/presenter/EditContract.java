@@ -1,10 +1,8 @@
 package com.naver.smarteditor.lesssmarteditor.views.edit.presenter;
 
-import android.view.View;
-
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.EditComponentAdapterContract;
 import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
-import com.naver.smarteditor.lesssmarteditor.data.edit.local.EditorComponentRepository;
+import com.naver.smarteditor.lesssmarteditor.data.edit.local.DocumentRepository;
 import com.naver.smarteditor.lesssmarteditor.views.basic.BaseView;
 import com.naver.smarteditor.lesssmarteditor.views.basic.presenter.BasePresenter;
 
@@ -16,6 +14,7 @@ public interface EditContract {
 
     interface View extends BaseView{
         void showProgressBar();
+        void showToast(String message);
         void setFocusForSelectedComponent(int componentIndex, android.view.View selectedComponent);
         void scrollToNewComponent(int componentIndex);
     }
@@ -29,7 +28,7 @@ public interface EditContract {
 
         void setComponentAdatperModel(EditComponentAdapterContract.Model adapter);
         void setComponentAdapterView(EditComponentAdapterContract.View adapter);
-        void setComponentDataSource(EditorComponentRepository repository);
+        void setComponentDataSource(DocumentRepository repository);
 
 
         //components

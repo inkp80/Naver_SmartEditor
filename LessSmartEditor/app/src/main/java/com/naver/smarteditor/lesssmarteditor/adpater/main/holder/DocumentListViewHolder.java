@@ -1,13 +1,12 @@
 package com.naver.smarteditor.lesssmarteditor.adpater.main.holder;
 
-import android.os.Build;
-import android.text.Html;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
 import com.naver.smarteditor.lesssmarteditor.adpater.basic.holder.BasicViewHolder;
-import com.naver.smarteditor.lesssmarteditor.data.DocumentData;
-import com.naver.smarteditor.lesssmarteditor.data.DocumentDataParcelable;
+import com.naver.smarteditor.lesssmarteditor.data.Document;
+import com.naver.smarteditor.lesssmarteditor.data.DocumentParcelable;
 import com.naver.smarteditor.lesssmarteditor.listener.OnDocumentClickListener;
 
 /**
@@ -17,37 +16,39 @@ import com.naver.smarteditor.lesssmarteditor.listener.OnDocumentClickListener;
 public class DocumentListViewHolder extends BasicViewHolder{
 
     private TextView mTitleText;
-    private DocumentData documentData;
+    private Document document;
     private OnDocumentClickListener onDocumentClickListener;
 
     public DocumentListViewHolder(View itemView, final OnDocumentClickListener onDocumentClickListener) {
         super(itemView);
         mTitleText = (TextView) itemView;
+        mTitleText.setEllipsize(TextUtils.TruncateAt.END);
+        mTitleText.setMaxLines(1);
         this.onDocumentClickListener = onDocumentClickListener;
         mTitleText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DocumentDataParcelable documentDataParcelable = new DocumentDataParcelable(
-                        documentData.get_id(),
-                        documentData.getTitle(),
-                        documentData.getTimeStemp(),
-                        documentData.getComponentsJson()
+                DocumentParcelable documentParcelable = new DocumentParcelable(
+                        document.get_id(),
+                        document.getTitle(),
+                        document.getTimeStemp(),
+                        document.getComponentsJson()
                 );
-                onDocumentClickListener.OnClick(documentDataParcelable);
+                onDocumentClickListener.OnDocumentClick(documentParcelable);
             }
         });
     }
 
-    public void bindDocumentData(DocumentData data){
-        this.documentData = data;
+    public void bindDocumentData(Document data){
+        this.document = data;
     }
 
     public void setTitleTextView(String title){
        mTitleText.setText(title);
     }
 
-    public DocumentData getDocumentData(){
-        return documentData;
+    public Document getDocument(){
+        return document;
     }
 
     @Override

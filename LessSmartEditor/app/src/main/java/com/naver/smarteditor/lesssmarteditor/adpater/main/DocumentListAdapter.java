@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import com.naver.smarteditor.lesssmarteditor.adpater.basic.holder.BasicViewHolder;
 import com.naver.smarteditor.lesssmarteditor.adpater.main.holder.DocumentListViewHolder;
-import com.naver.smarteditor.lesssmarteditor.data.DocumentData;
+import com.naver.smarteditor.lesssmarteditor.data.Document;
 import com.naver.smarteditor.lesssmarteditor.listener.OnDocumentClickListener;
 
 import java.util.ArrayList;
@@ -22,11 +22,11 @@ public class DocumentListAdapter extends RecyclerView.Adapter<BasicViewHolder> i
 
     private Context mContext;
     private OnDocumentClickListener onDocumentClickListener;
-    private List<DocumentData> mDocumentData;
+    private List<Document> mDocument;
 
     public DocumentListAdapter(Context context){
         this.mContext = context;
-        mDocumentData = new ArrayList<>();
+        mDocument = new ArrayList<>();
     }
 
     @Override
@@ -43,13 +43,13 @@ public class DocumentListAdapter extends RecyclerView.Adapter<BasicViewHolder> i
     @Override
     public void onBindViewHolder(BasicViewHolder holder, int position) {
         DocumentListViewHolder thisViewHolder = (DocumentListViewHolder) holder;
-        thisViewHolder.setTitleTextView(mDocumentData.get(position).getTitle());
-        thisViewHolder.bindDocumentData(mDocumentData.get(position));
+        thisViewHolder.setTitleTextView(mDocument.get(position).getTitle());
+        thisViewHolder.bindDocumentData(mDocument.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return mDocumentData.size();
+        return mDocument.size();
     }
 
     @Override
@@ -58,13 +58,13 @@ public class DocumentListAdapter extends RecyclerView.Adapter<BasicViewHolder> i
     }
 
     @Override
-    public void notifyAdapter() {
+    public void notifyDataChange() {
         notifyDataSetChanged();
     }
 
     @Override
-    public void setDocumentList(List<DocumentData> docs) {
-        this.mDocumentData = docs;
+    public void initDocumentList(List<Document> docs) {
+        this.mDocument = docs;
     }
 
     @Override

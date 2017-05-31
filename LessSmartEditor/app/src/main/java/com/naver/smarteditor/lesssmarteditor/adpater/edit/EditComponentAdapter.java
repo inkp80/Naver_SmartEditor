@@ -1,32 +1,18 @@
 package com.naver.smarteditor.lesssmarteditor.adpater.edit;
 
 import android.content.Context;
-import android.os.Build;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
-import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.naver.smarteditor.lesssmarteditor.MyApplication;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.holder.ComponentViewHolder;
-import com.naver.smarteditor.lesssmarteditor.adpater.edit.holder.ImgComponentViewHolder;
-import com.naver.smarteditor.lesssmarteditor.adpater.edit.holder.MapComponentViewHolder;
-import com.naver.smarteditor.lesssmarteditor.adpater.edit.holder.TextComponentViewHolder;
+import com.naver.smarteditor.lesssmarteditor.adpater.edit.holder.ViewHolderFactory;
 import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
-import com.naver.smarteditor.lesssmarteditor.data.component.ImgComponent;
-import com.naver.smarteditor.lesssmarteditor.data.component.MapComponent;
-import com.naver.smarteditor.lesssmarteditor.data.component.TextComponent;
 import com.naver.smarteditor.lesssmarteditor.listener.OnComponentLongClickListener;
-import com.naver.smarteditor.lesssmarteditor.listener.OnTextChangeListener;
+import com.naver.smarteditor.lesssmarteditor.listener.OnEditTextComponentChangeListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,11 +30,10 @@ public class EditComponentAdapter extends RecyclerView.Adapter<ComponentViewHold
 
     private RequestManager requestManager;
 
+    private ViewHolderFactory viewHolderFactory;
     private Context mContext;
-    private OnTextChangeListener onTextChangeListener;
+    private OnEditTextComponentChangeListener onEditTextComponentChangeListener;
     private List<BaseComponent> mComponents;
-
-    private EditText currentFocus;
 
     private OnComponentLongClickListener onComponentLongClickListener;
 
@@ -61,32 +46,17 @@ public class EditComponentAdapter extends RecyclerView.Adapter<ComponentViewHold
 
     @Override
     public ComponentViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
-        RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        //TODO : viewHolderFactory 메모리 누수?
+        viewHolderFactory = new ViewHolderFactory(mContext, requestManager, onEditTextComponentChangeListener);
         BaseComponent.TypE ViewHolderType = BaseComponent.getType(viewType);
-
-        //TODO : create ViewHolder Abstract
-        switch (ViewHolderType) {
-            case TEXT:
-                return createTextComponentViewholder(lp);
-            case IMG:
-                return createImageViewholder(lp);
-            case MAP:
-                return createMapViewHolder(lp);
-            default:
-                break;
-        }
-
-        return null;
+        return viewHolderFactory.createViewHolder(ViewHolderType);
     }
 
     @Override
     public void onBindViewHolder(ComponentViewHolder holder, int position) {
-        //TODO : viewholder - bindView() 구현 Abstract
         holder.setDataPositionOnAdapter(position);
         holder.setOnComponentLongClickListener(this);
         holder.bindView(mComponents.get(position));
-
     }
 
     @Override
@@ -94,14 +64,13 @@ public class EditComponentAdapter extends RecyclerView.Adapter<ComponentViewHold
         return mComponents.size();
     }
 
-    @Override
-    public void setOnTextChangeListener(OnTextChangeListener onTextChangeListener) {
-        this.onTextChangeListener = onTextChangeListener;
+    public void setOnEditTextComponentChangeListener(OnEditTextComponentChangeListener onEditTextComponentChangeListener) {
+        this.onEditTextComponentChangeListener = onEditTextComponentChangeListener;
     }
 
 
     @Override
-    public void notifyAdapter() {
+    public void notifyDataChange() {
         MyApplication.LogController.makeLog(TAG, "notifyadapter", localLogPermission);
         notifyDataSetChanged();
     }
@@ -116,60 +85,18 @@ public class EditComponentAdapter extends RecyclerView.Adapter<ComponentViewHold
 
     //AdapterModel & View
     @Override
-    public void setComponent(List<BaseComponent> components) {
+    public void initDocmentComponents(List<BaseComponent> components) {
         mComponents = new ArrayList<>(components);
     }
 
     @Override
-    public void clearComponent() {
+    public void clearDocumentComponent() {
         mComponents.clear();
     }
 
     @Override
-    public void swapComponent(int fromPosition, int toPosition) {
+    public void swapDocumentComponent(int fromPosition, int toPosition) {
         notifyItemMoved(fromPosition, toPosition);
-    }
-
-    @Override
-    public void setFocus(){
-        //TODO : Set focus to editText
-    }
-
-    //Create ViewHolders
-    //factory pattern - ?
-    private ImgComponentViewHolder createImageViewholder(RecyclerView.LayoutParams lp){
-        ImageView img = new ImageView(mContext);
-        img.setLayoutParams(lp);
-        ImgComponentViewHolder imgComponentViewHolder = new ImgComponentViewHolder(img, requestManager);
-        return imgComponentViewHolder;
-    }
-
-    private MapComponentViewHolder createMapViewHolder(RecyclerView.LayoutParams lp){
-        TextView placeName = new TextView(mContext);
-        ImageView mapImg = new ImageView(mContext);
-        placeName.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
-
-        LinearLayout linearLayout = new LinearLayout(mContext);
-        LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        llp.gravity = Gravity.CENTER;
-        placeName.setLayoutParams(lp);
-        placeName.setGravity(Gravity.CENTER_HORIZONTAL);
-        mapImg.setLayoutParams(lp);
-
-        linearLayout.setOrientation(LinearLayout.VERTICAL);
-        linearLayout.setLayoutParams(llp);
-        linearLayout.addView(mapImg);
-        linearLayout.addView(placeName);
-
-        MapComponentViewHolder mapComponentViewHolder = new MapComponentViewHolder(linearLayout, requestManager);
-        return mapComponentViewHolder;
-    }
-
-    private TextComponentViewHolder createTextComponentViewholder(RecyclerView.LayoutParams lp){
-        EditText et = new EditText(mContext);
-        et.setLayoutParams(lp);
-        TextComponentViewHolder textComponentViewHolder = new TextComponentViewHolder(et, onTextChangeListener);
-        return textComponentViewHolder;
     }
 
 

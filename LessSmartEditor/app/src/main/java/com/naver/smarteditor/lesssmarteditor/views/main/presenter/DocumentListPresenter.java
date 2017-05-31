@@ -2,10 +2,10 @@ package com.naver.smarteditor.lesssmarteditor.views.main.presenter;
 
 import com.naver.smarteditor.lesssmarteditor.adpater.main.DocumentListAdapterContract;
 import com.naver.smarteditor.lesssmarteditor.adpater.main.util.DocumentTouchEventListener;
-import com.naver.smarteditor.lesssmarteditor.data.DocumentData;
-import com.naver.smarteditor.lesssmarteditor.data.DocumentDataParcelable;
-import com.naver.smarteditor.lesssmarteditor.data.edit.local.EditorComponentDataSource;
-import com.naver.smarteditor.lesssmarteditor.data.edit.local.EditorComponentRepository;
+import com.naver.smarteditor.lesssmarteditor.data.Document;
+import com.naver.smarteditor.lesssmarteditor.data.DocumentParcelable;
+import com.naver.smarteditor.lesssmarteditor.data.edit.local.DocumentDataSource;
+import com.naver.smarteditor.lesssmarteditor.data.edit.local.DocumentRepository;
 import com.naver.smarteditor.lesssmarteditor.listener.OnDocumentClickListener;
 
 import java.util.List;
@@ -20,7 +20,7 @@ public class DocumentListPresenter implements DocumentListContract.Presenter, On
     private DocumentListAdapterContract.Model adapterModel;
     private DocumentListAdapterContract.View adapterView;
 
-    private EditorComponentRepository editComponentRepository;
+    private DocumentRepository editComponentRepository;
 
     public DocumentListPresenter() {
 
@@ -28,18 +28,18 @@ public class DocumentListPresenter implements DocumentListContract.Presenter, On
 
 
     @Override
-    public void OnClick(DocumentDataParcelable documentDataParcelable) {
-        view.editThisDocument(documentDataParcelable);
+    public void OnDocumentClick(DocumentParcelable documentParcelable) {
+        view.editSelectedDocument(documentParcelable);
     }
 
 
     @Override
     public void requestDocumentsFromLocal() {
-        editComponentRepository.getDocumentsListFromDatabase(new EditorComponentDataSource.LoadFromDatabaseCallBack() {
+        editComponentRepository.getDocumentsListFromDatabase(new DocumentDataSource.LoadFromDatabaseCallBack() {
             @Override
-            public void OnLoadFinished(List<DocumentData> data) {
-                adapterModel.setDocumentList(data);
-                adapterView.notifyAdapter();
+            public void OnLoadFinished(List<Document> data) {
+                adapterModel.initDocumentList(data);
+                adapterView.notifyDataChange();
             }
 
         });
@@ -57,7 +57,7 @@ public class DocumentListPresenter implements DocumentListContract.Presenter, On
     }
 
     @Override
-    public void setComponentDataSource(EditorComponentRepository repository) {
+    public void setComponentDataSource(DocumentRepository repository) {
         this.editComponentRepository = repository;
     }
 
@@ -74,12 +74,12 @@ public class DocumentListPresenter implements DocumentListContract.Presenter, On
 
 
     @Override
-    public void OnItemDismiss(DocumentData documentData) {
-        editComponentRepository.deleteDocumentInDatabase(documentData.get_id(), new EditorComponentDataSource.LoadFromDatabaseCallBack() {
+    public void OnItemDismiss(Document document) {
+        editComponentRepository.deleteDocumentFromDatabase(document.get_id(), new DocumentDataSource.LoadFromDatabaseCallBack() {
             @Override
-            public void OnLoadFinished(List<DocumentData> data) {
-                    adapterModel.setDocumentList(data);
-                    adapterView.notifyAdapter();
+            public void OnLoadFinished(List<Document> data) {
+                    adapterModel.initDocumentList(data);
+                    adapterView.notifyDataChange();
             }
         });
 

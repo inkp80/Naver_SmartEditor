@@ -23,7 +23,7 @@ public class TitleFilter implements InputFilter {
                                int dstart, int dend) {
         int keep = mMax - (dest.length() - (dend - dstart));
         if (keep <= 0) {
-            Toast.makeText(mContext, "Text Length Exceeded", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, String.valueOf(mMax) + "자를 초과하였습니다.", Toast.LENGTH_SHORT).show();
             return "";
         } else if (keep >= end - start) {
             return null; // keep original
