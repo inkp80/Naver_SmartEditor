@@ -65,7 +65,7 @@ public class EditComponentAdapter extends RecyclerView.Adapter<ComponentViewHold
         RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         BaseComponent.TypE ViewHolderType = BaseComponent.getType(viewType);
 
-
+        //TODO : create ViewHolder Abstract
         switch (ViewHolderType) {
             case TEXT:
                 return createTextComponentViewholder(lp);
@@ -82,7 +82,7 @@ public class EditComponentAdapter extends RecyclerView.Adapter<ComponentViewHold
 
     @Override
     public void onBindViewHolder(ComponentViewHolder holder, int position) {
-
+        //TODO : viewholder - bindView() 구현 Abstract
         BaseComponent.TypE thisComponentType = mComponents.get(position).getComponentType();
         holder.setDataPositionOnAdapter(position);
         holder.setOnComponentLongClickListener(this);
@@ -165,7 +165,7 @@ public class EditComponentAdapter extends RecyclerView.Adapter<ComponentViewHold
 
     @Override
     public void setFocus(){
-
+        //TODO : Set focus to editText
     }
 
     //Create ViewHolders
