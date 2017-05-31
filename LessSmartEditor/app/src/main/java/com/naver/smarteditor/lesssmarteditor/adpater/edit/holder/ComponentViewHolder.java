@@ -1,5 +1,6 @@
 package com.naver.smarteditor.lesssmarteditor.adpater.edit.holder;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -44,6 +45,8 @@ abstract public class ComponentViewHolder extends BasicViewHolder {
     public void setDataPositionOnAdapter(int position) {
 
     }
+
+    abstract public void bindView(Object object);
 
     abstract public void setOnComponentLongClickListener(OnComponentLongClickListener onComponentLongClickListener);
 }

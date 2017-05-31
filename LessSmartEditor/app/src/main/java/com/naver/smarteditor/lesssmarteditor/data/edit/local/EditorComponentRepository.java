@@ -44,8 +44,8 @@ public class EditorComponentRepository implements EditorComponentDataSource {
     }
 
     @Override
-    public void addComponent(BaseComponent.TypE type, Object componentData, final LoadComponentCallBack loadComponentCallBack) {
-        editComponentLocalDataSource.addComponent(type, componentData, new LoadComponentCallBack() {
+    public void addComponentToDocument(BaseComponent.TypE type, Object componentData, final LoadComponentCallBack loadComponentCallBack) {
+        editComponentLocalDataSource.addComponentToDocument(type, componentData, new LoadComponentCallBack() {
             @Override
             public void OnComponentLoaded(ArrayList<BaseComponent> components) {
                 if(loadComponentCallBack != null) {

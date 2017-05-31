@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.naver.smarteditor.lesssmarteditor.R;
-import com.naver.smarteditor.lesssmarteditor.SearchResultOnClickListener;
+import com.naver.smarteditor.lesssmarteditor.listener.OnPlaceItemClickListener;
 import com.naver.smarteditor.lesssmarteditor.data.api.naver_map.PlaceItem;
 
 import java.util.List;
@@ -24,7 +24,7 @@ public class SearchPlaceResultAdatpter extends RecyclerView.Adapter<SearchPlaceR
 
     List<PlaceItem> places;
     Context mContext;
-    SearchResultOnClickListener mSearchResultItemOnClickListener;
+    OnPlaceItemClickListener mSearchResultItemOnClickListener;
 
     public SearchPlaceResultAdatpter(Context context){
         mContext = context;
@@ -69,7 +69,7 @@ public class SearchPlaceResultAdatpter extends RecyclerView.Adapter<SearchPlaceR
         places = newData;
     }
 
-    public void setOnResultClickedListener(SearchResultOnClickListener listener){
+    public void setOnResultClickedListener(OnPlaceItemClickListener listener){
         this.mSearchResultItemOnClickListener = listener;
     }
 

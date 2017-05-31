@@ -15,9 +15,9 @@ import com.naver.smarteditor.lesssmarteditor.views.basic.presenter.BasePresenter
 public interface EditContract {
 
     interface View extends BaseView{
-        void waitForDbProcessing();
-        void setMenuForSelectedComponent(int position, android.view.View selectedComponent);
-        void scrollToNewComponent(int position);
+        void showProgressBar();
+        void setFocusForSelectedComponent(int componentIndex, android.view.View selectedComponent);
+        void scrollToNewComponent(int componentIndex);
     }
 
     interface Presenter extends BasePresenter{
@@ -25,7 +25,7 @@ public interface EditContract {
         //init & default setup Presenter
         void attachView(View view);
         void detachView();
-        void clearComponents();
+        void clearCurrentDocument();
 
         void setComponentAdatperModel(EditComponentAdapterContract.Model adapter);
         void setComponentAdapterView(EditComponentAdapterContract.View adapter);
@@ -33,8 +33,8 @@ public interface EditContract {
 
 
         //components
-        void addComponent(BaseComponent.TypE type, Object componentData);
-        void deleteComponent(int doc_id);
+        void addComponentToDocument(BaseComponent.TypE type, Object componentData);
+        void deleteComponentFromDocument(int componentIndex);
 
 
         //database

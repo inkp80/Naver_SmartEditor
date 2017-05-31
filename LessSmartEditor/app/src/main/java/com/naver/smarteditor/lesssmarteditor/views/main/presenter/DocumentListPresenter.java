@@ -34,7 +34,7 @@ public class DocumentListPresenter implements DocumentListContract.Presenter, On
 
 
     @Override
-    public void requestDocList() {
+    public void requestDocumentsFromLocal() {
         editComponentRepository.getDocumentsListFromDatabase(new EditorComponentDataSource.LoadFromDatabaseCallBack() {
             @Override
             public void OnLoadFinished(List<DocumentData> data) {

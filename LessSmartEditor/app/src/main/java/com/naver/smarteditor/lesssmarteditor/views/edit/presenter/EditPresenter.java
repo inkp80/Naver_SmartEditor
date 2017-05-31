@@ -57,10 +57,9 @@ public class EditPresenter implements EditContract.Presenter, OnTextChangeListen
     }
 
 
-    //Component 관련
     @Override
-    public void addComponent(final BaseComponent.TypE type, final Object componentData){
-        editComponentRepository.addComponent(type, componentData, new EditorComponentDataSource.LoadComponentCallBack() {
+    public void addComponentToDocument(final BaseComponent.TypE type, final Object componentData){
+        editComponentRepository.addComponentToDocument(type, componentData, new EditorComponentDataSource.LoadComponentCallBack() {
             @Override
             public void OnComponentLoaded(ArrayList<BaseComponent> components) {
                 if(components != null) {
@@ -76,7 +75,7 @@ public class EditPresenter implements EditContract.Presenter, OnTextChangeListen
     }
 
     @Override
-    public void deleteComponent(int position) {
+    public void deleteComponentFromDocument(int position) {
         editComponentRepository.deleteComponent(position, new EditorComponentDataSource.LoadComponentCallBack() {
             @Override
             public void OnComponentLoaded(ArrayList<BaseComponent> components) {
@@ -87,13 +86,13 @@ public class EditPresenter implements EditContract.Presenter, OnTextChangeListen
     }
 
     @Override
-    public void clearComponents() {
+    public void clearCurrentDocument() {
         editComponentRepository.clearComponents();
         adapterModel.clearComponent();
         adapterView.notifyAdapter();
     }
 
-    //item touch helper : 어뎁터 이벤트 감지
+    //item touch helper - Callback
     @Override
     public boolean OnComponentMove(final int from, final int to) {
         editComponentRepository.changeComponentOrder(from, to, new EditorComponentDataSource.LoadComponentCallBack() {
@@ -108,6 +107,8 @@ public class EditPresenter implements EditContract.Presenter, OnTextChangeListen
 
 
 
+
+    //TextWatcher - Callback
     @Override
     public void onTextChanged(CharSequence s, int position) {
         editComponentRepository.updateEditTextComponent(s, position, new EditorComponentDataSource.LoadComponentCallBack(){
@@ -160,6 +161,6 @@ public class EditPresenter implements EditContract.Presenter, OnTextChangeListen
 
     @Override
     public void OnComponentLongClick(int position, View thisView) {
-        view.setMenuForSelectedComponent(position, thisView);
+        view.setFocusForSelectedComponent(position, thisView);
     }
 }
