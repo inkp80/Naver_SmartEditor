@@ -33,8 +33,9 @@ public class TextComponentViewHolder extends ComponentViewHolder {
     }
 
 
-    public void onBind(final int position) {
+    public void bindTextWathcer() {
 
+        //TODO : onCreateViewHolder에 textWatcher 결합하도록 이동
         et.addTextChangedListener(textWatcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -43,7 +44,7 @@ public class TextComponentViewHolder extends ComponentViewHolder {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                onEditTextComponentChangeListener.onEditTextComponentTextChange(s, position);
+                onEditTextComponentChangeListener.onEditTextComponentTextChange(s, getAdapterPosition());
             }
 
             @Override
@@ -81,7 +82,7 @@ public class TextComponentViewHolder extends ComponentViewHolder {
         TextComponent textData = (TextComponent)object;
         this.removeWatcher();
         this.setText(textData.getText());
-        this.onBind(position);
+        this.bindTextWathcer();
     }
 }
 

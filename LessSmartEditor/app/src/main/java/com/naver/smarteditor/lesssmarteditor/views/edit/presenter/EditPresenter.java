@@ -5,13 +5,13 @@ import android.view.View;
 import com.naver.smarteditor.lesssmarteditor.MyApplication;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.EditComponentAdapterContract;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.util.ComponentTouchEventListener;
+import com.naver.smarteditor.lesssmarteditor.data.DocumentParcelable;
 import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.DocumentDataSource;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.DocumentRepository;
 import com.naver.smarteditor.lesssmarteditor.listener.OnComponentLongClickListener;
 import com.naver.smarteditor.lesssmarteditor.listener.OnEditTextComponentChangeListener;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -141,22 +141,10 @@ public class EditPresenter implements EditContract.Presenter, OnEditTextComponen
         });
     }
 
-    @Override
-    public void updateDocumentOnDatabase(String title, int doc_id) {
-        editComponentRepository.updateDocumentFromDatabase(title, doc_id, new DocumentDataSource.UpdateToDatabaseCallBack() {
-            @Override
-            public void OnUpdateFinished() {
-                MyApplication.LogController.makeLog(TAG, "DB request success : UPDATE", localLogPermission);
-                view.showToast(Calendar.getInstance().getTime() + " 저장되었습니다.");
-            }
-        });
-    }
-
-
     //utils
     @Override
-    public void getComponentsFromJson(String jsonComponents) {
-        editComponentRepository.convertJsonToComponents(jsonComponents, new DocumentDataSource.LoadComponentCallBack() {
+    public void convertParcelToDocumentComponents(DocumentParcelable documentParcelable) {
+        editComponentRepository.convertParcelToComponents(documentParcelable, new DocumentDataSource.LoadComponentCallBack() {
             @Override
             public void OnComponentLoaded(List<BaseComponent> components) {
                 adapterModel.initDocmentComponents(components);

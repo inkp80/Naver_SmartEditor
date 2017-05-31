@@ -29,6 +29,5 @@ public interface EditComponentAdapterContract {
         void initDocmentComponents(List<BaseComponent> components);
 
         void clearDocumentComponent();
-
     }
 }

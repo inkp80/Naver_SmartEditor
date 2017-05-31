@@ -17,6 +17,8 @@ import com.naver.smarteditor.lesssmarteditor.listener.OnEditTextComponentChangeL
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Collections.swap;
+
 /**
  * Created by NAVER on 2017. 5. 21..
  */
@@ -109,7 +111,5 @@ public class EditComponentAdapter extends RecyclerView.Adapter<ComponentViewHold
     public void OnComponentLongClick(int position, View thisView) {
         onComponentLongClickListener.OnComponentLongClick(position, thisView);
     }
-
-
 
 }

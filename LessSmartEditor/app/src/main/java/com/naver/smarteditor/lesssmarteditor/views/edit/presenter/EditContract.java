@@ -1,6 +1,7 @@
 package com.naver.smarteditor.lesssmarteditor.views.edit.presenter;
 
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.EditComponentAdapterContract;
+import com.naver.smarteditor.lesssmarteditor.data.DocumentParcelable;
 import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.DocumentRepository;
 import com.naver.smarteditor.lesssmarteditor.views.basic.BaseView;
@@ -38,10 +39,9 @@ public interface EditContract {
 
         //database
         void saveDocumentToDataBase(String title);
-        void updateDocumentOnDatabase(String title, int doc_id);
 
 
         //utils
-        void getComponentsFromJson(String jsonComponents);
+        void convertParcelToDocumentComponents(DocumentParcelable documentParcelable);
     }
 }

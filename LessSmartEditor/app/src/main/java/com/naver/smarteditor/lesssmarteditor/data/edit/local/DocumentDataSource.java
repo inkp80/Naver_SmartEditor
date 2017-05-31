@@ -1,6 +1,7 @@
 package com.naver.smarteditor.lesssmarteditor.data.edit.local;
 
 import com.naver.smarteditor.lesssmarteditor.data.Document;
+import com.naver.smarteditor.lesssmarteditor.data.DocumentParcelable;
 import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
 
 import java.util.List;
@@ -40,7 +41,7 @@ public interface DocumentDataSource {
 
     void clearDocumentComponents();
 
-    void convertJsonToComponents(String jsonComponents, LoadComponentCallBack loadComponentCallBack);
+    void convertParcelToComponents(DocumentParcelable documentParcelable, LoadComponentCallBack loadComponentCallBack);
 
     void swapDocumentComponent(int from, int to, LoadComponentCallBack loadComponentCallBack);
 

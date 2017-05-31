@@ -3,9 +3,9 @@ package com.naver.smarteditor.lesssmarteditor.data.edit.local;
 import android.content.Context;
 
 import com.naver.smarteditor.lesssmarteditor.data.Document;
+import com.naver.smarteditor.lesssmarteditor.data.DocumentParcelable;
 import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -105,8 +105,8 @@ public class DocumentRepository implements DocumentDataSource {
     }
 
     @Override
-    public void convertJsonToComponents(String jsonComponents, final LoadComponentCallBack loadComponentCallBack) {
-        editComponentLocalDataSource.convertJsonToComponents(jsonComponents, new LoadComponentCallBack() {
+    public void convertParcelToComponents(DocumentParcelable documentParcelable, final LoadComponentCallBack loadComponentCallBack) {
+        editComponentLocalDataSource.convertParcelToComponents(documentParcelable, new LoadComponentCallBack() {
             @Override
             public void OnComponentLoaded(List<BaseComponent> components) {
                 if(loadComponentCallBack != null){

@@ -9,6 +9,7 @@ import com.google.gson.GsonBuilder;
 
 import com.naver.smarteditor.lesssmarteditor.MyApplication;
 import com.naver.smarteditor.lesssmarteditor.data.Document;
+import com.naver.smarteditor.lesssmarteditor.data.DocumentParcelable;
 import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
 import com.naver.smarteditor.lesssmarteditor.data.component.ImgComponent;
 import com.naver.smarteditor.lesssmarteditor.data.component.MapComponent;
@@ -38,6 +39,9 @@ public class DocumentLocalDataSource implements DocumentDataSource {
     private EditorDbHelper mDbHelper;
     private SQLiteDatabase db;
 
+
+    private final String NEW_DOCUMENT = "new_document";
+    private String currentDocumentId = NEW_DOCUMENT;
 
     List<BaseComponent> mComponents;
 
@@ -91,6 +95,7 @@ public class DocumentLocalDataSource implements DocumentDataSource {
 
     @Override
     public void updateEditTextComponent(CharSequence s, int position, LoadComponentCallBack loadComponentCallBack) {
+        MyApplication.LogController.makeLog("TextWatcher Update ","pos" + String.valueOf(position), localLogPermission);
 
         ((TextComponent) mComponents.get(position)).setText(s.toString());
         if(loadComponentCallBack != null) {
@@ -102,6 +107,7 @@ public class DocumentLocalDataSource implements DocumentDataSource {
     public void clearDocumentComponents() {
         mComponents.clear();
         mComponents = new ArrayList<>();
+        currentDocumentId = NEW_DOCUMENT;
     }
 
     @Override
@@ -136,20 +142,30 @@ public class DocumentLocalDataSource implements DocumentDataSource {
     @Override
     public void saveDocumentToDatabase(String title, SaveToDatabaseCallBack saveToDatabaseCallBack) {
 
-        //TODO : asynTask - save to database
-        if(title.length() == 0){
+        if (title.length() == 0) {
             title = "제목 없음";
         }
-        if(checkDocumentComponentValidate() == false){
-            if(saveToDatabaseCallBack != null){
+        if (checkDocumentComponentValidate() == false) {
+            if (saveToDatabaseCallBack != null) {
                 saveToDatabaseCallBack.OnSaveFailed();
             }
             return;
         }
 
-        insertIntoDatabase(title, mComponents);
-        if(saveToDatabaseCallBack != null) {
-            saveToDatabaseCallBack.OnSaveFinished();
+        if(currentDocumentId == NEW_DOCUMENT) {
+            //TODO : asynTask - save to database
+
+            insertIntoDatabase(title, mComponents);
+            if (saveToDatabaseCallBack != null) {
+                saveToDatabaseCallBack.OnSaveFinished();
+            }
+
+            //TODO : set value inserted;
+        } else {
+            updateDatabase(title, currentDocumentId, mComponents);
+            if (saveToDatabaseCallBack != null) {
+                saveToDatabaseCallBack.OnSaveFinished();
+            }
         }
     }
 
@@ -184,8 +200,10 @@ public class DocumentLocalDataSource implements DocumentDataSource {
     }
 
     @Override
-    public void convertJsonToComponents(String jsonComponents, LoadComponentCallBack loadComponentCallBack) {
+    public void convertParcelToComponents(DocumentParcelable documentParcelable, LoadComponentCallBack loadComponentCallBack) {
 
+        currentDocumentId = String.valueOf(documentParcelable.getDoc_id());
+        String jsonComponents = documentParcelable.getComponentsJson();
         JSONArray jsonArray = null;
         try {
             jsonArray = new JSONArray(jsonComponents);
@@ -228,7 +246,7 @@ public class DocumentLocalDataSource implements DocumentDataSource {
     //database
     @Override
     public void updateDocumentFromDatabase(String title, int doc_id, UpdateToDatabaseCallBack updateToDatabaseCallBack) {
-        updateDatabase(title, doc_id, mComponents);
+//        updateDatabase(title, doc_id, mComponents);
         if(updateToDatabaseCallBack != null){
             updateToDatabaseCallBack.OnUpdateFinished();
         }
@@ -236,6 +254,9 @@ public class DocumentLocalDataSource implements DocumentDataSource {
 
     @Override
     public void deleteDocumentFromDatabase(int doc_id, LoadFromDatabaseCallBack loadFromDatabaseCallBack) {
+        if(String.valueOf(doc_id) == currentDocumentId){
+            currentDocumentId = NEW_DOCUMENT;
+        }
         deleteFromLocalDatabase(doc_id);
         List<Document> docList = converCursorToList(readFromLocalDatabase());
         Collections.reverse(docList);
@@ -254,9 +275,13 @@ public class DocumentLocalDataSource implements DocumentDataSource {
                 ", "+EditorContract.ComponentEntry.COLUNM_COMPONENTS_JSON + ") values ('"+title+"', '"+ Calendar.getInstance().getTimeInMillis() + "', '"+jsonStr+"');";
         try {
             db.execSQL(query);
+            Cursor cursor = db.rawQuery("SELECT * FROM documents ORDER BY _id DESC LIMIT 1;", null);
+            cursor.moveToNext();
+            String documentId = cursor.getString(EditorContract.COL_ID);
+            currentDocumentId = documentId;
             MyApplication.LogController.makeLog(TAG, "Database processing was Successfully done",localLogPermission);
         } catch (Exception e){
-            MyApplication.LogController.makeLog(TAG, "Error : Database insert", localLogPermission);
+            MyApplication.LogController.makeLog(TAG, "Error : Database insert, " + e, localLogPermission);
         }
     }
 
@@ -278,11 +303,11 @@ public class DocumentLocalDataSource implements DocumentDataSource {
         }
     }
 
-    private void updateDatabase(String title, int docId, List<BaseComponent> components){
+    private void updateDatabase(String title, String docId, List<BaseComponent> components){
         String jsonStr = new Gson().toJson(components);
         String query = "UPDATE " + EditorContract.ComponentEntry.TABLE_NAME
                 + " SET " + EditorContract.ComponentEntry.COLUMN_TITLE + "='" + title + "'," + EditorContract.ComponentEntry.COLUMN_TIMESTAMP + "='" + Calendar.getInstance().getTimeInMillis() + "',"
-                + EditorContract.ComponentEntry.COLUNM_COMPONENTS_JSON + "='" + jsonStr + "' where _id = " + String.valueOf(docId) + ";";
+                + EditorContract.ComponentEntry.COLUNM_COMPONENTS_JSON + "='" + jsonStr + "' where _id = '" + docId + "';";
 
         try {
             db.execSQL(query);
