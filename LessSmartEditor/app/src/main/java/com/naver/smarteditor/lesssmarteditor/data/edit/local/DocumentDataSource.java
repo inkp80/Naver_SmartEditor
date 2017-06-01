@@ -31,7 +31,7 @@ public interface DocumentDataSource {
 
 
     //component
-    void addComponentToDocument(BaseComponent.TypE type, Object componentData, LoadComponentCallBack loadComponentCallBack);
+    void addComponentToDocument(BaseComponent.Type type, Object componentData, LoadComponentCallBack loadComponentCallBack);
 
     void replaceDocumentComponents(List<BaseComponent> components, LoadComponentCallBack loadComponentCallBack);
 
@@ -45,6 +45,25 @@ public interface DocumentDataSource {
 
     void swapDocumentComponent(int from, int to, LoadComponentCallBack loadComponentCallBack);
 
+    interface LocalModel{
+
+        void addComponentToDocument(BaseComponent componentData);
+
+        void replaceDocumentComponents(List<BaseComponent> components);
+
+        void deleteDocumentComponent(int position);
+
+        void updateDocumentComponent(BaseComponent baseComponent, int position);
+
+        void clearDocumentComponents();
+
+        void convertParcelToComponents(DocumentParcelable documentParcelable);
+
+        void swapDocumentComponent(int from, int to);
+
+        List<BaseComponent> returnModel();
+    }
+
 
 
     //database
@@ -55,4 +74,29 @@ public interface DocumentDataSource {
     void getDocumentsListFromDatabase(LoadFromDatabaseCallBack loadFromDatabaseCallBack);
 
     void deleteDocumentFromDatabase(int doc_id, LoadFromDatabaseCallBack loadFromDatabaseCallBack);
+
+    interface DocumentLocalDatabase {
+
+        void saveDocumentToDatabase(String title, SaveToDatabaseCallBack saveToDatabaseCallBack);
+
+        void updateDocumentFromDatabase(String title, int doc_id, UpdateToDatabaseCallBack updateToDatabaseCallBack);
+
+        void getDocumentsListFromDatabase(LoadFromDatabaseCallBack loadFromDatabaseCallBack);
+
+        void deleteDocumentFromDatabase(int doc_id, LoadFromDatabaseCallBack loadFromDatabaseCallBack);
+    }
+
+    interface Repository{
+        void addComponent(BaseComponent component);
+        void updateComponent(BaseComponent baseComponent, int position);
+        void deleteComponent(int position);
+        void replaceComponent(List<BaseComponent> components);
+        void swapComponent(int fromPosition, int toPosition);
+
+        void requestUpdateDocument();
+        void requestDeleteDocument();
+        void requestCreateDocument();
+        void requestReadDocument();
+
+    }
 }

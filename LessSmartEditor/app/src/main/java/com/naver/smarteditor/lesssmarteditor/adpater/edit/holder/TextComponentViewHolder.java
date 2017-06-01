@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.EditText;
 
 
+import com.naver.smarteditor.lesssmarteditor.adpater.edit.util.ComponentFocusListener;
 import com.naver.smarteditor.lesssmarteditor.data.component.TextComponent;
 import com.naver.smarteditor.lesssmarteditor.listener.OnComponentLongClickListener;
 import com.naver.smarteditor.lesssmarteditor.listener.OnEditTextComponentChangeListener;
@@ -21,10 +22,18 @@ public class TextComponentViewHolder extends ComponentViewHolder {
     private final OnEditTextComponentChangeListener onEditTextComponentChangeListener;
     private TextWatcher textWatcher;
 
-    public TextComponentViewHolder(View itemView, final OnEditTextComponentChangeListener onEditTextComponentChangeListener) {
-        super(itemView);
+    public TextComponentViewHolder(View itemView, final ComponentFocusListener componentFocusListener, final OnEditTextComponentChangeListener onEditTextComponentChangeListener) {
+        super(itemView, componentFocusListener);
         this.et = (EditText) itemView;
         this.onEditTextComponentChangeListener = onEditTextComponentChangeListener;
+
+        itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                componentFocusListener.OnComponentFocused(getAdapterPosition());
+                return false;
+            }
+        });
     }
 
 
@@ -44,7 +53,7 @@ public class TextComponentViewHolder extends ComponentViewHolder {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                onEditTextComponentChangeListener.onEditTextComponentTextChange(s, getAdapterPosition());
+                onEditTextComponentChangeListener.onEditTextComponentTextChange(new TextComponent(s.toString()), getAdapterPosition());
             }
 
             @Override
@@ -56,24 +65,8 @@ public class TextComponentViewHolder extends ComponentViewHolder {
     }
 
 
-    @Override
-    public void setDataPositionOnAdapter(int position) {
-        this.position = position;
-    }
-
-    @Override
-    public int getDataPositionOnAdapter(){
-        return this.position;
-    }
-
     public void removeWatcher() {
         et.removeTextChangedListener(textWatcher);
-    }
-
-
-    @Override
-    public void setOnComponentLongClickListener(OnComponentLongClickListener onComponentLongClickListener) {
-        this.onComponentLongClickListener = onComponentLongClickListener;
     }
 
 

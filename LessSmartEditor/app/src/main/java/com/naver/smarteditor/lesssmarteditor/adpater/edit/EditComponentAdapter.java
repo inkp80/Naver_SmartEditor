@@ -2,30 +2,26 @@ package com.naver.smarteditor.lesssmarteditor.adpater.edit;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
-import com.naver.smarteditor.lesssmarteditor.MyApplication;
+import com.naver.smarteditor.lesssmarteditor.LogController;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.holder.ComponentViewHolder;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.holder.ViewHolderFactory;
+import com.naver.smarteditor.lesssmarteditor.adpater.edit.util.ComponentFocusListener;
 import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
-import com.naver.smarteditor.lesssmarteditor.listener.OnComponentLongClickListener;
 import com.naver.smarteditor.lesssmarteditor.listener.OnEditTextComponentChangeListener;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static java.util.Collections.swap;
 
 /**
  * Created by NAVER on 2017. 5. 21..
  */
 
 public class EditComponentAdapter extends RecyclerView.Adapter<ComponentViewHolder>
-        implements EditComponentAdapterContract.Model, EditComponentAdapterContract.View,
-        OnComponentLongClickListener {
+        implements EditComponentAdapterContract.Model, EditComponentAdapterContract.View {
 
     private final String TAG = "EditComponentAdapter";
     private boolean localLogPermission = true;
@@ -37,28 +33,41 @@ public class EditComponentAdapter extends RecyclerView.Adapter<ComponentViewHold
     private OnEditTextComponentChangeListener onEditTextComponentChangeListener;
     private List<BaseComponent> mComponents;
 
-    private OnComponentLongClickListener onComponentLongClickListener;
+    private ComponentFocusListener componentFocusListener;
+
+    private int mFocusedComponentPostion = -1;
 
 
     public EditComponentAdapter(Context context) {
         this.mContext = context;
         mComponents = new ArrayList<>();
         requestManager = Glide.with(context);
+        componentFocusListener = new ComponentFocusListener() {
+            @Override
+            public void OnComponentFocused(int position) {
+                mFocusedComponentPostion = position;
+                notifyDataChange();
+            }
+        };
     }
+
 
     @Override
     public ComponentViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         //TODO : viewHolderFactory 메모리 누수?
-        viewHolderFactory = new ViewHolderFactory(mContext, requestManager, onEditTextComponentChangeListener);
-        BaseComponent.TypE ViewHolderType = BaseComponent.getType(viewType);
-        return viewHolderFactory.createViewHolder(ViewHolderType);
+        viewHolderFactory = new ViewHolderFactory(mContext, requestManager, onEditTextComponentChangeListener, componentFocusListener);
+        BaseComponent.Type viewHolderType = BaseComponent.getType(viewType);
+        return viewHolderFactory.createViewHolder(viewHolderType);
     }
 
     @Override
     public void onBindViewHolder(ComponentViewHolder holder, int position) {
-        holder.setDataPositionOnAdapter(position);
-        holder.setOnComponentLongClickListener(this);
         holder.bindView(mComponents.get(position));
+        if(position == mFocusedComponentPostion){
+            holder.setHighlight();
+        } else {
+            holder.dismissHighlight();
+        }
     }
 
     @Override
@@ -72,12 +81,6 @@ public class EditComponentAdapter extends RecyclerView.Adapter<ComponentViewHold
 
 
     @Override
-    public void notifyDataChange() {
-        MyApplication.LogController.makeLog(TAG, "notifyadapter", localLogPermission);
-        notifyDataSetChanged();
-    }
-
-    @Override
     public int getItemViewType(int position) {
         super.getItemViewType(position);
         BaseComponent thisComponent = mComponents.get(position);
@@ -85,10 +88,32 @@ public class EditComponentAdapter extends RecyclerView.Adapter<ComponentViewHold
     }
 
 
-    //AdapterModel & View
+
+
+    //Adatper Model
+    @Override
+    public void addDocumentComponent(BaseComponent.Type type, BaseComponent baseComponent) {
+
+    }
+
     @Override
     public void initDocmentComponents(List<BaseComponent> components) {
         mComponents = new ArrayList<>(components);
+    }
+
+    @Override
+    public void deleteDocumentComponent(int postion) {
+
+    }
+
+    @Override
+    public void updateDocumentComponent(int position, BaseComponent baseComponent) {
+
+    }
+
+    @Override
+    public List<BaseComponent> printOutDocument() {
+        return null;
     }
 
     @Override
@@ -100,16 +125,13 @@ public class EditComponentAdapter extends RecyclerView.Adapter<ComponentViewHold
     public void swapDocumentComponent(int fromPosition, int toPosition) {
         notifyItemMoved(fromPosition, toPosition);
     }
+    //////////////////////////////////////////////////////////////////////////////////////////
 
-
-    @Override
-    public void setOnComponentLongClickListener(OnComponentLongClickListener onComponentLongClickListener){
-        this.onComponentLongClickListener = onComponentLongClickListener;
-    }
+    //Adapter View
 
     @Override
-    public void OnComponentLongClick(int position, View thisView) {
-        onComponentLongClickListener.OnComponentLongClick(position, thisView);
+    public void notifyDataChange() {
+        LogController.makeLog(TAG, "notifyadapter", localLogPermission);
+        notifyDataSetChanged();
     }
-
 }

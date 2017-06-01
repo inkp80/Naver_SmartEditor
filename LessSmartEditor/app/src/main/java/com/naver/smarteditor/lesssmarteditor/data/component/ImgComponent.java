@@ -1,7 +1,5 @@
 package com.naver.smarteditor.lesssmarteditor.data.component;
 
-import android.net.Uri;
-
 
 /**
  * Created by NAVER on 2017. 5. 23..
@@ -12,12 +10,12 @@ public class ImgComponent extends BaseComponent {
     String imgUri;
 
     public ImgComponent(String uri){
-        this.componentType = TypE.IMG;
+        this.componentType = Type.IMG;
         imgUri = uri;
     }
 
     @Override
-    public TypE getComponentType() {
+    public Type getComponentType() {
         return this.componentType;
     }
 

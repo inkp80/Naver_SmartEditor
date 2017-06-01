@@ -2,10 +2,9 @@ package com.naver.smarteditor.lesssmarteditor.views.edit.utils;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.bumptech.glide.Glide;
-import com.naver.smarteditor.lesssmarteditor.MyApplication;
+import com.naver.smarteditor.lesssmarteditor.LogController;
 
 /**
  * Created by NAVER on 2017. 5. 30..
@@ -27,17 +26,17 @@ public class ClearCachesTask extends AsyncTask<Void, Void, Void> {
 
     @Override protected void onPreExecute() {
         if (clearMemory) {
-            MyApplication.LogController.makeLog(TAG, "Clearing memory cache", localLogPermission);
+            LogController.makeLog(TAG, "Clearing memory cache", localLogPermission);
             Glide.get(context).clearMemory();
-            MyApplication.LogController.makeLog(TAG, "Clearing memory cache finished", localLogPermission);
+            LogController.makeLog(TAG, "Clearing memory cache finished", localLogPermission);
         }
     }
 
     @Override protected Void doInBackground(Void[] params) {
         if (clearDisk) {
-            MyApplication.LogController.makeLog(TAG, "Clearing disk cache", localLogPermission);
+            LogController.makeLog(TAG, "Clearing disk cache", localLogPermission);
             Glide.get(context).clearDiskCache();
-            MyApplication.LogController.makeLog(TAG, "Clearing disk cache finished", localLogPermission);
+            LogController.makeLog(TAG, "Clearing disk cache finished", localLogPermission);
         }
         return null;
     }

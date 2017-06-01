@@ -12,14 +12,14 @@ public class MapComponent extends BaseComponent {
     private String placeMapImgUri;
 
     public MapComponent(String name, String address, String coords, String uri){
-        this.componentType = TypE.MAP;
+        this.componentType = Type.MAP;
         this.placeName = name;
         this.placeAddress = address;
         this.placeCoords = coords;
         this.placeMapImgUri = uri;
     }
     @Override
-    public TypE getComponentType() {
+    public Type getComponentType() {
         return this.componentType;
     }
 

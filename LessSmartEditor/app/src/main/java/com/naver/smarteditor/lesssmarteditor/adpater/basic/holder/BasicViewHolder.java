@@ -14,8 +14,5 @@ abstract public class BasicViewHolder extends RecyclerView.ViewHolder{
         super(itemView);
     }
 
-    abstract public int getDataPositionOnAdapter();
-    abstract public void setDataPositionOnAdapter(int position);
-
 }
 

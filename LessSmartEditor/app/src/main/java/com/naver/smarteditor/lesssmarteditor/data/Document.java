@@ -7,13 +7,13 @@ package com.naver.smarteditor.lesssmarteditor.data;
 public class Document {
     private int _id;
     private String title;
-    private String timeStemp;
+    private String timeStamp;
     private String componentsJson;
 
-    public Document(int _id, String title, String timeStemp, String componentsJson) {
+    public Document(int _id, String title, String timeStamp, String componentsJson) {
         this._id = _id;
         this.title = title;
-        this.timeStemp = timeStemp;
+        this.timeStamp = timeStamp;
         this.componentsJson = componentsJson;
     }
 
@@ -33,12 +33,12 @@ public class Document {
         this.title = title;
     }
 
-    public String getTimeStemp() {
-        return timeStemp;
+    public String getTimeStamp() {
+        return timeStamp;
     }
 
-    public void setTimeStemp(String timeStemp) {
-        this.timeStemp = timeStemp;
+    public void setTimeStamp(String timeStamp) {
+        this.timeStamp = timeStamp;
     }
 
     public String getComponentsJson() {

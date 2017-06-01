@@ -8,10 +8,10 @@ abstract public class BaseComponent {
 
     //역할에 대해서 고려해볼 것
     //interface - type
-    public enum TypE {
+    public enum Type {
         TEXT(0), IMG(1), MAP(2), NOTDEFINE(-1);
         private int value;
-        private TypE(int value){
+        private Type(int value){
             this.value = value;
         }
         public int getTypeValue(){
@@ -20,20 +20,20 @@ abstract public class BaseComponent {
     };
 
     public int indexOfComponent;
-    public TypE componentType;
+    public Type componentType;
 
-    abstract public TypE getComponentType();
+    abstract public Type getComponentType();
 
     public int getComponentIndex(){
         return indexOfComponent;
     }
 
-    public static TypE getType(int typeNum){
-        for(TypE type : TypE.values()){
+    public static Type getType(int typeNum){
+        for(Type type : Type.values()){
             if(type.getTypeValue() == typeNum){
                 return type;
             }
         }
-        return TypE.NOTDEFINE;
+        return Type.NOTDEFINE;
     }
 }

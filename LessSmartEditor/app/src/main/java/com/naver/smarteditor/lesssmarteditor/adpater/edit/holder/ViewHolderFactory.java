@@ -12,9 +12,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.RequestManager;
-import com.naver.smarteditor.lesssmarteditor.MyApplication;
+import com.naver.smarteditor.lesssmarteditor.LogController;
+import com.naver.smarteditor.lesssmarteditor.adpater.edit.util.ComponentFocusListener;
 import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
-import com.naver.smarteditor.lesssmarteditor.data.component.TextComponent;
 import com.naver.smarteditor.lesssmarteditor.listener.OnEditTextComponentChangeListener;
 
 /**
@@ -25,28 +25,31 @@ public class ViewHolderFactory {
     private Context mContext;
     private RequestManager requestManager;
     private OnEditTextComponentChangeListener onEditTextComponentChangeListener;
-    public ViewHolderFactory(Context context, RequestManager requestManager, OnEditTextComponentChangeListener onEditTextComponentChangeListener){
+    private ComponentFocusListener componentFocusListener;
+    public ViewHolderFactory(Context context, RequestManager requestManager,  OnEditTextComponentChangeListener onEditTextComponentChangeListener, ComponentFocusListener componentFocusListener){
         this.mContext = context;
         this.requestManager = requestManager;
         this.onEditTextComponentChangeListener = onEditTextComponentChangeListener;
+        this.componentFocusListener = componentFocusListener;
+
     }
 
-    public ComponentViewHolder createViewHolder(BaseComponent.TypE type) {
+    public ComponentViewHolder createViewHolder(BaseComponent.Type type) {
 
         switch (type) {
             case TEXT:
-                return new TextComponentViewHolder(createItemView(type), onEditTextComponentChangeListener);
+                return new TextComponentViewHolder(createItemView(type), componentFocusListener, onEditTextComponentChangeListener);
             case IMG:
-                return new ImgComponentViewHolder(createItemView(type), requestManager);
+                return new ImgComponentViewHolder(createItemView(type), componentFocusListener, requestManager);
             case MAP:
-                return new MapComponentViewHolder(createItemView(type), requestManager);
+                return new MapComponentViewHolder(createItemView(type), componentFocusListener, requestManager);
             default:
-                MyApplication.LogController.makeLog("ViewHolderFactroy", "INVALID TYPE", true);
+                LogController.makeLog("ViewHolderFactroy", "INVALID TYPE", true);
                 return null;
         }
     }
 
-    private View createItemView(BaseComponent.TypE type){
+    private View createItemView(BaseComponent.Type type){
 
         RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);

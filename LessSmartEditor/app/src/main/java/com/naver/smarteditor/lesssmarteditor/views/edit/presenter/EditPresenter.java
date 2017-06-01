@@ -2,7 +2,7 @@ package com.naver.smarteditor.lesssmarteditor.views.edit.presenter;
 
 import android.view.View;
 
-import com.naver.smarteditor.lesssmarteditor.MyApplication;
+import com.naver.smarteditor.lesssmarteditor.LogController;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.EditComponentAdapterContract;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.util.ComponentTouchEventListener;
 import com.naver.smarteditor.lesssmarteditor.data.DocumentParcelable;
@@ -19,7 +19,7 @@ import java.util.List;
  * Created by NAVER on 2017. 5. 21..
  */
 
-public class EditPresenter implements EditContract.Presenter, OnEditTextComponentChangeListener,
+public class EditPresenter implements EditContract.Presenter,
         ComponentTouchEventListener, OnComponentLongClickListener {
     private final String TAG = "EditPresenter";
     private boolean localLogPermission = true;
@@ -29,6 +29,11 @@ public class EditPresenter implements EditContract.Presenter, OnEditTextComponen
     private EditComponentAdapterContract.View adapterView;
 
     private DocumentRepository editComponentRepository;
+
+
+
+
+    private OnEditTextComponentChangeListener onEditTextComponentChangeListener;
 
 
     //Presenter 초기화 관련
@@ -49,8 +54,6 @@ public class EditPresenter implements EditContract.Presenter, OnEditTextComponen
     @Override
     public void setComponentAdapterView(EditComponentAdapterContract.View adapter) {
         this.adapterView = adapter;
-        this.adapterView.setOnEditTextComponentChangeListener(this);
-        this.adapterView.setOnComponentLongClickListener(this);
     }
 
     @Override
@@ -60,17 +63,15 @@ public class EditPresenter implements EditContract.Presenter, OnEditTextComponen
 
 
     @Override
-    public void addComponentToDocument(final BaseComponent.TypE type, final Object componentData){
-        editComponentRepository.addComponentToDocument(type, componentData, new DocumentDataSource.LoadComponentCallBack() {
-            @Override
-            public void OnComponentLoaded(List<BaseComponent> components) {
-                if(components != null) {
-                    adapterModel.initDocmentComponents(components);
-                    adapterView.notifyDataChange();
-                    view.scrollToNewComponent(components.size());
-                }
-            }
-        });
+    public void addComponentToDocument(BaseComponent component){
+        editComponentRepository.addComponent(component);
+        adapterModel.initDocmentComponents(editComponentRepository.getDocumentData());
+        adapterView.notifyDataChange();
+    }
+
+    @Override
+    public void updateComponentInDocument(BaseComponent baseComponent, int position) {
+        editComponentRepository.updateComponent(baseComponent, position);
     }
 
     @Override
@@ -104,23 +105,12 @@ public class EditPresenter implements EditContract.Presenter, OnEditTextComponen
         return true;
     }
 
-
-
-
-    //TextWatcher - Callback
     @Override
-    public void onEditTextComponentTextChange(CharSequence s, int position) {
-        editComponentRepository.updateEditTextComponent(s, position, new DocumentDataSource.LoadComponentCallBack(){
-            @Override
-            public void OnComponentLoaded(List<BaseComponent> components){
-                if(components != null) {
-                    adapterModel.initDocmentComponents(components);
-                }
-            }
-        });
-
+    public void swapComponent(int fromPostition, int toPosition) {
+        editComponentRepository.swapComponent(fromPostition, toPosition);
+        adapterModel.initDocmentComponents(editComponentRepository.getDocumentData());
+        adapterView.swapDocumentComponent(fromPostition, toPosition);
     }
-
 
     //데이터베이스 관련
     @Override
@@ -128,13 +118,13 @@ public class EditPresenter implements EditContract.Presenter, OnEditTextComponen
         editComponentRepository.saveDocumentToDatabase(title, new DocumentDataSource.SaveToDatabaseCallBack() {
             @Override
             public void OnSaveFinished() {
-                MyApplication.LogController.makeLog(TAG, "DB request success : INSERT", localLogPermission);
+                LogController.makeLog(TAG, "DB request success : INSERT", localLogPermission);
                 view.showToast(Calendar.getInstance().getTime() + " 저장되었습니다.");
             }
 
             @Override
             public void OnSaveFailed() {
-                MyApplication.LogController.makeLog(TAG, "DB request failed : empty document", localLogPermission);
+                LogController.makeLog(TAG, "DB request failed : empty document", localLogPermission);
                 adapterView.notifyDataChange();
                 view.showToast("저장 실패 : 빈 문서입니다.");
             }

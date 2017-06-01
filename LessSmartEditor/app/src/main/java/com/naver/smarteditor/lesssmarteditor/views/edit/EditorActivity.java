@@ -20,7 +20,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.naver.smarteditor.lesssmarteditor.MyApplication;
+import com.naver.smarteditor.lesssmarteditor.LogController;
 import com.naver.smarteditor.lesssmarteditor.R;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.EditComponentAdapter;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.util.ComponentTouchEventListener;
@@ -28,7 +28,11 @@ import com.naver.smarteditor.lesssmarteditor.adpater.edit.util.ComponentTouchIte
 import com.naver.smarteditor.lesssmarteditor.data.DocumentParcelable;
 import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
 import com.naver.smarteditor.lesssmarteditor.data.api.naver_map.PlaceItemParcelable;
+import com.naver.smarteditor.lesssmarteditor.data.component.ImgComponent;
+import com.naver.smarteditor.lesssmarteditor.data.component.MapComponent;
+import com.naver.smarteditor.lesssmarteditor.data.component.TextComponent;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.DocumentRepository;
+import com.naver.smarteditor.lesssmarteditor.listener.OnEditTextComponentChangeListener;
 import com.naver.smarteditor.lesssmarteditor.views.edit.dialog.SelectComponentDialog;
 import com.naver.smarteditor.lesssmarteditor.views.edit.presenter.EditContract;
 import com.naver.smarteditor.lesssmarteditor.views.edit.presenter.EditPresenter;
@@ -91,10 +95,6 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
     private SelectComponentDialog mSelectComponentDialog;
 
 
-    private View.OnClickListener dialogAddTxtButtonListener;
-    private View.OnClickListener dialogImgButtonListener;
-    private View.OnClickListener dialogMapButtonListener;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -134,7 +134,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
             if (requestCode == REQ_MOV2_GALLERY) {
                 try {
                     Uri selectedImgUri = data.getData();
-                    mPresenter.addComponentToDocument(BaseComponent.TypE.IMG, selectedImgUri.toString());
+                    mPresenter.addComponentToDocument(new ImgComponent(selectedImgUri.toString()));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -142,10 +142,10 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
                 try {
                     Bundle bundle = data.getExtras();
                     PlaceItemParcelable passer = bundle.getParcelable(MAPINFO_PARCEL);
-                    mPresenter.addComponentToDocument(BaseComponent.TypE.MAP, passer);
+                    mPresenter.addComponentToDocument(new MapComponent(passer.getPlaceName(), passer.getPlaceAddress(), passer.getPlaceCoords(), passer.getPlaceUri()));
 
                 } catch (Exception e) {
-                    MyApplication.LogController.makeLog(TAG, "ERROR", localLogPermission);
+                    LogController.makeLog(TAG, "ERROR", localLogPermission);
                     e.printStackTrace();
                 }
             }
@@ -162,8 +162,23 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         mEditorRecyclerView.setAdapter(mAdapter);
         mEditorRecyclerView.setItemViewCacheSize(100);
 
+        mAdapter.setOnEditTextComponentChangeListener(new OnEditTextComponentChangeListener() {
+            @Override
+            public void onEditTextComponentTextChange(BaseComponent baseComponent, int position) {
+                mPresenter.updateComponentInDocument(baseComponent, position);
+                //update요청
+            }
+        });
 
-        ItemTouchHelper.Callback callback = new ComponentTouchItemHelperCallback(mAdapter, (ComponentTouchEventListener) mPresenter);
+
+        ItemTouchHelper.Callback callback = new ComponentTouchItemHelperCallback(mAdapter, new ComponentTouchEventListener() {
+            @Override
+            public boolean OnComponentMove(int from, int to) {
+                LogController.makeLog(TAG, "onComponentMov", localLogPermission);
+                mPresenter.swapComponent(from, to);
+                return false;
+            }
+        });
         ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
         touchHelper.attachToRecyclerView(mEditorRecyclerView);
     }
@@ -177,16 +192,17 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
     }
 
     private void initDialog() {
-        dialogAddTxtButtonListener = new View.OnClickListener() {
+
+        View.OnClickListener dialogAddTxtButtonListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //ADD TEXT COMPONENT TO EDITOR
-                mPresenter.addComponentToDocument(BaseComponent.TypE.TEXT, null);
+                mPresenter.addComponentToDocument(new TextComponent(""));
                 mSelectComponentDialog.dismiss();
             }
         };
 
-        dialogImgButtonListener = new View.OnClickListener() {
+        View.OnClickListener dialogImgButtonListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 requestImgSrcFromGallery();
@@ -194,7 +210,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
             }
         };
 
-        dialogMapButtonListener = new View.OnClickListener() {
+        View.OnClickListener dialogMapButtonListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 requestMapSrcFromNaverAPI();
@@ -349,7 +365,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
             return;
         }
 
-        MyApplication.LogController.makeLog(TAG, String.valueOf(componentIndex), localLogPermission);
+        LogController.makeLog(TAG, String.valueOf(componentIndex), localLogPermission);
         removeFocusFromCurrentComponent();
         focusingComponentIndex = componentIndex;
         focusingComponentView = selectedComponent;

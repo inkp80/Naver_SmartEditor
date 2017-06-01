@@ -33,8 +33,10 @@ public interface EditContract {
 
 
         //components
-        void addComponentToDocument(BaseComponent.TypE type, Object componentData);
-        void deleteComponentFromDocument(int componentIndex);
+        void addComponentToDocument(BaseComponent componentData);
+        void updateComponentInDocument(BaseComponent baseComponent, int position);
+        void deleteComponentFromDocument(int position);
+        void swapComponent(int fromPostition, int toPosition);
 
 
         //database

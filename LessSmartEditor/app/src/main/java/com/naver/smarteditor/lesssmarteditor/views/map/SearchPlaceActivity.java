@@ -10,7 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.naver.smarteditor.lesssmarteditor.MyApplication;
+import com.naver.smarteditor.lesssmarteditor.LogController;
 import com.naver.smarteditor.lesssmarteditor.NaverPlaceService;
 import com.naver.smarteditor.lesssmarteditor.R;
 import com.naver.smarteditor.lesssmarteditor.listener.OnPlaceItemClickListener;
@@ -143,14 +143,14 @@ public class SearchPlaceActivity extends AppCompatActivity {
 
     public boolean checkResponseVaild(Response<PlaceRequestResult> response){
         if(response.code() == RETROFIT_FAIL400 ){
-            MyApplication.LogController.makeLog(TAG, "CODE 400", localLogPermission);
+            LogController.makeLog(TAG, "CODE 400", localLogPermission);
             Toast.makeText(this, "연결 실패 : 네트워크 상태를 확인하세요.", Toast.LENGTH_SHORT).show();
             return false;
         } else if(response.code() == RETROFIT_SUCCESS){
             return true;
         } else {
             Toast.makeText(this, "연결 실패", Toast.LENGTH_SHORT).show();
-            MyApplication.LogController.makeLog(TAG, "CODE " + String.valueOf(response.code()), localLogPermission);
+            LogController.makeLog(TAG, "CODE " + String.valueOf(response.code()), localLogPermission);
             return false;
         }
     }

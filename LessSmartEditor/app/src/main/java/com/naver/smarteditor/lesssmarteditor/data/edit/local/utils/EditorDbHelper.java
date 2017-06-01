@@ -4,8 +4,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.naver.smarteditor.lesssmarteditor.MyApplication;
-import com.naver.smarteditor.lesssmarteditor.views.edit.presenter.EditContract;
+import com.naver.smarteditor.lesssmarteditor.LogController;
 
 /**
  * Created by NAVER on 2017. 5. 24..
@@ -26,13 +25,13 @@ public class EditorDbHelper extends SQLiteOpenHelper {
 
 
     public void onCreate(SQLiteDatabase db) {
-        MyApplication.LogController.makeLog(TAG,"creating table [" + TABLE_NAME + "].", localLogPermission);
+        LogController.makeLog(TAG,"creating table [" + TABLE_NAME + "].", localLogPermission);
 
         try {
             String DROP_SQL = "drop table if exists " + TABLE_NAME;
             db.execSQL(DROP_SQL);
         } catch(Exception ex) {
-            MyApplication.LogController.makeLog(TAG, "Exception in DROP_SQL, " + ex, localLogPermission);
+            LogController.makeLog(TAG, "Exception in DROP_SQL, " + ex, localLogPermission);
         }
 
         String CREATE_SQL = "create table " + TABLE_NAME + "("
@@ -44,18 +43,18 @@ public class EditorDbHelper extends SQLiteOpenHelper {
         try {
             db.execSQL(CREATE_SQL);
         } catch(Exception ex) {
-            MyApplication.LogController.makeLog(TAG, "Exception in CREATE_SQL, "+ex, localLogPermission);
+            LogController.makeLog(TAG, "Exception in CREATE_SQL, "+ex, localLogPermission);
         }
 
     }
 
     public void onOpen(SQLiteDatabase db) {
-        MyApplication.LogController.makeLog(TAG, "opened database [" + DATABASE_NAME + "].", localLogPermission);
+        LogController.makeLog(TAG, "opened database [" + DATABASE_NAME + "].", localLogPermission);
 
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        MyApplication.LogController.makeLog(TAG, "Upgrading database from version " + oldVersion + " to " + newVersion + ".", localLogPermission);
+        LogController.makeLog(TAG, "Upgrading database from version " + oldVersion + " to " + newVersion + ".", localLogPermission);
 
     }
 }

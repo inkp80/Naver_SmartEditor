@@ -1,19 +1,15 @@
 package com.naver.smarteditor.lesssmarteditor.adpater.edit.holder;
 
-import android.content.Context;
-import android.graphics.Color;
-import android.view.ContextMenu;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.Toast;
 
-import com.naver.smarteditor.lesssmarteditor.MyApplication;
+import android.content.res.Resources;
+import android.graphics.Color;
+import android.view.View;
+
+import com.naver.smarteditor.lesssmarteditor.R;
 import com.naver.smarteditor.lesssmarteditor.adpater.basic.holder.BasicViewHolder;
+import com.naver.smarteditor.lesssmarteditor.adpater.edit.util.ComponentFocusListener;
 import com.naver.smarteditor.lesssmarteditor.listener.OnComponentLongClickListener;
 
-import static com.naver.smarteditor.lesssmarteditor.MyApplication.COMPONENT_MENU_CANCEL;
-import static com.naver.smarteditor.lesssmarteditor.MyApplication.COMPONENT_MENU_DELETE;
 
 /**
  * Created by NAVER on 2017. 5. 29..
@@ -21,31 +17,30 @@ import static com.naver.smarteditor.lesssmarteditor.MyApplication.COMPONENT_MENU
 
 abstract public class ComponentViewHolder extends BasicViewHolder {
 
-    public OnComponentLongClickListener onComponentLongClickListener;
 
-    public ComponentViewHolder(final View itemView) {
+    public ComponentViewHolder(final View itemView, final ComponentFocusListener componentFocusListener) {
         super(itemView);
-        itemView.setPadding(10,10,10,10);
+
         itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                onComponentLongClickListener.OnComponentLongClick(getDataPositionOnAdapter(), itemView);
+                componentFocusListener.OnComponentFocused(getAdapterPosition());
                 return false;
             }
         });
-    }
-
-    @Override
-    public int getDataPositionOnAdapter() {
-        return 0;
-    }
-
-    @Override
-    public void setDataPositionOnAdapter(int position) {
+//        int padding = Resources.getSystem().getInteger(R.integer.viewholder_padding);
+//        itemView.setPadding(10,padding,padding,padding);
 
     }
 
     abstract public void bindView(Object object);
 
-    abstract public void setOnComponentLongClickListener(OnComponentLongClickListener onComponentLongClickListener);
+
+    public void setHighlight(){
+        this.itemView.setBackgroundColor(Color.LTGRAY);
+    }
+
+    public void dismissHighlight(){
+        this.itemView.setBackgroundColor(Color.parseColor("#FAFAFA"));
+    }
 }

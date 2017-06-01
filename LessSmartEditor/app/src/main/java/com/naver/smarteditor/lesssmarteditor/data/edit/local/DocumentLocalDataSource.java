@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import com.naver.smarteditor.lesssmarteditor.MyApplication;
+import com.naver.smarteditor.lesssmarteditor.LogController;
 import com.naver.smarteditor.lesssmarteditor.data.Document;
 import com.naver.smarteditor.lesssmarteditor.data.DocumentParcelable;
 import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
@@ -62,17 +62,17 @@ public class DocumentLocalDataSource implements DocumentDataSource {
     }
 
     @Override
-    public void addComponentToDocument(BaseComponent.TypE type, Object componentData, LoadComponentCallBack loadComponentCallBack) {
+    public void addComponentToDocument(BaseComponent.Type type, Object componentData, LoadComponentCallBack loadComponentCallBack) {
         //TODO : Factory pattern
         BaseComponent component = null;
 
-        if(type == BaseComponent.TypE.TEXT){
+        if(type == BaseComponent.Type.TEXT){
             TextComponent textComponent = new TextComponent("");
             component = textComponent;
-        } else if (type == BaseComponent.TypE.IMG){
+        } else if (type == BaseComponent.Type.IMG){
             ImgComponent imgComponent = new ImgComponent((String)componentData);
             component = imgComponent;
-        } else if(type == BaseComponent.TypE.MAP){
+        } else if(type == BaseComponent.Type.MAP){
             PlaceItemParcelable passer = (PlaceItemParcelable) componentData;
             MapComponent mapComponent = new MapComponent(passer.getPlaceName(), passer.getPlaceAddress(), passer.getPlaceCoords(), passer.getPlaceUri());
             component = mapComponent;
@@ -83,8 +83,8 @@ public class DocumentLocalDataSource implements DocumentDataSource {
                 throw new EmptyComponentException();
             }
             mComponents.add(component);
-        } catch (EmptyComponentException e){
-            MyApplication.LogController.makeLog(TAG + e, "Fail to add Component", localLogPermission);
+        } catch (com.naver.smarteditor.lesssmarteditor.data.edit.local.utils.EmptyComponentException e){
+            LogController.makeLog(TAG + e, "Fail to add Component", localLogPermission);
         }
 
 
@@ -95,7 +95,7 @@ public class DocumentLocalDataSource implements DocumentDataSource {
 
     @Override
     public void updateEditTextComponent(CharSequence s, int position, LoadComponentCallBack loadComponentCallBack) {
-        MyApplication.LogController.makeLog("TextWatcher Update ","pos" + String.valueOf(position), localLogPermission);
+        LogController.makeLog("TextWatcher Update ","pos" + String.valueOf(position), localLogPermission);
 
         ((TextComponent) mComponents.get(position)).setText(s.toString());
         if(loadComponentCallBack != null) {
@@ -141,7 +141,7 @@ public class DocumentLocalDataSource implements DocumentDataSource {
     //database
     @Override
     public void saveDocumentToDatabase(String title, SaveToDatabaseCallBack saveToDatabaseCallBack) {
-        MyApplication.LogController.makeLog(TAG, "DOC ID: "+currentDocumentId, localLogPermission);
+        LogController.makeLog(TAG, "DOC ID: "+currentDocumentId, localLogPermission);
 
         if (title.length() == 0) {
             title = "제목 없음";
@@ -163,7 +163,7 @@ public class DocumentLocalDataSource implements DocumentDataSource {
 
             //TODO : set value inserted;
         } else {
-            MyApplication.LogController.makeLog(TAG, "updating", localLogPermission);
+            LogController.makeLog(TAG, "updating", localLogPermission);
             updateDatabase(title, currentDocumentId, mComponents);
             if (saveToDatabaseCallBack != null) {
                 saveToDatabaseCallBack.OnSaveFinished();
@@ -173,9 +173,9 @@ public class DocumentLocalDataSource implements DocumentDataSource {
 
     private boolean checkDocumentComponentValidate(){
         List<BaseComponent> components = new ArrayList<>();
-        MyApplication.LogController.makeLog(TAG, String.valueOf(mComponents.size()), localLogPermission);
+        LogController.makeLog(TAG, String.valueOf(mComponents.size()), localLogPermission);
         for(BaseComponent baseComponent : mComponents){
-            BaseComponent.TypE type = baseComponent.getComponentType();
+            BaseComponent.Type type = baseComponent.getComponentType();
             switch(type){
                 case TEXT:
                     TextComponent thisTexComponent = (TextComponent) baseComponent;
@@ -210,7 +210,7 @@ public class DocumentLocalDataSource implements DocumentDataSource {
         try {
             jsonArray = new JSONArray(jsonComponents);
         } catch (Exception e){
-            MyApplication.LogController.makeLog(TAG, "JSON Error : string to json-array", localLogPermission);
+            LogController.makeLog(TAG, "JSON Error : string to json-array", localLogPermission);
         }
 
         GsonBuilder gsonBuilder = new GsonBuilder();
@@ -222,7 +222,7 @@ public class DocumentLocalDataSource implements DocumentDataSource {
                 JSONObject object = jsonArray.getJSONObject(i);
                 mComponents.add(gson.fromJson(object.toString(), BaseComponent.class));
             } catch (Exception e){
-                MyApplication.LogController.makeLog(TAG, "FAIL : load components from json", localLogPermission);
+                LogController.makeLog(TAG, "FAIL : load components from json", localLogPermission);
             }
         }
 
@@ -281,9 +281,9 @@ public class DocumentLocalDataSource implements DocumentDataSource {
             cursor.moveToNext();
             String documentId = cursor.getString(EditorContract.COL_ID);
             currentDocumentId = documentId;
-            MyApplication.LogController.makeLog(TAG, "Database processing was Successfully done",localLogPermission);
+            LogController.makeLog(TAG, "Database processing was Successfully done",localLogPermission);
         } catch (Exception e){
-            MyApplication.LogController.makeLog(TAG, "Error : Database insert, " + e, localLogPermission);
+            LogController.makeLog(TAG, "Error : Database insert, " + e, localLogPermission);
         }
     }
 
@@ -301,7 +301,7 @@ public class DocumentLocalDataSource implements DocumentDataSource {
         try{
             db.execSQL(query);
         } catch (Exception e){
-            MyApplication.LogController.makeLog(TAG, "Error : Database delete", localLogPermission);
+            LogController.makeLog(TAG, "Error : Database delete", localLogPermission);
         }
     }
 
@@ -314,7 +314,7 @@ public class DocumentLocalDataSource implements DocumentDataSource {
         try {
             db.execSQL(query);
         } catch (Exception e) {
-            MyApplication.LogController.makeLog(TAG, "DB ERROR :" + e, localLogPermission);
+            LogController.makeLog(TAG, "DB ERROR :" + e, localLogPermission);
         }
     }
 

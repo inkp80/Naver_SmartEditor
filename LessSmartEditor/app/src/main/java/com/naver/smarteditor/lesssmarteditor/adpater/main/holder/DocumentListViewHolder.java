@@ -31,7 +31,7 @@ public class DocumentListViewHolder extends BasicViewHolder{
                 DocumentParcelable documentParcelable = new DocumentParcelable(
                         document.get_id(),
                         document.getTitle(),
-                        document.getTimeStemp(),
+                        document.getTimeStamp(),
                         document.getComponentsJson()
                 );
                 onDocumentClickListener.OnDocumentClick(documentParcelable);
@@ -51,13 +51,4 @@ public class DocumentListViewHolder extends BasicViewHolder{
         return document;
     }
 
-    @Override
-    public void setDataPositionOnAdapter(int position) {
-        this.position = position;
-    }
-
-    @Override
-    public int getDataPositionOnAdapter(){
-        return this.position;
-    }
 }
