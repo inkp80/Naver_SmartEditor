@@ -27,16 +27,5 @@ public interface EditComponentAdapterContract {
 
         void initDocmentComponents(List<BaseComponent> components);
 
-        void addDocumentComponent(BaseComponent.Type type, BaseComponent baseComponent);
-        void deleteDocumentComponent(int postion);
-        void updateDocumentComponent(int position, BaseComponent baseComponent);
-        void swapDocumentComponent(int fromPosition, int toPosition);
-
-
-        //데이터베이스에 저장하기 위해서 presenter측에서 정보를 Adapter Model에 요청한다.
-        //view - action:save = mPresenter.save - mAdapter.Model getDataFromAdapterModel, LocalDB.saveIntoLocalDB
-        List<BaseComponent> printOutDocument();
-
-
     }
 }

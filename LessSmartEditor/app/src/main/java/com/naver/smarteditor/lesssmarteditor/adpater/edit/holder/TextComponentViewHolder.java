@@ -1,12 +1,15 @@
 package com.naver.smarteditor.lesssmarteditor.adpater.edit.holder;
 
+import android.graphics.Rect;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 
 
+import com.naver.smarteditor.lesssmarteditor.LogController;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.util.ComponentFocusListener;
+import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
 import com.naver.smarteditor.lesssmarteditor.data.component.TextComponent;
 import com.naver.smarteditor.lesssmarteditor.listener.OnComponentLongClickListener;
 import com.naver.smarteditor.lesssmarteditor.listener.OnEditTextComponentChangeListener;
@@ -18,20 +21,26 @@ import com.naver.smarteditor.lesssmarteditor.listener.OnEditTextComponentChangeL
 public class TextComponentViewHolder extends ComponentViewHolder {
 
 
+    public boolean focused = false;
+
     private EditText et;
     private final OnEditTextComponentChangeListener onEditTextComponentChangeListener;
     private TextWatcher textWatcher;
 
-    public TextComponentViewHolder(View itemView, final ComponentFocusListener componentFocusListener, final OnEditTextComponentChangeListener onEditTextComponentChangeListener) {
+    public TextComponentViewHolder(final View itemView, final ComponentFocusListener componentFocusListener, final OnEditTextComponentChangeListener onEditTextComponentChangeListener) {
         super(itemView, componentFocusListener);
         this.et = (EditText) itemView;
-        this.onEditTextComponentChangeListener = onEditTextComponentChangeListener;
 
-        itemView.setOnLongClickListener(new View.OnLongClickListener() {
+        this.onEditTextComponentChangeListener = onEditTextComponentChangeListener;
+        et.setOnClickListener(null);
+        et.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public boolean onLongClick(View v) {
-                componentFocusListener.OnComponentFocused(getAdapterPosition());
-                return false;
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(hasFocus){
+                    focused = true;
+                } else {
+                    focused = false;
+                }
             }
         });
     }
@@ -71,8 +80,8 @@ public class TextComponentViewHolder extends ComponentViewHolder {
 
 
     @Override
-    public void bindView(Object object) {
-        TextComponent textData = (TextComponent)object;
+    public void bindView(BaseComponent baseComponent) {
+        TextComponent textData = (TextComponent)baseComponent;
         this.removeWatcher();
         this.setText(textData.getText());
         this.bindTextWathcer();

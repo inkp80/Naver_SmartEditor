@@ -20,30 +20,12 @@ public interface DocumentDataSource {
         void OnLoadFinished(List<Document> data);
     }
 
-    interface SaveToDatabaseCallBack{
-        void OnSaveFinished();
-        void OnSaveFailed();
-    }
-
-    interface UpdateToDatabaseCallBack{
-        void OnUpdateFinished();
+    interface DatabaseCallback{
+        void OnSuccess(List<Document> documents);
+        void OnFail();
     }
 
 
-    //component
-    void addComponentToDocument(BaseComponent.Type type, Object componentData, LoadComponentCallBack loadComponentCallBack);
-
-    void replaceDocumentComponents(List<BaseComponent> components, LoadComponentCallBack loadComponentCallBack);
-
-    void deleteDocumentComponent(int position, LoadComponentCallBack loadComponentCallBack);
-
-    void updateEditTextComponent(CharSequence s, int position, LoadComponentCallBack loadComponentCallBack);
-
-    void clearDocumentComponents();
-
-    void convertParcelToComponents(DocumentParcelable documentParcelable, LoadComponentCallBack loadComponentCallBack);
-
-    void swapDocumentComponent(int from, int to, LoadComponentCallBack loadComponentCallBack);
 
     interface LocalModel{
 
@@ -65,25 +47,15 @@ public interface DocumentDataSource {
     }
 
 
-
-    //database
-    void saveDocumentToDatabase(String title, SaveToDatabaseCallBack saveToDatabaseCallBack);
-
-    void updateDocumentFromDatabase(String title, int doc_id, UpdateToDatabaseCallBack updateToDatabaseCallBack);
-
-    void getDocumentsListFromDatabase(LoadFromDatabaseCallBack loadFromDatabaseCallBack);
-
-    void deleteDocumentFromDatabase(int doc_id, LoadFromDatabaseCallBack loadFromDatabaseCallBack);
-
     interface DocumentLocalDatabase {
 
-        void saveDocumentToDatabase(String title, SaveToDatabaseCallBack saveToDatabaseCallBack);
+        void saveDocumentToDatabase(List<BaseComponent> documentData, DatabaseCallback databaseCallback);
 
-        void updateDocumentFromDatabase(String title, int doc_id, UpdateToDatabaseCallBack updateToDatabaseCallBack);
+        void updateDocumentFromDatabase(List<BaseComponent> documentData, DatabaseCallback databaseCallback);
 
-        void getDocumentsListFromDatabase(LoadFromDatabaseCallBack loadFromDatabaseCallBack);
+        void getDocumentsListFromDatabase(DatabaseCallback databaseCallback);
 
-        void deleteDocumentFromDatabase(int doc_id, LoadFromDatabaseCallBack loadFromDatabaseCallBack);
+        void deleteDocumentFromDatabase(int documentId, DatabaseCallback databaseCallback);
     }
 
     interface Repository{
@@ -92,11 +64,13 @@ public interface DocumentDataSource {
         void deleteComponent(int position);
         void replaceComponent(List<BaseComponent> components);
         void swapComponent(int fromPosition, int toPosition);
+        void clearComponent();
 
-        void requestUpdateDocument();
-        void requestDeleteDocument();
-        void requestCreateDocument();
-        void requestReadDocument();
+
+        void updateDocument(DatabaseCallback databaseCallback);
+        void deleteDocument(DatabaseCallback databaseCallback);
+        void createDocument(DatabaseCallback databaseCallback);
+        void readDocument(DatabaseCallback databaseCallback);
 
     }
 }

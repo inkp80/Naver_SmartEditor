@@ -18,6 +18,17 @@ public class DocumentRepository implements DocumentDataSource, DocumentDataSourc
 
     private static DocumentRepository mEditComponentRepository;
 
+    private DocumentLocalDataSource mEditComponentLocalDataSource;
+
+    private DocumentModel mDocumentModel;
+
+
+    ///////////
+    private DocumentRepository(Context mContext){
+        mEditComponentLocalDataSource = new DocumentLocalDataSource(mContext);
+        mDocumentModel = new DocumentModel();
+    }
+
     public static DocumentRepository getInstance(Context context){
         if(mEditComponentRepository == null){
             mEditComponentRepository = new DocumentRepository(context);
@@ -25,149 +36,55 @@ public class DocumentRepository implements DocumentDataSource, DocumentDataSourc
         return mEditComponentRepository;
     } //Singleton
 
-    private DocumentLocalDataSource mEditComponentLocalDataSource;
-    private DocumentModel mDocumentModel;
 
-    private DocumentRepository(Context mContext){
-        mEditComponentLocalDataSource = new DocumentLocalDataSource(mContext);
-        mDocumentModel = new DocumentModel();
-    }
+    //////////////////
 
     @Override
-    public void replaceDocumentComponents(List<BaseComponent> components, final LoadComponentCallBack loadComponentCallBack) {
-        mEditComponentLocalDataSource.replaceDocumentComponents(components, new LoadComponentCallBack() {
+    public void updateDocument(final DatabaseCallback databaseCallback) {
+        mEditComponentLocalDataSource.updateDocumentFromDatabase(mDocumentModel.returnModel(), new DatabaseCallback() {
             @Override
-            public void OnComponentLoaded(List<BaseComponent> components) {
-                if(loadComponentCallBack != null) {
-                    loadComponentCallBack.OnComponentLoaded(components);
+            public void OnSuccess(List<Document> documents) {
+                if(databaseCallback != null){
+                    databaseCallback.OnSuccess(null);
                 }
+            }
+
+            @Override
+            public void OnFail() {
+                databaseCallback.OnFail();
             }
         });
     }
 
     @Override
-    public void addComponentToDocument(BaseComponent.Type type, Object componentData, final LoadComponentCallBack loadComponentCallBack) {
-        mEditComponentLocalDataSource.addComponentToDocument(type, componentData, new LoadComponentCallBack() {
+    public void deleteDocument(DatabaseCallback databaseCallback) {
+
+    }
+
+    @Override
+    public void createDocument(DatabaseCallback databaseCallback) {
+
+    }
+
+    @Override
+    public void readDocument(final DatabaseCallback databaseCallback) {
+        mEditComponentLocalDataSource.getDocumentsListFromDatabase(new DatabaseCallback() {
             @Override
-            public void OnComponentLoaded(List<BaseComponent> components) {
-                if(loadComponentCallBack != null) {
-                    loadComponentCallBack.OnComponentLoaded(components);
+            public void OnSuccess(List<Document> documents) {
+                if(databaseCallback != null){
+                    databaseCallback.OnSuccess(null);
+                }
+            }
+
+            @Override
+            public void OnFail() {
+                if(databaseCallback != null){
+                    databaseCallback.OnFail();
                 }
             }
         });
     }
 
-    @Override
-    public void updateEditTextComponent(CharSequence s, int position, final LoadComponentCallBack loadComponentCallBack){
-        mEditComponentLocalDataSource.updateEditTextComponent(s, position, new LoadComponentCallBack() {
-            @Override
-            public void OnComponentLoaded(List<BaseComponent> components) {
-                if(loadComponentCallBack != null) {
-                    loadComponentCallBack.OnComponentLoaded(components);
-                }
-            }
-        });
-    }
-
-    @Override
-    public void clearDocumentComponents() {
-        mEditComponentLocalDataSource.clearDocumentComponents();
-    }
-
-    @Override
-    public void saveDocumentToDatabase(String title, final SaveToDatabaseCallBack saveToDatabaseCallBack) {
-        mEditComponentLocalDataSource.saveDocumentToDatabase(title, new SaveToDatabaseCallBack() {
-            @Override
-            public void OnSaveFinished() {
-                if(saveToDatabaseCallBack != null) {
-                    saveToDatabaseCallBack.OnSaveFinished();
-                }
-            }
-            @Override
-            public void OnSaveFailed(){
-                if(saveToDatabaseCallBack != null) {
-                    saveToDatabaseCallBack.OnSaveFailed();
-                }
-            }
-        });
-    }
-
-
-
-    @Override
-    public void getDocumentsListFromDatabase(final LoadFromDatabaseCallBack loadFromDatabaseCallBack) {
-        mEditComponentLocalDataSource.getDocumentsListFromDatabase(new LoadFromDatabaseCallBack() {
-            @Override
-            public void OnLoadFinished(List<Document> data) {
-                if(loadFromDatabaseCallBack != null){
-                    loadFromDatabaseCallBack.OnLoadFinished(data);
-                }
-            }
-        });
-    }
-
-    @Override
-    public void convertParcelToComponents(DocumentParcelable documentParcelable, final LoadComponentCallBack loadComponentCallBack) {
-        mEditComponentLocalDataSource.convertParcelToComponents(documentParcelable, new LoadComponentCallBack() {
-            @Override
-            public void OnComponentLoaded(List<BaseComponent> components) {
-                if(loadComponentCallBack != null){
-                    loadComponentCallBack.OnComponentLoaded(components);
-                }
-            }
-        });
-    }
-
-    @Override
-    public void deleteDocumentComponent(int position, final LoadComponentCallBack loadComponentCallBack) {
-        mEditComponentLocalDataSource.deleteDocumentComponent(position, new LoadComponentCallBack() {
-            @Override
-            public void OnComponentLoaded(List<BaseComponent> components) {
-                if(loadComponentCallBack != null){
-                    loadComponentCallBack.OnComponentLoaded(components);
-                }
-            }
-        });
-
-    }
-
-    @Override
-    public void updateDocumentFromDatabase(String title, int doc_id, final UpdateToDatabaseCallBack updateToDatabaseCallBack) {
-        mEditComponentLocalDataSource.updateDocumentFromDatabase(title, doc_id, new UpdateToDatabaseCallBack() {
-            @Override
-            public void OnUpdateFinished() {
-                if(updateToDatabaseCallBack != null){
-                    updateToDatabaseCallBack.OnUpdateFinished();
-                }
-            }
-        });
-
-    }
-
-
-    @Override
-    public void swapDocumentComponent(int from, int to, final LoadComponentCallBack loadComponentCallBack) {
-        mEditComponentLocalDataSource.swapDocumentComponent(from, to, new LoadComponentCallBack() {
-            @Override
-            public void OnComponentLoaded(List<BaseComponent> components) {
-                if(loadComponentCallBack != null){
-                    loadComponentCallBack.OnComponentLoaded(components);
-                }
-            }
-        });
-    }
-
-    @Override
-    public void deleteDocumentFromDatabase(int doc_id, final LoadFromDatabaseCallBack loadFromDatabaseCallBack) {
-        mEditComponentLocalDataSource.deleteDocumentFromDatabase(doc_id, new LoadFromDatabaseCallBack() {
-            @Override
-            public void OnLoadFinished(List<Document> data) {
-                if(loadFromDatabaseCallBack != null){
-                    loadFromDatabaseCallBack.OnLoadFinished(data);
-                }
-            }
-        });
-    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -200,24 +117,10 @@ public class DocumentRepository implements DocumentDataSource, DocumentDataSourc
     }
 
     @Override
-    public void requestUpdateDocument() {
-
+    public void clearComponent() {
+        mDocumentModel.clearDocumentComponents();
     }
 
-    @Override
-    public void requestDeleteDocument() {
-
-    }
-
-    @Override
-    public void requestCreateDocument() {
-
-    }
-
-    @Override
-    public void requestReadDocument() {
-
-    }
 
     public List<BaseComponent> getDocumentData(){
         return mDocumentModel.returnModel();

@@ -9,7 +9,7 @@ abstract public class BaseComponent {
     //역할에 대해서 고려해볼 것
     //interface - type
     public enum Type {
-        TEXT(0), IMG(1), MAP(2), NOTDEFINE(-1);
+        TEXT(0), IMG(1), MAP(2), TITLE(3), NOTDEFINE(-1);
         private int value;
         private Type(int value){
             this.value = value;
@@ -36,4 +36,6 @@ abstract public class BaseComponent {
         }
         return Type.NOTDEFINE;
     }
+
+    abstract void updateData(BaseComponent baseComponent);
 }

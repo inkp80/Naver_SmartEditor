@@ -40,10 +40,9 @@ public interface EditContract {
 
 
         //database
-        void saveDocumentToDataBase(String title);
+        void updateDocument();
 
 
         //utils
-        void convertParcelToDocumentComponents(DocumentParcelable documentParcelable);
     }
 }

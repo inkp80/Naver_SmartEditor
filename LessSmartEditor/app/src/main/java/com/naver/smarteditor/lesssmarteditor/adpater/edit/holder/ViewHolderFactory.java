@@ -43,6 +43,8 @@ public class ViewHolderFactory {
                 return new ImgComponentViewHolder(createItemView(type), componentFocusListener, requestManager);
             case MAP:
                 return new MapComponentViewHolder(createItemView(type), componentFocusListener, requestManager);
+            case TITLE:
+                return new TitleComponentViewHolder(createItemView(type), componentFocusListener, onEditTextComponentChangeListener);
             default:
                 LogController.makeLog("ViewHolderFactroy", "INVALID TYPE", true);
                 return null;
@@ -80,6 +82,10 @@ public class ViewHolderFactory {
                 mapItemView.addView(mapImg);
                 mapItemView.addView(placeName);
                 return mapItemView;
+            case TITLE:
+                EditText editTextTitleItemView = new EditText(mContext);
+                editTextTitleItemView.setLayoutParams(lp);
+                return editTextTitleItemView;
             default:
                 return null;
         }

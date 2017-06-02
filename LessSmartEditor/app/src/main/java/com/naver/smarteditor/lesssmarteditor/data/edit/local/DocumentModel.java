@@ -1,11 +1,7 @@
 package com.naver.smarteditor.lesssmarteditor.data.edit.local;
 
-import com.naver.smarteditor.lesssmarteditor.LogController;
 import com.naver.smarteditor.lesssmarteditor.data.DocumentParcelable;
 import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
-import com.naver.smarteditor.lesssmarteditor.data.component.MapComponent;
-import com.naver.smarteditor.lesssmarteditor.data.component.TextComponent;
-import com.naver.smarteditor.lesssmarteditor.data.edit.local.DocumentDataSource;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +32,7 @@ public class DocumentModel implements DocumentDataSource.LocalModel {
 
     @Override
     public void updateDocumentComponent(BaseComponent baseComponent, int position) {
+
         mComponents.set(position, baseComponent);
     }
 
@@ -79,4 +76,6 @@ public class DocumentModel implements DocumentDataSource.LocalModel {
     public List<BaseComponent> returnModel() {
         return mComponents;
     }
+
+
 }

@@ -6,7 +6,9 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone">
 
         <EditText
             android:id="@+id/editor_et_title"
@@ -14,22 +16,19 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:hint="제목 없음"
+            android:inputType="text"
             android:maxLength="5"
             android:maxLines="1"
-            android:inputType="text"
             android:paddingLeft="8dp" />
 
-        <Button
-            android:id="@+id/editor_bt_save"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="save" />
 
     </LinearLayout>
+
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
 
         <Button
             android:id="@+id/editor_bt_newdocument"
@@ -55,31 +54,44 @@
 
     <LinearLayout
         android:id="@+id/editor_component_menu"
-        android:visibility="gone"
-        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        >
+        android:orientation="horizontal"
+        android:visibility="gone">
 
         <Button
-            android:layout_weight="1"
             android:id="@+id/editor_bt_delete"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="delete" />
 
         <Button
-            android:layout_weight="1"
             android:id="@+id/editor_bt_cancel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="cancel" />
     </LinearLayout>
 
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/editor_recyclerview"
+    <LinearLayout
+        android:weightSum="1"
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
+        android:layout_height="match_parent">
 
+        <android.support.v7.widget.RecyclerView
+            android:layout_weight="0.1"
+            android:id="@+id/editor_recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
+
+        <Button
+            android:layout_weight="0.9"
+            android:id="@+id/editor_bt_save"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="save" />
+    </LinearLayout>
 </LinearLayout>

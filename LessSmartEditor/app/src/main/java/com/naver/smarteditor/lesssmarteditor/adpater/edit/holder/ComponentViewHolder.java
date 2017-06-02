@@ -3,11 +3,13 @@ package com.naver.smarteditor.lesssmarteditor.adpater.edit.holder;
 
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.view.View;
 
 import com.naver.smarteditor.lesssmarteditor.R;
 import com.naver.smarteditor.lesssmarteditor.adpater.basic.holder.BasicViewHolder;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.util.ComponentFocusListener;
+import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
 import com.naver.smarteditor.lesssmarteditor.listener.OnComponentLongClickListener;
 
 
@@ -21,26 +23,27 @@ abstract public class ComponentViewHolder extends BasicViewHolder {
     public ComponentViewHolder(final View itemView, final ComponentFocusListener componentFocusListener) {
         super(itemView);
 
-        itemView.setOnLongClickListener(new View.OnLongClickListener() {
+        itemView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onLongClick(View v) {
-                componentFocusListener.OnComponentFocused(getAdapterPosition());
-                return false;
+            public void onClick(View v) {
+                Rect outRect = new Rect();
+                itemView.getGlobalVisibleRect(outRect);
+                componentFocusListener.OnComponentFocused(getAdapterPosition(), outRect);
             }
         });
-//        int padding = Resources.getSystem().getInteger(R.integer.viewholder_padding);
-//        itemView.setPadding(10,padding,padding,padding);
 
     }
 
-    abstract public void bindView(Object object);
+    abstract public void bindView(BaseComponent baseComponent);
 
 
-    public void setHighlight(){
+    public void showHighlight(){
         this.itemView.setBackgroundColor(Color.LTGRAY);
     }
 
     public void dismissHighlight(){
         this.itemView.setBackgroundColor(Color.parseColor("#FAFAFA"));
     }
+
+
 }

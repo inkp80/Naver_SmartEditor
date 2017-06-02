@@ -24,6 +24,13 @@ public class TextComponent extends BaseComponent{
 
     public void setText(String text){
         this.text = text;
+    }
 
+    @Override
+    void updateData(BaseComponent baseComponent) {
+        TextComponent component = (TextComponent) baseComponent;
+        if(component.getText() != null){
+            this.text = component.getText();
+        }
     }
 }

@@ -26,4 +26,9 @@ public class ImgComponent extends BaseComponent {
     public void setImgUri(String uri){
         imgUri = uri;
     }
+
+    @Override
+    void updateData(BaseComponent baseComponent) {
+
+    }
 }

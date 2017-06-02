@@ -35,15 +35,17 @@ public class DocumentListPresenter implements DocumentListContract.Presenter, On
 
     @Override
     public void requestDocumentsFromLocal() {
-        editComponentRepository.getDocumentsListFromDatabase(new DocumentDataSource.LoadFromDatabaseCallBack() {
-            @Override
-            public void OnLoadFinished(List<Document> data) {
-                adapterModel.initDocumentList(data);
-                adapterView.notifyDataChange();
-            }
+        editComponentRepository.getDocumentData();
 
-        });
     }
+//        editComponentRepository.getDocumentsListFromDatabase(new DocumentDataSource.LoadFromDatabaseCallBack() {
+//            @Override
+//            public void OnLoadFinished(List<Document> data) {
+//                adapterModel.initDocumentList(data);
+//                adapterView.notifyDataChange();
+//            }
+//
+//        });
 
     @Override
     public void setMainAdapterModel(DocumentListAdapterContract.Model adapter) {
@@ -51,7 +53,7 @@ public class DocumentListPresenter implements DocumentListContract.Presenter, On
     }
 
     @Override
-    public void setMainAdapterView(DocumentListAdapterContract.View adapter){
+    public void setMainAdapterView(DocumentListAdapterContract.View adapter) {
         this.adapterView = adapter;
         adapterView.setDocumentOnClickedListener(this);
     }
@@ -75,13 +77,13 @@ public class DocumentListPresenter implements DocumentListContract.Presenter, On
 
     @Override
     public void OnItemDismiss(Document document) {
-        editComponentRepository.deleteDocumentFromDatabase(document.get_id(), new DocumentDataSource.LoadFromDatabaseCallBack() {
-            @Override
-            public void OnLoadFinished(List<Document> data) {
-                    adapterModel.initDocumentList(data);
-                    adapterView.notifyDataChange();
-            }
-        });
+//        editComponentRepository.deleteDocumentFromDatabase(document.get_id(), new DocumentDataSource.LoadFromDatabaseCallBack() {
+//            @Override
+//            public void OnLoadFinished(List<Document> data) {
+//                    adapterModel.initDocumentList(data);
+//                    adapterView.notifyDataChange();
+//            }
+//        });
 
     }
 }

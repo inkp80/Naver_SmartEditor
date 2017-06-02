@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.RequestManager;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.util.ComponentFocusListener;
+import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
 import com.naver.smarteditor.lesssmarteditor.data.component.MapComponent;
 import com.naver.smarteditor.lesssmarteditor.listener.OnComponentLongClickListener;
 
@@ -29,14 +30,14 @@ public class MapComponentViewHolder extends ComponentViewHolder{
 
         placeMapImg = (ImageView) placeLinearLayout.getChildAt(0);
         placeTextInfo = (TextView) placeLinearLayout.getChildAt(1);
-    
+
     }
 
 
 
     @Override
-    public void bindView(Object object) {
-        MapComponent thisMapComponent = (MapComponent) object;
+    public void bindView(BaseComponent baseComponent) {
+        MapComponent thisMapComponent = (MapComponent) baseComponent;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             this.placeTextInfo.setText(Html.fromHtml("<b>" + thisMapComponent.getPlaceName() + "</b>", Html.FROM_HTML_MODE_COMPACT));

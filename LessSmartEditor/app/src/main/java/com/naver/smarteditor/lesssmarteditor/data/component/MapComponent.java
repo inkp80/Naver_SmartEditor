@@ -54,4 +54,9 @@ public class MapComponent extends BaseComponent {
     public void setPlaceMapImgUri(String placeMapImgUri) {
         this.placeMapImgUri = placeMapImgUri;
     }
+
+    @Override
+    void updateData(BaseComponent baseComponent) {
+
+    }
 }

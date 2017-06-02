@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -13,6 +14,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.InputFilter;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -31,6 +33,7 @@ import com.naver.smarteditor.lesssmarteditor.data.api.naver_map.PlaceItemParcela
 import com.naver.smarteditor.lesssmarteditor.data.component.ImgComponent;
 import com.naver.smarteditor.lesssmarteditor.data.component.MapComponent;
 import com.naver.smarteditor.lesssmarteditor.data.component.TextComponent;
+import com.naver.smarteditor.lesssmarteditor.data.component.TitleComponent;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.DocumentRepository;
 import com.naver.smarteditor.lesssmarteditor.listener.OnEditTextComponentChangeListener;
 import com.naver.smarteditor.lesssmarteditor.views.edit.dialog.SelectComponentDialog;
@@ -92,8 +95,12 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
     RecyclerView mEditorRecyclerView;
 
 
+
     private SelectComponentDialog mSelectComponentDialog;
 
+    private Rect focusedRange;
+    private boolean isFocused = false;
+    private ActivityToViewHolder activity2ViewHolder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +111,14 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         inputMethodManager = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
 
         mAdapter = new EditComponentAdapter(this);
+        activity2ViewHolder = mAdapter.getA2V();
+        mAdapter.setV2A(new ViewHolderToActivity() {
+            @Override
+            public void focusing(Rect rect) {
+                focusedRange = rect;
+                isFocused = true;
+            }
+        });
 
         initPresenter();
 
@@ -111,7 +126,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
 
         initEditorMenu();
 
-        initDialog();
+        initSelectComponentDialog();
 
         initDocument();
 
@@ -176,7 +191,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
             public boolean OnComponentMove(int from, int to) {
                 LogController.makeLog(TAG, "onComponentMov", localLogPermission);
                 mPresenter.swapComponent(from, to);
-                return false;
+                return true;
             }
         });
         ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
@@ -189,9 +204,11 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         mPresenter.setComponentAdapterView(mAdapter);
         mPresenter.setComponentAdatperModel(mAdapter);
         mPresenter.setComponentDataSource(DocumentRepository.getInstance(this));
+
+        mPresenter.addComponentToDocument(new TitleComponent(null, null));
     }
 
-    private void initDialog() {
+    private void initSelectComponentDialog() {
 
         View.OnClickListener dialogAddTxtButtonListener = new View.OnClickListener() {
             @Override
@@ -263,7 +280,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         mBtSaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mPresenter.saveDocumentToDataBase(mTxtTitle.getText().toString());
+                mPresenter.updateDocument();
                 new ClearCachesTask(getBaseContext(), true, true).execute();
             }
         });
@@ -279,7 +296,9 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
                         .setPositiveButton("YES", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                clearDocument();
+                                mPresenter.clearCurrentDocument();
+                                mPresenter.addComponentToDocument(new TitleComponent(null, null));
+                                activity2ViewHolder.clearFocus();
                             }
                         });
                 ab.show();
@@ -302,13 +321,10 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
 
     @Override
     public void onBackPressed() {
-        if (checkComponentIsFocused()) {
-            removeFocusFromCurrentComponent();
-            backKeyTime = 0;
-            return;
-        }
+
 
         if (System.currentTimeMillis() > backKeyTime + 2000) {
+            activity2ViewHolder.clearFocus();
             backKeyTime = System.currentTimeMillis();
             Toast.makeText(this, "\'뒤로\' 한번 더 누르시면 종료됩니다.", Toast.LENGTH_SHORT).show();
             return;
@@ -419,15 +435,30 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
 
 
     private void requestDocumentBody(DocumentParcelable documentParcelable) {
-        mPresenter.convertParcelToDocumentComponents(documentParcelable);
+//        mPresenter.convertParcelToDocumentComponents(documentParcelable);
     }
 
 
-    //TODO : clearDocument, 이미 비어있다면 새로 만들 필요가 없다.. 초기화로는?
-    private void clearDocument() {
-        mTxtTitle.setText("");
-        mTxtTitle.setHint("제목 없음");
-        removeFocusFromCurrentComponent();
-        mPresenter.clearCurrentDocument();
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            if(inputMethodManager.isAcceptingText())
+                inputMethodManager.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), 0);
+            if (isFocused) {
+                if (!focusedRange.contains((int)event.getRawX(), (int)event.getRawY())) {
+                    focusedRange = null;
+                    isFocused = false;
+                    activity2ViewHolder.clearFocus();
+                    //굳이 이럴 필요가 있나??
+                    //다이렉트로 뿌리자.
+
+
+                } else{
+                    return false;
+                }
+            }
+        }
+        return super.dispatchTouchEvent(event);
     }
+
 }
