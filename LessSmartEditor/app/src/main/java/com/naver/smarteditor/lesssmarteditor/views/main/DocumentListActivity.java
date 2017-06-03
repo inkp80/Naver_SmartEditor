@@ -44,7 +44,7 @@ public class DocumentListActivity extends AppCompatActivity implements DocumentL
         initRecyclerView();
 
 
-        documentListPresenter.requestDocumentsFromLocal();
+        documentListPresenter.requestDocumentsList();
     }
 
 
@@ -81,7 +81,7 @@ public class DocumentListActivity extends AppCompatActivity implements DocumentL
     @Override
     protected void onResume(){
         super.onResume();
-        documentListPresenter.requestDocumentsFromLocal();
+        documentListPresenter.requestDocumentsList();
     }
 
 

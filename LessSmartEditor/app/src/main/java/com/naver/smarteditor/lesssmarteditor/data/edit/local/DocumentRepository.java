@@ -3,7 +3,6 @@ package com.naver.smarteditor.lesssmarteditor.data.edit.local;
 import android.content.Context;
 
 import com.naver.smarteditor.lesssmarteditor.data.Document;
-import com.naver.smarteditor.lesssmarteditor.data.DocumentParcelable;
 import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
 
 import java.util.List;
@@ -41,7 +40,7 @@ public class DocumentRepository implements DocumentDataSource, DocumentDataSourc
 
     @Override
     public void updateDocument(final DatabaseCallback databaseCallback) {
-        mEditComponentLocalDataSource.updateDocumentFromDatabase(mDocumentModel.returnModel(), new DatabaseCallback() {
+        mEditComponentLocalDataSource.updateDocument(mDocumentModel.returnModel(), new DatabaseCallback() {
             @Override
             public void OnSuccess(List<Document> documents) {
                 if(databaseCallback != null){
@@ -68,7 +67,7 @@ public class DocumentRepository implements DocumentDataSource, DocumentDataSourc
 
     @Override
     public void readDocument(final DatabaseCallback databaseCallback) {
-        mEditComponentLocalDataSource.getDocumentsListFromDatabase(new DatabaseCallback() {
+        mEditComponentLocalDataSource.getDocumentsList(new DatabaseCallback() {
             @Override
             public void OnSuccess(List<Document> documents) {
                 if(databaseCallback != null){

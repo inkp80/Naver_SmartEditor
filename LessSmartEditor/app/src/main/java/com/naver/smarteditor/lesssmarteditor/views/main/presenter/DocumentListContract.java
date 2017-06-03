@@ -26,6 +26,8 @@ public interface DocumentListContract {
 
         void setComponentDataSource(DocumentRepository repository);
 
-        void requestDocumentsFromLocal();
+        void requestDocumentsList();
+
+
     }
 }

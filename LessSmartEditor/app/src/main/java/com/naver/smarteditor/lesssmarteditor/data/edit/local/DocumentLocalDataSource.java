@@ -53,7 +53,7 @@ public class DocumentLocalDataSource implements DocumentDataSource.DocumentLocal
     }
 
     @Override
-    public void saveDocumentToDatabase(List<BaseComponent> documentData, DocumentDataSource.DatabaseCallback databaseCallback) {
+    public void saveDocument(List<BaseComponent> documentData, DocumentDataSource.DatabaseCallback databaseCallback) {
 
         //check vaildation
         insertIntoDatabase(documentData);
@@ -64,7 +64,7 @@ public class DocumentLocalDataSource implements DocumentDataSource.DocumentLocal
     }
 
     @Override
-    public void updateDocumentFromDatabase(List<BaseComponent> documentData, DocumentDataSource.DatabaseCallback databaseCallback) {
+    public void updateDocument(List<BaseComponent> documentData, DocumentDataSource.DatabaseCallback databaseCallback) {
         if (currentDocumentId == NEW_DOCUMENT) {
             insertIntoDatabase(documentData);
             if (databaseCallback != null) {
@@ -79,18 +79,18 @@ public class DocumentLocalDataSource implements DocumentDataSource.DocumentLocal
     }
 
     @Override
-    public void getDocumentsListFromDatabase(DocumentDataSource.DatabaseCallback databaseCallback) {
+    public void getDocumentsList(DocumentDataSource.DatabaseCallback databaseCallback) {
 
     }
 
     @Override
-    public void deleteDocumentFromDatabase(int documentId, DocumentDataSource.DatabaseCallback databaseCallback) {
+    public void deleteDocument(int documentId, DocumentDataSource.DatabaseCallback databaseCallback) {
 
     }
 
     //    //database
 //    @Override
-//    public void saveDocumentToDatabase(SaveToDatabaseCallBack saveToDatabaseCallBack) {
+//    public void saveDocument(SaveToDatabaseCallBack saveToDatabaseCallBack) {
 //        LogController.makeLog(TAG, "DOC ID: "+currentDocumentId, localLogPermission);
 //
 //        if (title.length() == 0) {
@@ -183,13 +183,13 @@ public class DocumentLocalDataSource implements DocumentDataSource.DocumentLocal
 //    }
 //
 //    @Override
-//    public void saveDocumentToDatabase(String title, SaveToDatabaseCallBack saveToDatabaseCallBack) {
+//    public void saveDocument(String title, SaveToDatabaseCallBack saveToDatabaseCallBack) {
 //
 //    }
 //
 //
 //    @Override
-//    public void getDocumentsListFromDatabase(LoadFromDatabaseCallBack loadFromDatabaseCallBack) {
+//    public void getDocumentsList(LoadFromDatabaseCallBack loadFromDatabaseCallBack) {
 //
 //        List<Document> docList = converCursorToList(readFromLocalDatabase());
 //        Collections.reverse(docList);
@@ -202,7 +202,7 @@ public class DocumentLocalDataSource implements DocumentDataSource.DocumentLocal
 //
 //    //database
 //    @Override
-//    public void updateDocumentFromDatabase(String title, int doc_id, UpdateToDatabaseCallBack updateToDatabaseCallBack) {
+//    public void updateDocument(String title, int doc_id, UpdateToDatabaseCallBack updateToDatabaseCallBack) {
 ////        updateDatabase(title, doc_id, mComponents);
 //        if(updateToDatabaseCallBack != null){
 //            updateToDatabaseCallBack.OnUpdateFinished();
@@ -210,7 +210,7 @@ public class DocumentLocalDataSource implements DocumentDataSource.DocumentLocal
 //    }
 //
 //    @Override
-//    public void deleteDocumentFromDatabase(int doc_id, LoadFromDatabaseCallBack loadFromDatabaseCallBack) {
+//    public void deleteDocument(int doc_id, LoadFromDatabaseCallBack loadFromDatabaseCallBack) {
 //        if(String.valueOf(doc_id) == currentDocumentId){
 //            currentDocumentId = NEW_DOCUMENT;
 //        }

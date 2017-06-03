@@ -49,13 +49,13 @@ public interface DocumentDataSource {
 
     interface DocumentLocalDatabase {
 
-        void saveDocumentToDatabase(List<BaseComponent> documentData, DatabaseCallback databaseCallback);
+        void saveDocument(List<BaseComponent> documentData, DatabaseCallback databaseCallback);
 
-        void updateDocumentFromDatabase(List<BaseComponent> documentData, DatabaseCallback databaseCallback);
+        void updateDocument(List<BaseComponent> documentData, DatabaseCallback databaseCallback);
 
-        void getDocumentsListFromDatabase(DatabaseCallback databaseCallback);
+        void getDocumentsList(DatabaseCallback databaseCallback);
 
-        void deleteDocumentFromDatabase(int documentId, DatabaseCallback databaseCallback);
+        void deleteDocument(int documentId, DatabaseCallback databaseCallback);
     }
 
     interface Repository{

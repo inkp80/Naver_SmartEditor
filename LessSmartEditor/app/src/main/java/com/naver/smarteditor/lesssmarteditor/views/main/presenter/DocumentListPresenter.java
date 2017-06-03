@@ -34,11 +34,11 @@ public class DocumentListPresenter implements DocumentListContract.Presenter, On
 
 
     @Override
-    public void requestDocumentsFromLocal() {
+    public void requestDocumentsList() {
         editComponentRepository.getDocumentData();
 
     }
-//        editComponentRepository.getDocumentsListFromDatabase(new DocumentDataSource.LoadFromDatabaseCallBack() {
+//        editComponentRepository.getDocumentsList(new DocumentDataSource.LoadFromDatabaseCallBack() {
 //            @Override
 //            public void OnLoadFinished(List<Document> data) {
 //                adapterModel.initDocumentList(data);
@@ -77,7 +77,7 @@ public class DocumentListPresenter implements DocumentListContract.Presenter, On
 
     @Override
     public void OnItemDismiss(Document document) {
-//        editComponentRepository.deleteDocumentFromDatabase(document.get_id(), new DocumentDataSource.LoadFromDatabaseCallBack() {
+//        editComponentRepository.deleteDocument(document.get_id(), new DocumentDataSource.LoadFromDatabaseCallBack() {
 //            @Override
 //            public void OnLoadFinished(List<Document> data) {
 //                    adapterModel.initDocumentList(data);
