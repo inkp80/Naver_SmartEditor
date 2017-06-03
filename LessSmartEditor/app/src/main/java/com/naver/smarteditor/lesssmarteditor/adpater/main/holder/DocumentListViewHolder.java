@@ -16,7 +16,7 @@ import com.naver.smarteditor.lesssmarteditor.listener.OnDocumentClickListener;
 public class DocumentListViewHolder extends BasicViewHolder{
 
     private TextView mTitleText;
-    private Document document;
+    private int documentId;
     private OnDocumentClickListener onDocumentClickListener;
 
     public DocumentListViewHolder(View itemView, final OnDocumentClickListener onDocumentClickListener) {
@@ -28,27 +28,22 @@ public class DocumentListViewHolder extends BasicViewHolder{
         mTitleText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DocumentParcelable documentParcelable = new DocumentParcelable(
-                        document.get_id(),
-                        document.getTitle(),
-                        document.getTimeStamp(),
-                        document.getComponentsJson()
-                );
-                onDocumentClickListener.OnDocumentClick(documentParcelable);
+
+                onDocumentClickListener.OnDocumentClick(documentId);
             }
         });
     }
 
-    public void bindDocumentData(Document data){
-        this.document = data;
-    }
 
     public void setTitleTextView(String title){
        mTitleText.setText(title);
     }
 
-    public Document getDocument(){
-        return document;
+    public void setDocumentId(int documentId) {
+        this.documentId = documentId;
     }
 
+    public int getDocumentId(){
+        return this.documentId;
+    }
 }

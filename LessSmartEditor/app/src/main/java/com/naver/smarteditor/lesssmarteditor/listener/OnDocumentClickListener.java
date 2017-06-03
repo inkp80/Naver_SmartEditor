@@ -7,5 +7,5 @@ import com.naver.smarteditor.lesssmarteditor.data.DocumentParcelable;
  */
 
 public interface OnDocumentClickListener {
-    void OnDocumentClick(DocumentParcelable documentParcelable);
+    void OnDocumentClick(int documentId);
 }

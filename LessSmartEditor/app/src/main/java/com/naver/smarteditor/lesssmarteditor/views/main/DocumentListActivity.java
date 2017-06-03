@@ -13,13 +13,16 @@ import com.naver.smarteditor.lesssmarteditor.adpater.main.DocumentListAdapter;
 import com.naver.smarteditor.lesssmarteditor.adpater.main.util.DocumentTouchItemHelperCallback;
 import com.naver.smarteditor.lesssmarteditor.data.DocumentParcelable;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.DocumentRepository;
+import com.naver.smarteditor.lesssmarteditor.listener.OnDocumentClickListener;
 import com.naver.smarteditor.lesssmarteditor.views.edit.EditorActivity;
 import com.naver.smarteditor.lesssmarteditor.views.main.presenter.DocumentListContract;
 import com.naver.smarteditor.lesssmarteditor.views.main.presenter.DocumentListPresenter;
 
+import static com.naver.smarteditor.lesssmarteditor.MyApplication.DOCUMENT_ID;
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.DOCUMENT_PARCEL;
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.EDIT_DOCUMENT_MODE;
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.EDITOR_MODE;
+import static com.naver.smarteditor.lesssmarteditor.MyApplication.REQ_MOV2_DOCLIST;
 
 public class DocumentListActivity extends AppCompatActivity implements DocumentListContract.View{
 
@@ -38,9 +41,14 @@ public class DocumentListActivity extends AppCompatActivity implements DocumentL
         setContentView(R.layout.activity_main);
 
         documentListAdapter = new DocumentListAdapter(this);
-        //init presenter
+        documentListAdapter.setDocumentOnClickedListener(new OnDocumentClickListener() {
+            @Override
+            public void OnDocumentClick(int documentId) {
+                editSelectedDocument(documentId);
+            }
+        });
+
         initPresenter();
-        //init recyclerview
         initRecyclerView();
 
 
@@ -86,11 +94,10 @@ public class DocumentListActivity extends AppCompatActivity implements DocumentL
 
 
     @Override
-    public void editSelectedDocument(DocumentParcelable documentParcelable) {
+    public void editSelectedDocument(int documentId) {
         Intent intent = new Intent(DocumentListActivity.this, EditorActivity.class);
-        intent.putExtra(DOCUMENT_PARCEL, documentParcelable);
-        intent.putExtra(EDITOR_MODE, EDIT_DOCUMENT_MODE);
-        startActivity(intent);
+        intent.putExtra(DOCUMENT_ID, documentId);
+        setResult(REQ_MOV2_DOCLIST, intent);
     }
 
     private void addRecyclerViewBorder(LinearLayoutManager layoutManager){

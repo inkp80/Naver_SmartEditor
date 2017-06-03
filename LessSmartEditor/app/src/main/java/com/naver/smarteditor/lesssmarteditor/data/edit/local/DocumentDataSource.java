@@ -20,18 +20,27 @@ public interface DocumentDataSource {
         void OnLoadFinished(List<Document> data);
     }
 
-    interface DatabaseCallback{
-        void OnSuccess(List<Document> documents);
+    interface DatabaseUpdateCallback {
+        void OnSuccess();
         void OnFail();
     }
 
+    interface DatabaseReadCallback {
+        void OnSuccess(List<Document> document);
+        void OnFail();
+    }
+
+    interface DatabaseDeleteCallback{
+        void OnSuccess(Document document);
+        void OnFail();
+    }
 
 
     interface LocalModel{
 
         void addComponentToDocument(BaseComponent componentData);
 
-        void replaceDocumentComponents(List<BaseComponent> components);
+        void initDocumentComponents(List<BaseComponent> components);
 
         void deleteDocumentComponent(int position);
 
@@ -43,34 +52,34 @@ public interface DocumentDataSource {
 
         void swapDocumentComponent(int from, int to);
 
-        List<BaseComponent> returnModel();
+        List<BaseComponent> getComponents();
     }
 
 
     interface DocumentLocalDatabase {
 
-        void saveDocument(List<BaseComponent> documentData, DatabaseCallback databaseCallback);
+        void updateDocumentData(List<BaseComponent> documentData, DatabaseUpdateCallback databaseUpdateCallback);
 
-        void updateDocument(List<BaseComponent> documentData, DatabaseCallback databaseCallback);
+        void deleteDocumentData(int documentId, DatabaseUpdateCallback databaseUpdateCallback);
 
-        void getDocumentsList(DatabaseCallback databaseCallback);
-
-        void deleteDocument(int documentId, DatabaseCallback databaseCallback);
+        void readDocumentData(DatabaseReadCallback databaseReadCallback);
     }
 
     interface Repository{
         void addComponent(BaseComponent component);
         void updateComponent(BaseComponent baseComponent, int position);
         void deleteComponent(int position);
-        void replaceComponent(List<BaseComponent> components);
+        void initComponent(List<BaseComponent> components);
         void swapComponent(int fromPosition, int toPosition);
         void clearComponent();
 
 
-        void updateDocument(DatabaseCallback databaseCallback);
-        void deleteDocument(DatabaseCallback databaseCallback);
-        void createDocument(DatabaseCallback databaseCallback);
-        void readDocument(DatabaseCallback databaseCallback);
+        void updateDocument(DatabaseUpdateCallback databaseUpdateCallback);
+        void deleteDocument(DatabaseUpdateCallback databaseUpdateCallback);
+        void createDocument(DatabaseUpdateCallback databaseUpdateCallback);
+        void readDocuments(DatabaseReadCallback databaseReadCallback);
+
+        void getDocumentById(int documentId, DatabaseReadCallback databaseReadCallback);
 
     }
 }

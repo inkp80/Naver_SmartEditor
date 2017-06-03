@@ -5,30 +5,18 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import com.naver.smarteditor.lesssmarteditor.LogController;
-import com.naver.smarteditor.lesssmarteditor.MyApplication;
 import com.naver.smarteditor.lesssmarteditor.data.Document;
-import com.naver.smarteditor.lesssmarteditor.data.DocumentParcelable;
 import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
-import com.naver.smarteditor.lesssmarteditor.data.component.ImgComponent;
-import com.naver.smarteditor.lesssmarteditor.data.component.MapComponent;
-import com.naver.smarteditor.lesssmarteditor.data.component.TextComponent;
 import com.naver.smarteditor.lesssmarteditor.data.component.TitleComponent;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.utils.EditorContract;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.utils.EditorDbHelper;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.utils.WrongComponentException;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
-
-import static java.util.Collections.*;
 
 /**
  * Created by NAVER on 2017. 5. 21..
@@ -52,180 +40,60 @@ public class DocumentLocalDataSource implements DocumentDataSource.DocumentLocal
         db = mDbHelper.getWritableDatabase();
     }
 
-    @Override
-    public void saveDocument(List<BaseComponent> documentData, DocumentDataSource.DatabaseCallback databaseCallback) {
-
-        //check vaildation
-        insertIntoDatabase(documentData);
-        if (databaseCallback != null) {
-            databaseCallback.OnSuccess(null);
-        }
-
-    }
 
     @Override
-    public void updateDocument(List<BaseComponent> documentData, DocumentDataSource.DatabaseCallback databaseCallback) {
+    public void updateDocumentData(List<BaseComponent> documentData, DocumentDataSource.DatabaseUpdateCallback databaseUpdateCallback) {
         if (currentDocumentId == NEW_DOCUMENT) {
-            insertIntoDatabase(documentData);
-            if (databaseCallback != null) {
-                databaseCallback.OnSuccess(null);
+            if (databaseUpdateCallback != null) {
+                try {
+                    insertLocalDatabase(documentData);
+                    databaseUpdateCallback.OnSuccess();
+                } catch (Exception e){
+                    databaseUpdateCallback.OnFail();
+                }
             }
         } else {
-            updateDatabase(currentDocumentId, documentData);
-            if(databaseCallback != null) {
-                databaseCallback.OnSuccess(null);
+            if(databaseUpdateCallback != null) {
+                try{
+                    updateLocalDatabase(currentDocumentId, documentData);
+                    databaseUpdateCallback.OnSuccess();
+                } catch (Exception e){
+                    databaseUpdateCallback.OnFail();
+                }
             }
         }
     }
 
     @Override
-    public void getDocumentsList(DocumentDataSource.DatabaseCallback databaseCallback) {
-
+    public void deleteDocumentData(int documentId, DocumentDataSource.DatabaseUpdateCallback databaseUpdateCallback) {
+        if(databaseUpdateCallback != null){
+            try{
+                deleteDocument(documentId);
+                databaseUpdateCallback.OnSuccess();
+            } catch (Exception e){
+                databaseUpdateCallback.OnFail();
+            }
+        }
     }
+
 
     @Override
-    public void deleteDocument(int documentId, DocumentDataSource.DatabaseCallback databaseCallback) {
-
+    public void readDocumentData(DocumentDataSource.DatabaseReadCallback databaseReadCallback) {
+        if(databaseReadCallback != null){
+            try {
+                List<Document> documentList = readLocalDatabase();
+                databaseReadCallback.OnSuccess(documentList);
+            } catch (Exception e){
+                databaseReadCallback.OnFail();
+            }
+        }
     }
 
-    //    //database
-//    @Override
-//    public void saveDocument(SaveToDatabaseCallBack saveToDatabaseCallBack) {
-//        LogController.makeLog(TAG, "DOC ID: "+currentDocumentId, localLogPermission);
-//
-//        if (title.length() == 0) {
-//            title = "제목 없음";
-//        }
-//        if (checkDocumentComponentValidate() == false) {
-//            if (saveToDatabaseCallBack != null) {
-//                saveToDatabaseCallBack.OnSaveFailed();
-//            }
-//            return;
-//        }
-//
-//        if(currentDocumentId == NEW_DOCUMENT) {
-//            //TODO : asynTask - save to database
-//
-//            insertIntoDatabase(title, mComponents);
-//            if (saveToDatabaseCallBack != null) {
-//                saveToDatabaseCallBack.OnSaveFinished();
-//            }
-//
-//            //TODO : set value inserted;
-//        } else {
-//            LogController.makeLog(TAG, "updating", localLogPermission);
-//            updateDatabase(title, currentDocumentId, mComponents);
-//            if (saveToDatabaseCallBack != null) {
-//                saveToDatabaseCallBack.OnSaveFinished();
-//            }
-//        }
-//    }
-//
-//    private boolean checkDocumentComponentValidate(){
-//        List<BaseComponent> components = new ArrayList<>();
-//        LogController.makeLog(TAG, String.valueOf(mComponents.size()), localLogPermission);
-//        for(BaseComponent baseComponent : mComponents){
-//            BaseComponent.Type type = baseComponent.getComponentType();
-//            switch(type){
-//                case TEXT:
-//                    TextComponent thisTexComponent = (TextComponent) baseComponent;
-//                    if(thisTexComponent.getText().length() == 0){
-//                        break;
-//                    }
-//                    components.add(baseComponent);
-//                    break;
-//                case IMG:
-//                    components.add(baseComponent);
-//                    break;
-//                case MAP:
-//                    components.add(baseComponent);
-//                    break;
-//                default:
-//                    break;
-//            }
-//        }
-//        if(components.size() == 0){
-//            return false;
-//        } else {
-//            return true;
-//        }
-//    }
-//
-//    @Override
-//    public void convertParcelToComponents(DocumentParcelable documentParcelable, LoadComponentCallBack loadComponentCallBack) {
-//
-//        currentDocumentId = String.valueOf(documentParcelable.getDoc_id());
-//        String jsonComponents = documentParcelable.getComponentsJson();
-//        JSONArray jsonArray = null;
-//        try {
-//            jsonArray = new JSONArray(jsonComponents);
-//        } catch (Exception e){
-//            LogController.makeLog(TAG, "JSON Error : string to json-array", localLogPermission);
-//        }
-//
-//        GsonBuilder gsonBuilder = new GsonBuilder();
-//        gsonBuilder.registerTypeAdapter(BaseComponent.class, new MyJsonDeserializer());
-//        Gson gson = gsonBuilder.create();
-//
-//        for(int i=0; i < jsonArray.length(); i++){
-//            try{
-//                JSONObject object = jsonArray.getJSONObject(i);
-//                mComponents.add(gson.fromJson(object.toString(), BaseComponent.class));
-//            } catch (Exception e){
-//                LogController.makeLog(TAG, "FAIL : load components from json", localLogPermission);
-//            }
-//        }
-//
-//        if(loadComponentCallBack != null){
-//            loadComponentCallBack.OnComponentLoaded(mComponents);
-//        }
-//
-//    }
-//
-//    @Override
-//    public void saveDocument(String title, SaveToDatabaseCallBack saveToDatabaseCallBack) {
-//
-//    }
-//
-//
-//    @Override
-//    public void getDocumentsList(LoadFromDatabaseCallBack loadFromDatabaseCallBack) {
-//
-//        List<Document> docList = converCursorToList(readFromLocalDatabase());
-//        Collections.reverse(docList);
-//
-//        if(loadFromDatabaseCallBack != null){
-//            loadFromDatabaseCallBack.OnLoadFinished(docList);
-//        }
-//    }
-//
-//
-//    //database
-//    @Override
-//    public void updateDocument(String title, int doc_id, UpdateToDatabaseCallBack updateToDatabaseCallBack) {
-////        updateDatabase(title, doc_id, mComponents);
-//        if(updateToDatabaseCallBack != null){
-//            updateToDatabaseCallBack.OnUpdateFinished();
-//        }
-//    }
-//
-//    @Override
-//    public void deleteDocument(int doc_id, LoadFromDatabaseCallBack loadFromDatabaseCallBack) {
-//        if(String.valueOf(doc_id) == currentDocumentId){
-//            currentDocumentId = NEW_DOCUMENT;
-//        }
-//        deleteFromLocalDatabase(doc_id);
-//        List<Document> docList = converCursorToList(readFromLocalDatabase());
-//        Collections.reverse(docList);
-//
-//        if(loadFromDatabaseCallBack != null){
-//            loadFromDatabaseCallBack.OnLoadFinished(docList);
-//        }
-//    }
-//
-//
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////
     //DB CRUD
-    private void insertIntoDatabase(List<BaseComponent> components) {
+
+    private void insertLocalDatabase(List<BaseComponent> components) {
 
         String title = "";
 
@@ -252,16 +120,18 @@ public class DocumentLocalDataSource implements DocumentDataSource.DocumentLocal
         }
     }
 
-    private Cursor readFromLocalDatabase() {
+
+    //Document List를 넘긴다.
+    private List<Document> readLocalDatabase() {
         String querySelete = "SELECT * " +
                 "FROM " + EditorContract.ComponentEntry.TABLE_NAME
                 + " order by (" + EditorContract.ComponentEntry.COLUMN_TIMESTAMP + ")";
 
         Cursor cursor = db.rawQuery(querySelete, null);
-        return cursor;
+        return converCursorToList(cursor);
     }
 
-    private void deleteFromLocalDatabase(int docId) {
+    private void deleteDocument(int docId) {
         String query = "DELETE FROM " + EditorContract.ComponentEntry.TABLE_NAME + " WHERE _id ='" + String.valueOf(docId) + "'";
         try {
             db.execSQL(query);
@@ -270,7 +140,7 @@ public class DocumentLocalDataSource implements DocumentDataSource.DocumentLocal
         }
     }
 
-    private void updateDatabase(String docId, List<BaseComponent> components) {
+    private void updateLocalDatabase(String docId, List<BaseComponent> components) {
         String title = "";
         String jsonStr = new Gson().toJson(components);
         String query = "UPDATE " + EditorContract.ComponentEntry.TABLE_NAME
@@ -281,6 +151,7 @@ public class DocumentLocalDataSource implements DocumentDataSource.DocumentLocal
             db.execSQL(query);
         } catch (Exception e) {
             LogController.makeLog(TAG, "DB ERROR :" + e, localLogPermission);
+            throw e;
         }
     }
 
@@ -297,5 +168,6 @@ public class DocumentLocalDataSource implements DocumentDataSource.DocumentLocal
         }
         return DocList;
     }
+
 
 }

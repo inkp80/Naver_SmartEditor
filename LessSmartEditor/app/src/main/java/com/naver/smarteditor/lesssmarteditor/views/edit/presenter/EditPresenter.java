@@ -1,19 +1,13 @@
 package com.naver.smarteditor.lesssmarteditor.views.edit.presenter;
 
-import android.view.View;
 
 import com.naver.smarteditor.lesssmarteditor.LogController;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.EditComponentAdapterContract;
-import com.naver.smarteditor.lesssmarteditor.adpater.edit.util.ComponentTouchEventListener;
 import com.naver.smarteditor.lesssmarteditor.data.Document;
-import com.naver.smarteditor.lesssmarteditor.data.DocumentParcelable;
 import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.DocumentDataSource;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.DocumentRepository;
-import com.naver.smarteditor.lesssmarteditor.listener.OnComponentLongClickListener;
-import com.naver.smarteditor.lesssmarteditor.listener.OnEditTextComponentChangeListener;
 
-import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -31,9 +25,6 @@ public class EditPresenter implements EditContract.Presenter{
     private DocumentRepository editComponentRepository;
 
 
-
-
-    private OnEditTextComponentChangeListener onEditTextComponentChangeListener;
 
 
     //Presenter 초기화 관련
@@ -61,14 +52,13 @@ public class EditPresenter implements EditContract.Presenter{
         this.editComponentRepository = repository;
     }
 
-    ////////////////////
 
 
     //done
     @Override
     public void addComponentToDocument(BaseComponent component){
         editComponentRepository.addComponent(component);
-        adapterModel.initDocmentComponents(editComponentRepository.getDocumentData());
+        adapterModel.initDocmentComponents(editComponentRepository.getCurrentDocumentComponents());
         adapterView.notifyDataChange();
     }
 
@@ -77,13 +67,13 @@ public class EditPresenter implements EditContract.Presenter{
     @Override
     public void updateComponentInDocument(BaseComponent baseComponent, int position) {
         editComponentRepository.updateComponent(baseComponent, position);
-        adapterModel.initDocmentComponents(editComponentRepository.getDocumentData());
+        adapterModel.initDocmentComponents(editComponentRepository.getCurrentDocumentComponents());
     }
 
     @Override
     public void deleteComponentFromDocument(int position) {
         editComponentRepository.deleteComponent(position);
-        adapterModel.initDocmentComponents(editComponentRepository.getDocumentData());
+        adapterModel.initDocmentComponents(editComponentRepository.getCurrentDocumentComponents());
         adapterView.notifyDataChange();
     }
 
@@ -100,22 +90,40 @@ public class EditPresenter implements EditContract.Presenter{
     @Override
     public void swapComponent(int fromPosition, int toPosition) {
         editComponentRepository.swapComponent(fromPosition, toPosition);
-        adapterModel.initDocmentComponents(editComponentRepository.getDocumentData());
+        adapterModel.initDocmentComponents(editComponentRepository.getCurrentDocumentComponents());
         adapterView.swapDocumentComponent(fromPosition, toPosition);
     }
 
 
     @Override
     public void updateDocument() {
-        editComponentRepository.updateDocument(new DocumentDataSource.DatabaseCallback() {
+        editComponentRepository.updateDocument(new DocumentDataSource.DatabaseUpdateCallback() {
             @Override
-            public void OnSuccess(List<Document> documents) {
+            public void OnSuccess() {
+                LogController.makeLog(TAG, "저장 완료", localLogPermission);
                 view.showToast("update Sucess");
             }
 
             @Override
             public void OnFail() {
                 view.showToast("update fail");
+            }
+        });
+    }
+
+    @Override
+    public void getDocument(int documentId) {
+        editComponentRepository.getDocumentById(documentId, new DocumentDataSource.DatabaseReadCallback() {
+            @Override
+            public void OnSuccess(List<Document> document) {
+                //database things
+                adapterModel.initDocmentComponents(editComponentRepository.getCurrentDocumentComponents());
+                adapterView.notifyDataChange();
+            }
+
+            @Override
+            public void OnFail() {
+
             }
         });
     }

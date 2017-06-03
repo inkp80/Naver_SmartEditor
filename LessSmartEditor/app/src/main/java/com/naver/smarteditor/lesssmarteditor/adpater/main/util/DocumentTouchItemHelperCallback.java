@@ -44,7 +44,7 @@ public class DocumentTouchItemHelperCallback extends ItemTouchHelper.Callback {
 
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-        mItemTouchHelper.OnItemDismiss(((DocumentListViewHolder)viewHolder).getDocument());
+//        mItemTouchHelper.OnItemDismiss(((DocumentListViewHolder)viewHolder).getDocument());
     }
 
 }

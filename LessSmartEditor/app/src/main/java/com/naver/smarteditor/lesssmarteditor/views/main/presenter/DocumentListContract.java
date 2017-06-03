@@ -12,7 +12,7 @@ import com.naver.smarteditor.lesssmarteditor.views.basic.presenter.BasePresenter
 
 public interface DocumentListContract {
     interface View extends BaseView{
-        void editSelectedDocument(DocumentParcelable documentParcelable);
+        void editSelectedDocument(int documentId);
     }
 
     interface Presenter extends BasePresenter{

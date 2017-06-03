@@ -3,10 +3,8 @@ package com.naver.smarteditor.lesssmarteditor.views.main.presenter;
 import com.naver.smarteditor.lesssmarteditor.adpater.main.DocumentListAdapterContract;
 import com.naver.smarteditor.lesssmarteditor.adpater.main.util.DocumentTouchEventListener;
 import com.naver.smarteditor.lesssmarteditor.data.Document;
-import com.naver.smarteditor.lesssmarteditor.data.DocumentParcelable;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.DocumentDataSource;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.DocumentRepository;
-import com.naver.smarteditor.lesssmarteditor.listener.OnDocumentClickListener;
 
 import java.util.List;
 
@@ -14,7 +12,7 @@ import java.util.List;
  * Created by NAVER on 2017. 5. 24..
  */
 
-public class DocumentListPresenter implements DocumentListContract.Presenter, OnDocumentClickListener, DocumentTouchEventListener {
+public class DocumentListPresenter implements DocumentListContract.Presenter, DocumentTouchEventListener {
 
     private DocumentListContract.View view;
     private DocumentListAdapterContract.Model adapterModel;
@@ -28,24 +26,21 @@ public class DocumentListPresenter implements DocumentListContract.Presenter, On
 
 
     @Override
-    public void OnDocumentClick(DocumentParcelable documentParcelable) {
-        view.editSelectedDocument(documentParcelable);
-    }
-
-
-    @Override
     public void requestDocumentsList() {
-        editComponentRepository.getDocumentData();
+        editComponentRepository.readDocuments(new DocumentDataSource.DatabaseUpdateCallback() {
+            @Override
+            public void OnSuccess(List<Document> documents) {
+                adapterModel.initDocumentList(documents);
+                adapterView.notifyDataChange();
+            }
+
+            @Override
+            public void OnFail() {
+//                view.showToast("ERROR");
+            }
+        });
 
     }
-//        editComponentRepository.getDocumentsList(new DocumentDataSource.LoadFromDatabaseCallBack() {
-//            @Override
-//            public void OnLoadFinished(List<Document> data) {
-//                adapterModel.initDocumentList(data);
-//                adapterView.notifyDataChange();
-//            }
-//
-//        });
 
     @Override
     public void setMainAdapterModel(DocumentListAdapterContract.Model adapter) {
@@ -55,7 +50,6 @@ public class DocumentListPresenter implements DocumentListContract.Presenter, On
     @Override
     public void setMainAdapterView(DocumentListAdapterContract.View adapter) {
         this.adapterView = adapter;
-        adapterView.setDocumentOnClickedListener(this);
     }
 
     @Override

@@ -41,6 +41,7 @@ public interface EditContract {
 
         //database
         void updateDocument();
+        void getDocument(int documentId);
 
 
         //utils

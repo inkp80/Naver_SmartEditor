@@ -48,9 +48,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static android.view.View.GONE;
+import static com.naver.smarteditor.lesssmarteditor.MyApplication.DOCUMENT_ID;
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.NEW_DOCUMENT_MODE;
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.DOCUMENT_PARCEL;
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.MAPINFO_PARCEL;
+import static com.naver.smarteditor.lesssmarteditor.MyApplication.REQ_ADD_DOCUMENT;
+import static com.naver.smarteditor.lesssmarteditor.MyApplication.REQ_MOV2_DOCLIST;
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.REQ_MOV2_GALLERY;
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.REQ_MOV2_SEARCH_PLACE;
 
@@ -62,8 +65,6 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
     private final String TAG = "EditorActivity";
     private boolean localLogPermission = true;
     private long backKeyTime = 0;
-
-    private int EDITOR_MODE = NEW_DOCUMENT_MODE;
 
     private InputMethodManager inputMethodManager;
 
@@ -163,6 +164,14 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
                     LogController.makeLog(TAG, "ERROR", localLogPermission);
                     e.printStackTrace();
                 }
+            } else if (requestCode == REQ_MOV2_DOCLIST) {
+                try {
+                    int documentId = getIntent().getIntExtra(DOCUMENT_ID, -1);
+                    mPresenter.getDocument(documentId);
+                } catch (Exception e) {
+
+                }
+
             }
         }
     }
@@ -273,13 +282,14 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(EditorActivity.this, DocumentListActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, REQ_MOV2_DOCLIST);
             }
         });
 
         mBtSaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                LogController.makeLog(TAG, "save bt pushed", localLogPermission);
                 mPresenter.updateDocument();
                 new ClearCachesTask(getBaseContext(), true, true).execute();
             }

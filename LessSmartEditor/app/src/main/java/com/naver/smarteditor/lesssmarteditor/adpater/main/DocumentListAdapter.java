@@ -44,7 +44,8 @@ public class DocumentListAdapter extends RecyclerView.Adapter<BasicViewHolder> i
     public void onBindViewHolder(BasicViewHolder holder, int position) {
         DocumentListViewHolder thisViewHolder = (DocumentListViewHolder) holder;
         thisViewHolder.setTitleTextView(mDocument.get(position).getTitle());
-        thisViewHolder.bindDocumentData(mDocument.get(position));
+//        thisViewHolder.bindDocumentData(mDocument.get(position));
+        //TODO : ID TAG 부착
     }
 
     @Override

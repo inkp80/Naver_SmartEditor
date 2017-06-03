@@ -2,16 +2,24 @@ package com.naver.smarteditor.lesssmarteditor.data.edit.local;
 
 import android.content.Context;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.naver.smarteditor.lesssmarteditor.LogController;
 import com.naver.smarteditor.lesssmarteditor.data.Document;
 import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
+import com.naver.smarteditor.lesssmarteditor.data.edit.local.utils.MyJsonDeserializer;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by NAVER on 2017. 5. 21..
  */
 
-public class DocumentRepository implements DocumentDataSource, DocumentDataSource.Repository{
+public class DocumentRepository implements DocumentDataSource.Repository{
     private final String TAG = "DocumentRepository";
     private boolean localLogPermission = true;
 
@@ -38,56 +46,59 @@ public class DocumentRepository implements DocumentDataSource, DocumentDataSourc
 
     //////////////////
 
+
     @Override
-    public void updateDocument(final DatabaseCallback databaseCallback) {
-        mEditComponentLocalDataSource.updateDocument(mDocumentModel.returnModel(), new DatabaseCallback() {
+    public void updateDocument(DocumentDataSource.DatabaseUpdateCallback databaseUpdateCallback) {
+        mEditComponentLocalDataSource.updateDocumentData(getCurrentDocumentComponents(), databaseUpdateCallback);
+    }
+
+
+    @Override
+    public void deleteDocument(DocumentDataSource.DatabaseUpdateCallback databaseUpdateCallback) {
+
+    }
+
+    @Override
+    public void createDocument(DocumentDataSource.DatabaseUpdateCallback databaseUpdateCallback) {
+
+    }
+
+    @Override
+    public void readDocuments(DocumentDataSource.DatabaseReadCallback databaseReadCallback) {
+        mEditComponentLocalDataSource.readDocumentData(databaseReadCallback);
+    }
+
+    @Override
+    public void getDocumentById(final int documentId, final DocumentDataSource.DatabaseReadCallback databaseReadCallback) {
+
+        mEditComponentLocalDataSource.readDocumentData(new DocumentDataSource.DatabaseReadCallback(){
+
             @Override
             public void OnSuccess(List<Document> documents) {
-                if(databaseCallback != null){
-                    databaseCallback.OnSuccess(null);
+                List<Document> foundDocs = new ArrayList<>();
+                for(Document document : documents) {
+                    if (document.get_id() == documentId) {
+                        foundDocs.add(document);
+                    }
                 }
+
+                Document targetDoc = foundDocs.get(0);
+
+                mDocumentModel.initDocumentComponents(getComponentsFromDocument(targetDoc));
             }
 
             @Override
             public void OnFail() {
-                databaseCallback.OnFail();
+
             }
         });
     }
 
-    @Override
-    public void deleteDocument(DatabaseCallback databaseCallback) {
-
-    }
-
-    @Override
-    public void createDocument(DatabaseCallback databaseCallback) {
-
-    }
-
-    @Override
-    public void readDocument(final DatabaseCallback databaseCallback) {
-        mEditComponentLocalDataSource.getDocumentsList(new DatabaseCallback() {
-            @Override
-            public void OnSuccess(List<Document> documents) {
-                if(databaseCallback != null){
-                    databaseCallback.OnSuccess(null);
-                }
-            }
-
-            @Override
-            public void OnFail() {
-                if(databaseCallback != null){
-                    databaseCallback.OnFail();
-                }
-            }
-        });
-    }
-
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 
 
     @Override
@@ -106,8 +117,8 @@ public class DocumentRepository implements DocumentDataSource, DocumentDataSourc
     }
 
     @Override
-    public void replaceComponent(List<BaseComponent> components) {
-        mDocumentModel.replaceDocumentComponents(components);
+    public void initComponent(List<BaseComponent> components) {
+        mDocumentModel.initDocumentComponents(components);
     }
 
     @Override
@@ -121,7 +132,37 @@ public class DocumentRepository implements DocumentDataSource, DocumentDataSourc
     }
 
 
-    public List<BaseComponent> getDocumentData(){
-        return mDocumentModel.returnModel();
+
+    //Repository Utils
+    public List<BaseComponent> getCurrentDocumentComponents(){
+        return mDocumentModel.getComponents();
+    }
+
+
+    private List<BaseComponent> getComponentsFromDocument(Document targetDoc) {
+        String componentsInJson = targetDoc.getComponentsJson();
+
+        JSONArray jsonArray = null;
+
+        try {
+            jsonArray = new JSONArray(componentsInJson);
+        } catch (Exception e){
+            LogController.makeLog(TAG, "JSON Error : string to json-array", localLogPermission);
+        }
+
+        List<BaseComponent> components = new ArrayList<>();
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(BaseComponent.class, new MyJsonDeserializer());
+        Gson gson = gsonBuilder.create();
+
+        for(int i = 0; i < jsonArray.length(); i++) {
+            try {
+                JSONObject object = jsonArray.getJSONObject(i);
+                components.add(gson.fromJson(object.toString(), BaseComponent.class));
+            } catch (Exception e) {
+                LogController.makeLog(TAG, "FAIL : load components from json", localLogPermission);
+            }
+        }
+        return components;
     }
 }

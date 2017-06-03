@@ -10,6 +10,7 @@ import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
 import com.naver.smarteditor.lesssmarteditor.data.component.ImgComponent;
 import com.naver.smarteditor.lesssmarteditor.data.component.MapComponent;
 import com.naver.smarteditor.lesssmarteditor.data.component.TextComponent;
+import com.naver.smarteditor.lesssmarteditor.data.component.TitleComponent;
 
 import java.lang.reflect.Type;
 
@@ -48,6 +49,13 @@ public class MyJsonDeserializer implements JsonDeserializer<BaseComponent> {
             JsonElement placeCoords = jsonObject.get("placeCoords");
             JsonElement placeMapImgUri = jsonObject.get("placeMapImgUri");
             typeModel = new MapComponent(placeName.getAsString(), placeAddress.getAsString(), placeCoords.getAsString(), placeMapImgUri.getAsString());
+
+        } else if ("TITLE".equals(type)){
+            LogController.makeLog("Deserializer type", "Title", true);
+
+            JsonElement title = jsonObject.get("title");
+            JsonElement titleBackgroundImgUri = jsonObject.get("titleBackgroundUri");
+            typeModel = new TitleComponent(title.getAsString(), titleBackgroundImgUri.getAsString());
         }
         // TODO : set properties of type model
 

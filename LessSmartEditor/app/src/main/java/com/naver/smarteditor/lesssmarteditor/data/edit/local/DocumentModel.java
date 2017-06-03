@@ -47,7 +47,7 @@ public class DocumentModel implements DocumentDataSource.LocalModel {
     }
 
     @Override
-    public void replaceDocumentComponents(List<BaseComponent> components) {
+    public void initDocumentComponents(List<BaseComponent> components) {
         mComponents = components;
     }
 
@@ -73,7 +73,7 @@ public class DocumentModel implements DocumentDataSource.LocalModel {
     }
 
     @Override
-    public List<BaseComponent> returnModel() {
+    public List<BaseComponent> getComponents() {
         return mComponents;
     }
 

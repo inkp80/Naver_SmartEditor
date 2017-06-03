@@ -15,6 +15,7 @@ public class MyApplication extends Application {
 
     public static final int REQ_MOV2_GALLERY = 104;
     public static final int REQ_MOV2_SEARCH_PLACE = 105;
+    public static final int REQ_MOV2_DOCLIST = 106;
 
 
     public static final int RETROFIT_FAIL400 = 400;
@@ -27,6 +28,7 @@ public class MyApplication extends Application {
     //INTENT KEY STRING
     public static final String MAPINFO_PARCEL = "mapinfoParcel";
     public static final String DOCUMENT_PARCEL = "documentParcel";
+    public static final String DOCUMENT_ID = "document_id";
 
     //EDITOR MODE
     public static final String EDITOR_MODE = "mode_flag";
@@ -35,6 +37,8 @@ public class MyApplication extends Application {
     //COMPONENT MENU ID
     public static final int COMPONENT_MENU_DELETE = 19;
     public static final int COMPONENT_MENU_CANCEL = 21;
+
+
 
 
 }
