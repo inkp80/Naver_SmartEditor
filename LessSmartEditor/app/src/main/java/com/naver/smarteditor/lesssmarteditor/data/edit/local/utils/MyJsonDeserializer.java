@@ -54,8 +54,8 @@ public class MyJsonDeserializer implements JsonDeserializer<BaseComponent> {
             LogController.makeLog("Deserializer type", "Title", true);
 
             JsonElement title = jsonObject.get("title");
-            JsonElement titleBackgroundImgUri = jsonObject.get("titleBackgroundUri");
-            typeModel = new TitleComponent(title.getAsString(), titleBackgroundImgUri.getAsString());
+            JsonElement titleBackgroundUri = jsonObject.get("titleBackgroundUri");
+            typeModel = new TitleComponent(title.getAsString(), titleBackgroundUri.getAsString());
         }
         // TODO : set properties of type model
 

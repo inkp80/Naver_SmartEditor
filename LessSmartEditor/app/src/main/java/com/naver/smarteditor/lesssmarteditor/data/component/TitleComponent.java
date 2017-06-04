@@ -1,12 +1,16 @@
 package com.naver.smarteditor.lesssmarteditor.data.component;
 
+import com.naver.smarteditor.lesssmarteditor.LogController;
+import com.naver.smarteditor.lesssmarteditor.MyApplication;
+
 /**
  * Created by NAVER on 2017. 6. 2..
  */
 
 public class TitleComponent extends BaseComponent {
+
     private String title;
-    private String titleBackgroundUri;
+    private String titleBackgroundUri = MyApplication.NO_TITLE_IMG;
 
     public TitleComponent(String title, String titleBackgroundUri){
         this.componentType = Type.TITLE;
@@ -35,13 +39,14 @@ public class TitleComponent extends BaseComponent {
     }
 
     @Override
-    void updateData(BaseComponent baseComponent) {
+    public void updateData(BaseComponent baseComponent) {
         TitleComponent component = (TitleComponent) baseComponent;
         if(component.getTitle() != null){
             this.title = component.getTitle();
         }
 
-        if(component.getTitleBackgroundUri() != null){
+        if(component.getTitleBackgroundUri() != MyApplication.NO_TITLE_IMG){
+            LogController.makeLog("titlecompoennt", "updating uri", true);
             this.titleBackgroundUri = component.titleBackgroundUri;
         }
     }

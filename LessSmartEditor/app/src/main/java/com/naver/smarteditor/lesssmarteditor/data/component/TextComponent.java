@@ -1,5 +1,7 @@
 package com.naver.smarteditor.lesssmarteditor.data.component;
 
+import com.naver.smarteditor.lesssmarteditor.LogController;
+
 /**
  * Created by NAVER on 2017. 5. 21..
  */
@@ -27,7 +29,7 @@ public class TextComponent extends BaseComponent{
     }
 
     @Override
-    void updateData(BaseComponent baseComponent) {
+    public void updateData(BaseComponent baseComponent) {
         TextComponent component = (TextComponent) baseComponent;
         if(component.getText() != null){
             this.text = component.getText();

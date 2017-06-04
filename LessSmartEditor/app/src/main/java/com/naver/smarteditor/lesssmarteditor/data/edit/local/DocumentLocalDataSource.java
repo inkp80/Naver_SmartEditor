@@ -16,6 +16,7 @@ import com.naver.smarteditor.lesssmarteditor.data.edit.local.utils.WrongComponen
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -29,8 +30,8 @@ public class DocumentLocalDataSource implements DocumentDataSource.DocumentLocal
     private SQLiteDatabase db;
 
 
-    private final String NEW_DOCUMENT = "new_document";
-    private String currentDocumentId = NEW_DOCUMENT;
+    private final int NEW_DOCUMENT = -1;
+    private int currentDocumentId = NEW_DOCUMENT;
 
     List<BaseComponent> mComponents;
 
@@ -43,6 +44,7 @@ public class DocumentLocalDataSource implements DocumentDataSource.DocumentLocal
 
     @Override
     public void updateDocumentData(List<BaseComponent> documentData, DocumentDataSource.DatabaseUpdateCallback databaseUpdateCallback) {
+        LogController.makeLog(TAG, String.valueOf(currentDocumentId), localLogPermission);
         if (currentDocumentId == NEW_DOCUMENT) {
             if (databaseUpdateCallback != null) {
                 try {
@@ -53,6 +55,7 @@ public class DocumentLocalDataSource implements DocumentDataSource.DocumentLocal
                 }
             }
         } else {
+            LogController.makeLog(TAG, String.valueOf(currentDocumentId), localLogPermission);
             if(databaseUpdateCallback != null) {
                 try{
                     updateLocalDatabase(currentDocumentId, documentData);
@@ -92,19 +95,13 @@ public class DocumentLocalDataSource implements DocumentDataSource.DocumentLocal
 
     //////////////////////////////////////////////////////////////////////////////////////////////////
     //DB CRUD
-
+    private final int TITLE_COMPONENT = 0;
     private void insertLocalDatabase(List<BaseComponent> components) {
-
-        String title = "";
-
-        try {
-            title = ((TitleComponent) components.get(0)).getTitle();
-            throw new WrongComponentException();
-        } catch (Exception e) {
-            LogController.makeLog(TAG, e.toString(), localLogPermission);
-        }
+        String title = ((TitleComponent) components.get(TITLE_COMPONENT)).getTitle();
 
         String jsonStr = new Gson().toJson(components);
+        LogController.makeLog("save into local", jsonStr, true);
+
 
         String query = "INSERT INTO " + EditorContract.ComponentEntry.TABLE_NAME + "(" + EditorContract.ComponentEntry.COLUMN_TITLE + "," + EditorContract.ComponentEntry.COLUMN_TIMESTAMP +
                 ", " + EditorContract.ComponentEntry.COLUNM_COMPONENTS_JSON + ") values ('" + title + "', '" + Calendar.getInstance().getTimeInMillis() + "', '" + jsonStr + "');";
@@ -112,7 +109,8 @@ public class DocumentLocalDataSource implements DocumentDataSource.DocumentLocal
             db.execSQL(query);
             Cursor cursor = db.rawQuery("SELECT * FROM documents ORDER BY _id DESC LIMIT 1;", null);
             cursor.moveToNext();
-            String documentId = cursor.getString(EditorContract.COL_ID);
+            int documentId = cursor.getInt(EditorContract.COL_ID);
+            LogController.makeLog(TAG, "afterInsert Id" + documentId, localLogPermission);
             currentDocumentId = documentId;
             LogController.makeLog(TAG, "Database processing was Successfully done", localLogPermission);
         } catch (Exception e) {
@@ -140,8 +138,8 @@ public class DocumentLocalDataSource implements DocumentDataSource.DocumentLocal
         }
     }
 
-    private void updateLocalDatabase(String docId, List<BaseComponent> components) {
-        String title = "";
+    private void updateLocalDatabase(int docId, List<BaseComponent> components) {
+        String title = ((TitleComponent) components.get(TITLE_COMPONENT)).getTitle();
         String jsonStr = new Gson().toJson(components);
         String query = "UPDATE " + EditorContract.ComponentEntry.TABLE_NAME
                 + " SET " + EditorContract.ComponentEntry.COLUMN_TITLE + "='" + title + "'," + EditorContract.ComponentEntry.COLUMN_TIMESTAMP + "='" + Calendar.getInstance().getTimeInMillis() + "',"
@@ -166,8 +164,18 @@ public class DocumentLocalDataSource implements DocumentDataSource.DocumentLocal
             Document data = new Document(_id, title, timeStamp, jsonObject);
             DocList.add(data);
         }
+        Collections.reverse(DocList);
         return DocList;
     }
 
 
+    @Override
+    public void clearDocumentInfo() {
+        currentDocumentId = NEW_DOCUMENT;
+    }
+
+    @Override
+    public void setDocumentInfo(int documentId) {
+        currentDocumentId = documentId;
+    }
 }

@@ -5,6 +5,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 
+import com.naver.smarteditor.lesssmarteditor.MyApplication;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.util.ComponentFocusListener;
 import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
 import com.naver.smarteditor.lesssmarteditor.data.component.TitleComponent;
@@ -43,7 +44,7 @@ public class TitleComponentViewHolder extends ComponentViewHolder {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                onEditTextComponentChangeListener.onEditTextComponentTextChange(new TitleComponent(s.toString(), null), getAdapterPosition());
+                onEditTextComponentChangeListener.onEditTextComponentTextChange(new TitleComponent(s.toString(), MyApplication.NO_TITLE_IMG), getAdapterPosition());
             }
 
             @Override

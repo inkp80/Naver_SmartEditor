@@ -37,5 +37,5 @@ abstract public class BaseComponent {
         return Type.NOTDEFINE;
     }
 
-    abstract void updateData(BaseComponent baseComponent);
+    abstract public void updateData(BaseComponent baseComponent);
 }

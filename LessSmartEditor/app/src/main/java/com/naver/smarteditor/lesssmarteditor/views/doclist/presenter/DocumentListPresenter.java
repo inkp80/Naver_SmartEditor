@@ -1,4 +1,4 @@
-package com.naver.smarteditor.lesssmarteditor.views.main.presenter;
+package com.naver.smarteditor.lesssmarteditor.views.doclist.presenter;
 
 import com.naver.smarteditor.lesssmarteditor.adpater.main.DocumentListAdapterContract;
 import com.naver.smarteditor.lesssmarteditor.adpater.main.util.DocumentTouchEventListener;
@@ -27,16 +27,17 @@ public class DocumentListPresenter implements DocumentListContract.Presenter, Do
 
     @Override
     public void requestDocumentsList() {
-        editComponentRepository.readDocuments(new DocumentDataSource.DatabaseUpdateCallback() {
+
+        editComponentRepository.getDocumentLists(new DocumentDataSource.DatabaseReadCallback() {
             @Override
-            public void OnSuccess(List<Document> documents) {
-                adapterModel.initDocumentList(documents);
+            public void OnSuccess(List<Document> document) {
+                adapterModel.initDocumentList(document);
                 adapterView.notifyDataChange();
             }
 
             @Override
             public void OnFail() {
-//                view.showToast("ERROR");
+                view.showToastMessage("Error : fail to get document list");
             }
         });
 

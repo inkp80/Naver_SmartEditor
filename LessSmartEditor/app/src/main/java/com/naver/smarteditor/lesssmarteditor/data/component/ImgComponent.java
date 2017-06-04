@@ -28,7 +28,7 @@ public class ImgComponent extends BaseComponent {
     }
 
     @Override
-    void updateData(BaseComponent baseComponent) {
+    public void updateData(BaseComponent baseComponent) {
 
     }
 }

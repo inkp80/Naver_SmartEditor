@@ -7,6 +7,6 @@ import android.graphics.Rect;
  */
 
 public interface ComponentFocusListener {
-    void OnComponentFocused(int position, Rect rect);
+    void OnComponentFocused(Rect focusingViewRect, int focusingIndex);
 
 }

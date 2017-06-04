@@ -28,7 +28,7 @@ abstract public class ComponentViewHolder extends BasicViewHolder {
             public void onClick(View v) {
                 Rect outRect = new Rect();
                 itemView.getGlobalVisibleRect(outRect);
-                componentFocusListener.OnComponentFocused(getAdapterPosition(), outRect);
+                componentFocusListener.OnComponentFocused(outRect, getAdapterPosition());
             }
         });
 

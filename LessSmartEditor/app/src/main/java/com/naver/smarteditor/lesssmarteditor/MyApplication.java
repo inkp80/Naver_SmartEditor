@@ -30,6 +30,9 @@ public class MyApplication extends Application {
     public static final String DOCUMENT_PARCEL = "documentParcel";
     public static final String DOCUMENT_ID = "document_id";
 
+
+    public static final String NO_TITLE_IMG = "no title image";
+
     //EDITOR MODE
     public static final String EDITOR_MODE = "mode_flag";
 

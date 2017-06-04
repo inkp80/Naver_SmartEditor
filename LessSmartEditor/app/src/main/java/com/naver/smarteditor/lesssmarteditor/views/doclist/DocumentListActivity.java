@@ -1,4 +1,4 @@
-package com.naver.smarteditor.lesssmarteditor.views.main;
+package com.naver.smarteditor.lesssmarteditor.views.doclist;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -7,21 +7,19 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.widget.Toast;
 
+import com.naver.smarteditor.lesssmarteditor.LogController;
 import com.naver.smarteditor.lesssmarteditor.R;
 import com.naver.smarteditor.lesssmarteditor.adpater.main.DocumentListAdapter;
 import com.naver.smarteditor.lesssmarteditor.adpater.main.util.DocumentTouchItemHelperCallback;
-import com.naver.smarteditor.lesssmarteditor.data.DocumentParcelable;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.DocumentRepository;
-import com.naver.smarteditor.lesssmarteditor.listener.OnDocumentClickListener;
+import com.naver.smarteditor.lesssmarteditor.listener.OnDocumentItemClickListener;
 import com.naver.smarteditor.lesssmarteditor.views.edit.EditorActivity;
-import com.naver.smarteditor.lesssmarteditor.views.main.presenter.DocumentListContract;
-import com.naver.smarteditor.lesssmarteditor.views.main.presenter.DocumentListPresenter;
+import com.naver.smarteditor.lesssmarteditor.views.doclist.presenter.DocumentListContract;
+import com.naver.smarteditor.lesssmarteditor.views.doclist.presenter.DocumentListPresenter;
 
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.DOCUMENT_ID;
-import static com.naver.smarteditor.lesssmarteditor.MyApplication.DOCUMENT_PARCEL;
-import static com.naver.smarteditor.lesssmarteditor.MyApplication.EDIT_DOCUMENT_MODE;
-import static com.naver.smarteditor.lesssmarteditor.MyApplication.EDITOR_MODE;
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.REQ_MOV2_DOCLIST;
 
 public class DocumentListActivity extends AppCompatActivity implements DocumentListContract.View{
@@ -41,17 +39,15 @@ public class DocumentListActivity extends AppCompatActivity implements DocumentL
         setContentView(R.layout.activity_main);
 
         documentListAdapter = new DocumentListAdapter(this);
-        documentListAdapter.setDocumentOnClickedListener(new OnDocumentClickListener() {
+        documentListAdapter.setOnDocumentItemClickListener(new OnDocumentItemClickListener() {
             @Override
-            public void OnDocumentClick(int documentId) {
+            public void OnItemClick(int documentId) {
                 editSelectedDocument(documentId);
             }
         });
 
         initPresenter();
         initRecyclerView();
-
-
         documentListPresenter.requestDocumentsList();
     }
 
@@ -96,8 +92,10 @@ public class DocumentListActivity extends AppCompatActivity implements DocumentL
     @Override
     public void editSelectedDocument(int documentId) {
         Intent intent = new Intent(DocumentListActivity.this, EditorActivity.class);
+        LogController.makeLog(TAG, "editSelectDocument : "+String.valueOf(documentId), localLogPermission);
         intent.putExtra(DOCUMENT_ID, documentId);
-        setResult(REQ_MOV2_DOCLIST, intent);
+        setResult(RESULT_OK, intent);
+        finish();
     }
 
     private void addRecyclerViewBorder(LinearLayoutManager layoutManager){
@@ -106,6 +104,8 @@ public class DocumentListActivity extends AppCompatActivity implements DocumentL
         recyclerView.addItemDecoration(dividerItemDecoration);
     }
 
-
-
+    @Override
+    public void showToastMessage(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
 }

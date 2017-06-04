@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,6 +15,7 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.InputFilter;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,7 +27,6 @@ import com.naver.smarteditor.lesssmarteditor.R;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.EditComponentAdapter;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.util.ComponentTouchEventListener;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.util.ComponentTouchItemHelperCallback;
-import com.naver.smarteditor.lesssmarteditor.data.DocumentParcelable;
 import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
 import com.naver.smarteditor.lesssmarteditor.data.api.naver_map.PlaceItemParcelable;
 import com.naver.smarteditor.lesssmarteditor.data.component.ImgComponent;
@@ -41,7 +40,7 @@ import com.naver.smarteditor.lesssmarteditor.views.edit.presenter.EditContract;
 import com.naver.smarteditor.lesssmarteditor.views.edit.presenter.EditPresenter;
 import com.naver.smarteditor.lesssmarteditor.views.edit.utils.ClearCachesTask;
 import com.naver.smarteditor.lesssmarteditor.views.edit.utils.TitleFilter;
-import com.naver.smarteditor.lesssmarteditor.views.main.DocumentListActivity;
+import com.naver.smarteditor.lesssmarteditor.views.doclist.DocumentListActivity;
 import com.naver.smarteditor.lesssmarteditor.views.map.SearchPlaceActivity;
 
 import butterknife.BindView;
@@ -49,10 +48,8 @@ import butterknife.ButterKnife;
 
 import static android.view.View.GONE;
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.DOCUMENT_ID;
-import static com.naver.smarteditor.lesssmarteditor.MyApplication.NEW_DOCUMENT_MODE;
-import static com.naver.smarteditor.lesssmarteditor.MyApplication.DOCUMENT_PARCEL;
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.MAPINFO_PARCEL;
-import static com.naver.smarteditor.lesssmarteditor.MyApplication.REQ_ADD_DOCUMENT;
+import static com.naver.smarteditor.lesssmarteditor.MyApplication.NO_TITLE_IMG;
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.REQ_MOV2_DOCLIST;
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.REQ_MOV2_GALLERY;
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.REQ_MOV2_SEARCH_PLACE;
@@ -71,8 +68,6 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
     private EditContract.Presenter mPresenter;
     private EditComponentAdapter mAdapter;
 
-    private int focusingComponentIndex;
-    private View focusingComponentView;
 
 
     @BindView(R.id.editor_component_menu)
@@ -99,7 +94,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
 
     private SelectComponentDialog mSelectComponentDialog;
 
-    private Rect focusedRange;
+    private Rect focusingRange;
     private boolean isFocused = false;
     private ActivityToViewHolder activity2ViewHolder;
 
@@ -109,14 +104,17 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         setContentView(R.layout.activity_editor);
         ButterKnife.bind(this);
 
+        getWindow().setSoftInputMode( WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        getWindow().setSoftInputMode( WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         inputMethodManager = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
 
         mAdapter = new EditComponentAdapter(this);
         activity2ViewHolder = mAdapter.getA2V();
         mAdapter.setV2A(new ViewHolderToActivity() {
             @Override
-            public void focusing(Rect rect) {
-                focusedRange = rect;
+            public void focusing(Rect focusingViewRange) {
+                showComponentOption();
+                focusingRange = focusingViewRange;
                 isFocused = true;
             }
         });
@@ -128,8 +126,6 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         initEditorMenu();
 
         initSelectComponentDialog();
-
-        initDocument();
 
         setTitleLengthLimit(30);
 
@@ -166,7 +162,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
                 }
             } else if (requestCode == REQ_MOV2_DOCLIST) {
                 try {
-                    int documentId = getIntent().getIntExtra(DOCUMENT_ID, -1);
+                    int documentId = data.getIntExtra(DOCUMENT_ID, -1);
                     mPresenter.getDocument(documentId);
                 } catch (Exception e) {
 
@@ -214,7 +210,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         mPresenter.setComponentAdatperModel(mAdapter);
         mPresenter.setComponentDataSource(DocumentRepository.getInstance(this));
 
-        mPresenter.addComponentToDocument(new TitleComponent(null, null));
+        mPresenter.addComponentToDocument(new TitleComponent("", NO_TITLE_IMG));
     }
 
     private void initSelectComponentDialog() {
@@ -289,7 +285,6 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         mBtSaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LogController.makeLog(TAG, "save bt pushed", localLogPermission);
                 mPresenter.updateDocument();
                 new ClearCachesTask(getBaseContext(), true, true).execute();
             }
@@ -306,9 +301,12 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
                         .setPositiveButton("YES", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                //TODO : document ID init
                                 mPresenter.clearCurrentDocument();
-                                mPresenter.addComponentToDocument(new TitleComponent(null, null));
+                                mPresenter.addComponentToDocument(new TitleComponent("", NO_TITLE_IMG));
                                 activity2ViewHolder.clearFocus();
+                                focusingRange = null;
+                                isFocused = false;
                             }
                         });
                 ab.show();
@@ -331,8 +329,6 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
 
     @Override
     public void onBackPressed() {
-
-
         if (System.currentTimeMillis() > backKeyTime + 2000) {
             activity2ViewHolder.clearFocus();
             backKeyTime = System.currentTimeMillis();
@@ -345,12 +341,6 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
             android.os.Process.killProcess(android.os.Process.myPid());
         }
     }
-
-    private DocumentParcelable getDocumentDataFromParcelable(Intent intent) {
-        Bundle bundle = intent.getExtras();
-        DocumentParcelable documentParcelable = bundle.getParcelable(DOCUMENT_PARCEL);
-        return documentParcelable;
-    }
     ////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -360,15 +350,20 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         mBtCancelMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                removeFocusFromCurrentComponent();
+                activity2ViewHolder.clearFocus();
+                isFocused = false;
+                focusingRange = null;
+                hideComponentOption();
             }
         });
 
         mBtDeleteComponent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mPresenter.deleteComponentFromDocument(focusingComponentIndex);
-                removeFocusFromCurrentComponent();
+                mPresenter.deleteComponentFromDocument(mAdapter.getFocusingViewIndex());
+                activity2ViewHolder.clearFocus();
+                isFocused = false;
+                focusingRange = null;
                 hideComponentOption();
             }
         });
@@ -376,43 +371,12 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
 
     private void showComponentOption() {
         mComponentMenu.setVisibility(View.VISIBLE);
+        mBtSaveButton.setVisibility(GONE);
     }
 
     private void hideComponentOption() {
         mComponentMenu.setVisibility(GONE);
-    }
-
-    @Override
-    public void setFocusForSelectedComponent(int componentIndex, View selectedComponent) {
-
-        inputMethodManager.toggleSoftInput(0, 0);
-
-        if (selectedComponent == focusingComponentView) {
-            return;
-        }
-
-        LogController.makeLog(TAG, String.valueOf(componentIndex), localLogPermission);
-        removeFocusFromCurrentComponent();
-        focusingComponentIndex = componentIndex;
-        focusingComponentView = selectedComponent;
-        focusingComponentView.setBackgroundColor(Color.LTGRAY);
-        showComponentOption();
-    }
-
-    private void removeFocusFromCurrentComponent() {
-        hideComponentOption();
-        if (focusingComponentView != null) {
-            focusingComponentView.setBackgroundColor(Color.parseColor("#FAFAFA"));
-        }
-        focusingComponentView = null;
-        focusingComponentIndex = -1;
-    }
-
-    private boolean checkComponentIsFocused() {
-        if (mComponentMenu.getVisibility() == View.VISIBLE)
-            return true;
-        else
-            return false;
+        mBtSaveButton.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -425,40 +389,23 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
 
 
 
-    //TODO : 구조 개선, 작명
-    //doc List Activity => View로 => Presenter로 => Model 가공 => View로
-    private void initDocument() {
-        Intent intent = getIntent();
-        if(intent.getExtras() == null){
-            return;
-        }
-        //if document need to load, need to clear current document before load document
-        mPresenter.clearCurrentDocument();
-
-        Bundle bundle = intent.getExtras();
-        DocumentParcelable documentParcelable = bundle.getParcelable(DOCUMENT_PARCEL);
-
-
-        mTxtTitle.setText(documentParcelable.getTitle());
-        requestDocumentBody(documentParcelable);
-    }
-
-
-    private void requestDocumentBody(DocumentParcelable documentParcelable) {
-//        mPresenter.convertParcelToDocumentComponents(documentParcelable);
-    }
-
-
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             if(inputMethodManager.isAcceptingText())
                 inputMethodManager.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), 0);
             if (isFocused) {
-                if (!focusedRange.contains((int)event.getRawX(), (int)event.getRawY())) {
-                    focusedRange = null;
-                    isFocused = false;
-                    activity2ViewHolder.clearFocus();
+                if (!focusingRange.contains((int)event.getRawX(), (int)event.getRawY())) {
+
+
+                    Rect recyclerViewOutRect = new Rect();
+                    mEditorRecyclerView.getGlobalVisibleRect(recyclerViewOutRect);
+                    if(recyclerViewOutRect.contains((int)event.getRawX(), (int)event.getRawY())) {
+                        focusingRange = null;
+                        isFocused = false;
+                        activity2ViewHolder.clearFocus();
+                        hideComponentOption();
+                    }
                     //굳이 이럴 필요가 있나??
                     //다이렉트로 뿌리자.
 

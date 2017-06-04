@@ -7,5 +7,5 @@ import android.graphics.Rect;
  */
 
 public interface ViewHolderToActivity {
-    void focusing(Rect rect);
+    void focusing(Rect focusingViewRect);
 }

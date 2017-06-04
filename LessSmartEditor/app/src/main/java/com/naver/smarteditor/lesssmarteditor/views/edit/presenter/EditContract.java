@@ -16,7 +16,6 @@ public interface EditContract {
     interface View extends BaseView{
         void showProgressBar();
         void showToast(String message);
-        void setFocusForSelectedComponent(int componentIndex, android.view.View selectedComponent);
         void scrollToNewComponent(int componentIndex);
     }
 

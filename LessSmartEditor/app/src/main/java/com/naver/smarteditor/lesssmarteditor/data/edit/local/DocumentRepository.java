@@ -1,6 +1,7 @@
 package com.naver.smarteditor.lesssmarteditor.data.edit.local;
 
 import android.content.Context;
+import android.nfc.Tag;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -64,13 +65,13 @@ public class DocumentRepository implements DocumentDataSource.Repository{
     }
 
     @Override
-    public void readDocuments(DocumentDataSource.DatabaseReadCallback databaseReadCallback) {
+    public void getDocumentLists(DocumentDataSource.DatabaseReadCallback databaseReadCallback) {
         mEditComponentLocalDataSource.readDocumentData(databaseReadCallback);
     }
 
     @Override
     public void getDocumentById(final int documentId, final DocumentDataSource.DatabaseReadCallback databaseReadCallback) {
-
+        LogController.makeLog(TAG, "getDocByID" + documentId, true);
         mEditComponentLocalDataSource.readDocumentData(new DocumentDataSource.DatabaseReadCallback(){
 
             @Override
@@ -81,10 +82,12 @@ public class DocumentRepository implements DocumentDataSource.Repository{
                         foundDocs.add(document);
                     }
                 }
-
+                LogController.makeLog("repository", String.valueOf(foundDocs.size()), true);
                 Document targetDoc = foundDocs.get(0);
 
                 mDocumentModel.initDocumentComponents(getComponentsFromDocument(targetDoc));
+                databaseReadCallback.OnSuccess(null);
+                mEditComponentLocalDataSource.setDocumentInfo(documentId);
             }
 
             @Override
@@ -128,6 +131,7 @@ public class DocumentRepository implements DocumentDataSource.Repository{
 
     @Override
     public void clearComponent() {
+        mEditComponentLocalDataSource.clearDocumentInfo();
         mDocumentModel.clearDocumentComponents();
     }
 
@@ -155,14 +159,18 @@ public class DocumentRepository implements DocumentDataSource.Repository{
         gsonBuilder.registerTypeAdapter(BaseComponent.class, new MyJsonDeserializer());
         Gson gson = gsonBuilder.create();
 
+        LogController.makeLog(TAG, "String JSON " + jsonArray, localLogPermission);
+
         for(int i = 0; i < jsonArray.length(); i++) {
             try {
                 JSONObject object = jsonArray.getJSONObject(i);
+                gson.fromJson(object.toString(), BaseComponent.class);
                 components.add(gson.fromJson(object.toString(), BaseComponent.class));
             } catch (Exception e) {
-                LogController.makeLog(TAG, "FAIL : load components from json", localLogPermission);
+                LogController.makeLog(TAG, "FAIL : load components from json, " + e, localLogPermission);
             }
         }
+        LogController.makeLog(TAG, String.valueOf(components.size()), localLogPermission);
         return components;
     }
 }

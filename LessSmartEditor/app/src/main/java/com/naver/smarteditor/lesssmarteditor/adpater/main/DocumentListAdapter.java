@@ -9,7 +9,7 @@ import android.widget.TextView;
 import com.naver.smarteditor.lesssmarteditor.adpater.basic.holder.BasicViewHolder;
 import com.naver.smarteditor.lesssmarteditor.adpater.main.holder.DocumentListViewHolder;
 import com.naver.smarteditor.lesssmarteditor.data.Document;
-import com.naver.smarteditor.lesssmarteditor.listener.OnDocumentClickListener;
+import com.naver.smarteditor.lesssmarteditor.listener.OnDocumentItemClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +21,7 @@ import java.util.List;
 public class DocumentListAdapter extends RecyclerView.Adapter<BasicViewHolder> implements DocumentListAdapterContract.Model, DocumentListAdapterContract.View {
 
     private Context mContext;
-    private OnDocumentClickListener onDocumentClickListener;
+    private OnDocumentItemClickListener onDocumentItemClickListener;
     private List<Document> mDocument;
 
     public DocumentListAdapter(Context context){
@@ -36,7 +36,7 @@ public class DocumentListAdapter extends RecyclerView.Adapter<BasicViewHolder> i
         mTitle.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 30);
         mTitle.setPadding(10,10,10,10);
         mTitle.setLayoutParams(lp);
-        DocumentListViewHolder documentListViewHolder = new DocumentListViewHolder(mTitle, onDocumentClickListener);
+        DocumentListViewHolder documentListViewHolder = new DocumentListViewHolder(mTitle, onDocumentItemClickListener);
         return documentListViewHolder;
     }
 
@@ -44,8 +44,7 @@ public class DocumentListAdapter extends RecyclerView.Adapter<BasicViewHolder> i
     public void onBindViewHolder(BasicViewHolder holder, int position) {
         DocumentListViewHolder thisViewHolder = (DocumentListViewHolder) holder;
         thisViewHolder.setTitleTextView(mDocument.get(position).getTitle());
-//        thisViewHolder.bindDocumentData(mDocument.get(position));
-        //TODO : ID TAG 부착
+        thisViewHolder.setDocumentId(mDocument.get(position).get_id());
     }
 
     @Override
@@ -69,8 +68,8 @@ public class DocumentListAdapter extends RecyclerView.Adapter<BasicViewHolder> i
     }
 
     @Override
-    public void setDocumentOnClickedListener(OnDocumentClickListener onDocumentClickListener) {
-        this.onDocumentClickListener = onDocumentClickListener;
+    public void setOnDocumentItemClickListener(OnDocumentItemClickListener onDocumentItemClickListener) {
+        this.onDocumentItemClickListener = onDocumentItemClickListener;
     }
 
 }

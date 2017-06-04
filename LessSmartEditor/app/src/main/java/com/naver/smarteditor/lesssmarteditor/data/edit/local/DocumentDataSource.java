@@ -31,7 +31,7 @@ public interface DocumentDataSource {
     }
 
     interface DatabaseDeleteCallback{
-        void OnSuccess(Document document);
+        void OnSuccess();
         void OnFail();
     }
 
@@ -58,11 +58,15 @@ public interface DocumentDataSource {
 
     interface DocumentLocalDatabase {
 
+        void clearDocumentInfo();
+
         void updateDocumentData(List<BaseComponent> documentData, DatabaseUpdateCallback databaseUpdateCallback);
 
         void deleteDocumentData(int documentId, DatabaseUpdateCallback databaseUpdateCallback);
 
         void readDocumentData(DatabaseReadCallback databaseReadCallback);
+
+        void setDocumentInfo(int documentId);
     }
 
     interface Repository{
@@ -77,7 +81,7 @@ public interface DocumentDataSource {
         void updateDocument(DatabaseUpdateCallback databaseUpdateCallback);
         void deleteDocument(DatabaseUpdateCallback databaseUpdateCallback);
         void createDocument(DatabaseUpdateCallback databaseUpdateCallback);
-        void readDocuments(DatabaseReadCallback databaseReadCallback);
+        void getDocumentLists(DatabaseReadCallback databaseReadCallback);
 
         void getDocumentById(int documentId, DatabaseReadCallback databaseReadCallback);
 

@@ -52,27 +52,6 @@
             android:text="Add Component" />
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/editor_component_menu"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:visibility="gone">
-
-        <Button
-            android:id="@+id/editor_bt_delete"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="delete" />
-
-        <Button
-            android:id="@+id/editor_bt_cancel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="cancel" />
-    </LinearLayout>
 
 
     <LinearLayout
@@ -82,16 +61,37 @@
         android:layout_height="match_parent">
 
         <android.support.v7.widget.RecyclerView
-            android:layout_weight="0.1"
+            android:layout_weight="1"
             android:id="@+id/editor_recyclerview"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
+            android:layout_height="wrap_content"></android.support.v7.widget.RecyclerView>
+
+        <LinearLayout
+            android:id="@+id/editor_component_menu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <Button
+                android:id="@+id/editor_bt_delete"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="delete" />
+
+            <Button
+                android:id="@+id/editor_bt_cancel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="cancel" />
+        </LinearLayout>
 
         <Button
-            android:layout_weight="0.9"
             android:id="@+id/editor_bt_save"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:text="save" />
     </LinearLayout>
 </LinearLayout>

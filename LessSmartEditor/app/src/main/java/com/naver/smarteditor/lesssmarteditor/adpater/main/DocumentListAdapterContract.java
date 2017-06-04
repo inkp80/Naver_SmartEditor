@@ -2,7 +2,7 @@ package com.naver.smarteditor.lesssmarteditor.adpater.main;
 
 import com.naver.smarteditor.lesssmarteditor.adpater.basic.BaseAdapterContract;
 import com.naver.smarteditor.lesssmarteditor.data.Document;
-import com.naver.smarteditor.lesssmarteditor.listener.OnDocumentClickListener;
+import com.naver.smarteditor.lesssmarteditor.listener.OnDocumentItemClickListener;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ public interface DocumentListAdapterContract {
 
     interface View extends BaseAdapterContract.View {
         void notifyDataChange();
-        void setDocumentOnClickedListener(OnDocumentClickListener onDocumentClickListener);
+        void setOnDocumentItemClickListener(OnDocumentItemClickListener onDocumentItemClickListener);
     }
 
     interface Model extends BaseAdapterContract.Model {

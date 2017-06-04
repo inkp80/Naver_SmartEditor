@@ -1,7 +1,6 @@
-package com.naver.smarteditor.lesssmarteditor.views.main.presenter;
+package com.naver.smarteditor.lesssmarteditor.views.doclist.presenter;
 
 import com.naver.smarteditor.lesssmarteditor.adpater.main.DocumentListAdapterContract;
-import com.naver.smarteditor.lesssmarteditor.data.DocumentParcelable;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.DocumentRepository;
 import com.naver.smarteditor.lesssmarteditor.views.basic.BaseView;
 import com.naver.smarteditor.lesssmarteditor.views.basic.presenter.BasePresenter;
@@ -13,6 +12,7 @@ import com.naver.smarteditor.lesssmarteditor.views.basic.presenter.BasePresenter
 public interface DocumentListContract {
     interface View extends BaseView{
         void editSelectedDocument(int documentId);
+        void showToastMessage(String message);
     }
 
     interface Presenter extends BasePresenter{
