@@ -57,6 +57,12 @@
         android:text="hello world!"
         android:id="@+id/textview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content" />
+
+    <EditText
+        android:hint="wait...."
+        android:id="@+id/result_et"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
 </LinearLayout>
