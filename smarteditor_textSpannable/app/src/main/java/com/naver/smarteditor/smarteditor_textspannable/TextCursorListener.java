@@ -1,9 +1,11 @@
 package com.naver.smarteditor.smarteditor_textspannable;
 
+import android.text.style.StyleSpan;
+
 /**
  * Created by NAVER on 2017. 6. 5..
  */
 
 public interface TextCursorListener {
-    void postionSetup(int start, int end);
+    void showSelectedTypes(int styleType);
 }

@@ -18,7 +18,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="bold" />
+            android:text="bold(X)" />
+
+
+        <Button
+            android:id="@+id/bt_italic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="ITALIC(X)" />
 
         <Button
             android:id="@+id/bt_background"
@@ -26,14 +34,6 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="color" />
-
-
-        <Button
-            android:id="@+id/bt_make_html"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="to - HTML" />
 
 
         <Button
@@ -45,24 +45,21 @@
 
     </LinearLayout>
 
-    <EditText
-        android:id="@+id/et_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="enter text in here"
-        android:padding="10dp" />
 
-
-    <TextView
-        android:text="hello world!"
-        android:id="@+id/textview"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <EditText
-        android:hint="wait...."
-        android:id="@+id/result_et"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        <com.naver.smarteditor.smarteditor_textspannable.SmartEditor
+            android:id="@+id/et_smarteditor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="top"
+            android:hint="enter text in here"
+            android:padding="10dp" />
+
+    </LinearLayout>
 
 </LinearLayout>
