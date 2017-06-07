@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,7 +15,6 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.InputFilter;
 import android.text.style.StyleSpan;
 import android.text.style.UnderlineSpan;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -61,6 +59,7 @@ import static com.naver.smarteditor.lesssmarteditor.MyApplication.NO_TITLE_IMG;
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.REQ_MOV2_DOCLIST;
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.REQ_MOV2_GALLERY;
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.REQ_MOV2_SEARCH_PLACE;
+import static com.naver.smarteditor.lesssmarteditor.views.edit.SmartEditText.Typeface_Underline;
 
 /**
  * Created by NAVER on 2017. 5. 11..
@@ -118,7 +117,6 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         ButterKnife.bind(this);
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-//        getWindow().setSoftInputMode( WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         inputMethodManager = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
 
         mAdapter = new EditComponentAdapter(this);
@@ -128,6 +126,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
                 checkSelectedType(styleType);
             }
         });
+
 
         initPresenter();
 
@@ -140,6 +139,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         setTitleLengthLimit(30);
 
         initComponentOption();
+
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
     }
@@ -382,7 +382,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
             public void onClick(View v) {
                 if (currentFocusingViewHolder != null) {
                     //TODO : delete
-                    mPresenter.deleteComponentFromDocument(currentFucusingPosition);
+                    mPresenter.deleteComponentFromDocument(currentFocusingPosition);
 
                     currentFocusingViewHolder.dismissHighlight();
                     currentFocusingViewHolder = null;
@@ -396,6 +396,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
             @Override
             public void onClick(View v) {
                 currentEditText.editSpannable(StyleSpan.class, Typeface.BOLD);
+                checkSelectedType(currentEditText.getSelectedSpanValue());
             }
         });
 
@@ -403,30 +404,33 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
             @Override
             public void onClick(View v) {
                 currentEditText.editSpannable(StyleSpan.class, Typeface.ITALIC);
+                checkSelectedType(currentEditText.getSelectedSpanValue());
             }
         });
 
         mBtUnderline.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                currentEditText.editSpannable(UnderlineSpan.class, 3);
+                currentEditText.editSpannable(UnderlineSpan.class, Typeface_Underline);
+                checkSelectedType(currentEditText.getSelectedSpanValue());
             }
         });
     }
 
-    private void showComponentOption(BaseComponent.Type type) {
-        if (type == BaseComponent.Type.IMG || type == BaseComponent.Type.MAP) {
-            mImgMapComponentMenu.setVisibility(View.VISIBLE);
-        } else if (type == BaseComponent.Type.TEXT || type == BaseComponent.Type.TITLE) {
-            if (type == BaseComponent.Type.TEXT)
-                currentEditText = ((TextComponentViewHolder) currentFocusingViewHolder).getEditText();
-            else if (type == BaseComponent.Type.TITLE)
-                currentEditText = ((TitleComponentViewHolder) currentFocusingViewHolder).getEditText();
-
-            mTextSpanMenu.setVisibility(View.VISIBLE);
-        }
+    private void showComponentOption(int type) {
+        //TODO : 분기문 개선하기
         mBtSaveButton.setVisibility(GONE);
+        if (BaseComponent.getType(type) == BaseComponent.Type.IMG || BaseComponent.getType(type) == BaseComponent.Type.MAP) {
+            mImgMapComponentMenu.setVisibility(View.VISIBLE);
+            return;
+        } else if (BaseComponent.getType(type) == BaseComponent.Type.TEXT) {
+            currentEditText = ((TextComponentViewHolder) currentFocusingViewHolder).getEditText();
+        } else if (BaseComponent.getType(type) == BaseComponent.Type.TITLE) {
+            currentEditText = ((TitleComponentViewHolder) currentFocusingViewHolder).getEditText();
+        }
+        mTextSpanMenu.setVisibility(View.VISIBLE);
     }
+
 
     private void hideComponentOption() {
         mImgMapComponentMenu.setVisibility(GONE);
@@ -441,54 +445,96 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
     ////////////////////////////////////////////////////////////////////////////////////
 
 
-    private ComponentViewHolder currentFocusingViewHolder;
-    private int currentFucusingPosition;
+    private int currentFocusingPosition;
     private SmartEditText currentEditText;
+    private ComponentViewHolder currentFocusingViewHolder;
+
+    private Boolean isViewHolderFocused = false;
 
 
     private class RecyclerViewTouchItemHelper implements RecyclerView.OnItemTouchListener {
+        //TODO : 이벤트 감지 외 많은 작업을 이 곳에서 수행하고 있음 - 역할 수정 필요
         @Override
         public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent event) {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                View v = mEditorRecyclerView.findChildViewUnder(event.getX(), event.getY());
-                if (v == null) {
-                    if (currentFocusingViewHolder != null) {
-                        currentFocusingViewHolder.dismissHighlight();
-                        currentFocusingViewHolder = null;
-                    }
-                    if (inputMethodManager.isAcceptingText()) {
-                        inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-                    }
+                ComponentViewHolder clickedViewholder = null;
+                View clickedView = mEditorRecyclerView.findChildViewUnder(event.getX(), event.getY());
+
+
+                if (clickedView == null) {
+                    //빈 공간을 클릭한 경우 / 혹은 그 이외의 케이스
+                    //TODO : editText의 경우 현재 구간을 선택 중인가? 체크
+                    isViewHolderFocused = false;
+                    hideSoftKeyboard();
                     hideComponentOption();
                     return false;
+                } else {
+                    clickedViewholder = (ComponentViewHolder) mEditorRecyclerView.getChildViewHolder(clickedView);
                 }
 
-                ComponentViewHolder temp = (ComponentViewHolder) mEditorRecyclerView.getChildViewHolder(v);
-
-                if (temp == currentFocusingViewHolder) {
+                ///////////////////////////
+                if (isViewHolderFocused) {
+                    //자기 자신
+                    if (currentFocusingViewHolder == clickedViewholder) {
+                        doNothing();
+                    } else {
+                        //타 객체
+                        hideSoftKeyboard();
+                        isViewHolderFocused = false;
+                        hideComponentOption();
+                        return false;
+                    }
+                } else {
+                    isViewHolderFocused = true;
+                    currentFocusingPosition = mEditorRecyclerView.getChildAdapterPosition(clickedView);
+                    currentFocusingViewHolder = clickedViewholder;
+                    showComponentOption(currentFocusingViewHolder.getItemViewType());
                     return false;
                 }
-                if (inputMethodManager.isAcceptingText()) {
-                    inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-                }
-
-                if (currentFocusingViewHolder != null) {
-                    currentFocusingViewHolder.dismissHighlight();
-                    currentFocusingViewHolder = null;
-                    hideComponentOption();
-                    return false;
-                }
-
-                currentFocusingViewHolder = temp;
-                currentFocusingViewHolder.showHighlight();
-
-
-                currentFucusingPosition = mEditorRecyclerView.getChildAdapterPosition(v);
-                BaseComponent.Type type = BaseComponent.getType(mAdapter.getItemViewType(currentFucusingPosition));
-                showComponentOption(type);
             }
             return false;
         }
+
+//            {
+//            View v = mEditorRecyclerView.findChildViewUnder(event.getX(), event.getY());
+//            if (v == null) {
+//                if (currentFocusingViewHolder != null) {
+//                    currentFocusingViewHolder.dismissHighlight();
+//                    currentFocusingViewHolder = null;
+//                }
+//                if (inputMethodManager.isAcceptingText()) {
+//                    inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+//                }
+//                hideComponentOption();
+//                return false;
+//            }
+//
+//            ComponentViewHolder temp = (ComponentViewHolder) mEditorRecyclerView.getChildViewHolder(v);
+//
+//            if (temp == currentFocusingViewHolder) {
+//                return false;
+//            }
+//            if (inputMethodManager.isAcceptingText()) {
+//                inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+//            }
+//
+//            if (currentFocusingViewHolder != null) {
+//                currentFocusingViewHolder.dismissHighlight();
+//                currentFocusingViewHolder = null;
+//                hideComponentOption();
+//                return false;
+//            }
+//
+//            currentFocusingViewHolder = temp;
+//            currentFocusingViewHolder.showHighlight();
+//
+//
+//            currentFucusingPosition = mEditorRecyclerView.getChildAdapterPosition(v);
+//            BaseComponent.Type type = BaseComponent.getType(mAdapter.getItemViewType(currentFucusingPosition));
+//            showComponentOption(type);
+//        }
+//            return false;
+//    }
 
         @Override
         public void onTouchEvent(RecyclerView rv, MotionEvent e) {
@@ -505,17 +551,36 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
     public void checkSelectedType(int styleType) {
         mBtItalic.setText("I(X)");
         mBtBold.setText("B(X)");
+        mBtUnderline.setText("U(X)");
 
-        for (int i = 0; i < 3; i++) {
+
+        //Typeface.BOLD = 1 ~ 2;
+        //Typeface.ITALIC = 2 ~ 4;
+        //Typeface_Underline = 3 ~ 8;
+
+        for (int i = 1; i <= 3; i++) {
             int isChecked = styleType & (1 << i);
-            if (isChecked / 2 == 1) {
+            if ((isChecked & (1 << Typeface.BOLD)) != 0) {
                 mBtBold.setText("B(O)");
                 continue;
 
-            } else if (isChecked / 2 == 2) {
+            } else if ((isChecked & (1 << Typeface.ITALIC)) != 0) {
                 mBtItalic.setText("I(O)");
+                continue;
+            } else if ((isChecked & (1 << Typeface_Underline)) != 0) {
+                mBtUnderline.setText("U(O)");
                 continue;
             }
         }
+    }
+
+    private void hideSoftKeyboard() {
+        if (inputMethodManager.isAcceptingText()) {
+            inputMethodManager.hideSoftInputFromInputMethod(getCurrentFocus().getWindowToken(), 0);
+        }
+    }
+
+    private boolean doNothing() {
+        return false;
     }
 }

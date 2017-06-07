@@ -18,12 +18,9 @@ import com.naver.smarteditor.lesssmarteditor.listener.TextCursorListener;
 
 public class SmartEditText extends EditText {
 
+    public static final int Typeface_Underline = 3;
 
-    boolean mBold = false;
-    boolean mItalic = false;
     private StatusManager statusManager = new StatusManager();
-
-    Spannable span = this.getEditableText();
     TextCursorListener textCursorListener;
 
     public SmartEditText(Context context) {
@@ -38,7 +35,9 @@ public class SmartEditText extends EditText {
     protected void onSelectionChanged(int selStart, int selEnd) {
         super.onSelectionChanged(selStart, selEnd);
         removeInvaildSpan(0, this.length());
-        getStyleSpan(selStart, selEnd);
+        if (textCursorListener != null) {
+            textCursorListener.showSelectedTypes(getSelectedSpanValue());
+        }
     }
 
 
@@ -47,40 +46,39 @@ public class SmartEditText extends EditText {
     }
 
 
-    private void getStyleSpan(int selStart, int selEnd) {
+    public int getSelectedSpanValue() {
+        int selStart = this.getSelectionStart();
+        int selEnd = this.getSelectionEnd();
         Spannable spannable;
         spannable = this.getText();
+        int spanTypeValue = 0;
 
+
+        //check StyleSpan : BOLD, ITALIC
         StyleSpan typeSpan[];
         typeSpan = spannable.getSpans(selStart, selEnd, StyleSpan.class);
-
-        int styleType = 0;
         for (StyleSpan span : typeSpan) {
 
-            styleType |= (1 << span.getStyle());
-
-            if(span.getStyle() == Typeface.BOLD){
-                statusManager.setStyleState(Typeface.BOLD, true);
-                Log.d("current", spannable.getSpanStart(span) + ", " + spannable.getSpanEnd(span));
-            } else if(span.getStyle() == Typeface.ITALIC){
-                statusManager.setStyleState(Typeface.ITALIC, true);
-            }
+            spanTypeValue |= (1 << span.getStyle());
+            statusManager.setStyleState(span.getStyle(), true);
         }
 
+
+        //check Underline spans
         UnderlineSpan underlineSpans[];
         underlineSpans = spannable.getSpans(selStart, selEnd, UnderlineSpan.class);
+        Log.d("underlineLength", String.valueOf(underlineSpans.length));
+
         for(UnderlineSpan underlineSpan : underlineSpans){
-            styleType |= (1<<3);
+            spanTypeValue |= (1 << Typeface_Underline);
+            Log.d("getSelectedSpanValue", "Underline is setted, " + ((1 << Typeface_Underline)));
             statusManager.setStyleState(Typeface_Underline, true);
             break;
         }
 
-        if (textCursorListener != null) {
-            textCursorListener.showSelectedTypes(styleType);
-        }
+        return spanTypeValue;
     }
 
-    private final int Typeface_Underline = 3;
 
     private void removeInvaildSpan(int start, int end){
         Spannable spannable = this.getEditableText();
@@ -102,48 +100,10 @@ public class SmartEditText extends EditText {
     }
 
 
-    private class StatusManager{
-        private boolean bold = false;
-        private boolean itlic = false;
-        private boolean underline = false;
-
-        private <T> boolean getStyleState(Class typeClass, int typeValue){
-            if(typeClass == StyleSpan.class){
-                switch (typeValue){
-                    case Typeface.BOLD:
-                        return bold;
-                    case Typeface.ITALIC:
-                        return itlic;
-                    default:
-                        return false;
-                }
-            } else if(typeClass == UnderlineSpan.class){
-                    return underline;
-            }
-            return false;
-        }
-        private void setStyleState(int typeValue, boolean state){
-
-            switch (typeValue){
-                case Typeface.BOLD:
-                    bold = state;
-                    break;
-                case Typeface.ITALIC:
-                    itlic = state;
-                    break;
-                case Typeface_Underline:
-                    underline = state;
-                default:
-                    break;
-            }
-        }
-    }
-
-
 
     public void editSpannable(Class typeClass, int typeValue){
         removeInvaildSpan(0, this.length());
-        getStyleSpan(this.getSelectionStart(), this.getSelectionEnd());
+        getSelectedSpanValue();
         boolean state = statusManager.getStyleState(typeClass, typeValue);
 
         Log.d("Status", String.valueOf(typeValue) + ", " + String.valueOf(state));
@@ -187,13 +147,12 @@ public class SmartEditText extends EditText {
 
         Spannable spannable = this.getEditableText();
         T[] spans = spannable.getSpans(selStart, selEnd, typeClass);
-        Log.d("Size", String.valueOf(spans.length));
+//        Log.d("Size", String.valueOf(spans.length));
 
         for(T span : spans){
 
-            if(typeValue <= 2) {
+            if(typeClass == StyleSpan.class) {
                 if ((((StyleSpan) span).getStyle() & typeValue) == 0) {
-
                     Log.d("spanStyleValue", "span:" + String.valueOf(((StyleSpan) span).getStyle()) + ", typeVal:" + String.valueOf(typeValue));
                     continue;
                 }
@@ -229,5 +188,44 @@ public class SmartEditText extends EditText {
 
     }
 
+
+    private class StatusManager{
+        private boolean bold = false;
+        private boolean itlic = false;
+        private boolean underline = false;
+
+        private <T> boolean getStyleState(Class typeClass, int typeValue){
+            if(typeClass == StyleSpan.class){
+                switch (typeValue){
+                    case Typeface.BOLD:
+                        return bold;
+                    case Typeface.ITALIC:
+                        return itlic;
+                    default:
+                        return false;
+                }
+            } else if(typeClass == UnderlineSpan.class){
+                return underline;
+            }
+            return false;
+        }
+
+
+        private void setStyleState(int typeValue, boolean state){
+
+            switch (typeValue){
+                case Typeface.BOLD:
+                    bold = state;
+                    break;
+                case Typeface.ITALIC:
+                    itlic = state;
+                    break;
+                case Typeface_Underline:
+                    underline = state;
+                default:
+                    break;
+            }
+        }
+    }
 
 }
