@@ -6,6 +6,7 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -16,6 +17,7 @@ import com.naver.smarteditor.lesssmarteditor.LogController;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.util.ComponentFocusListener;
 import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
 import com.naver.smarteditor.lesssmarteditor.listener.OnEditTextComponentChangeListener;
+import com.naver.smarteditor.lesssmarteditor.views.edit.SmartEditText;
 
 /**
  * Created by NAVER on 2017. 5. 31..
@@ -25,26 +27,23 @@ public class ViewHolderFactory {
     private Context mContext;
     private RequestManager requestManager;
     private OnEditTextComponentChangeListener onEditTextComponentChangeListener;
-    private ComponentFocusListener componentFocusListener;
-    public ViewHolderFactory(Context context, RequestManager requestManager,  OnEditTextComponentChangeListener onEditTextComponentChangeListener, ComponentFocusListener componentFocusListener){
+    public ViewHolderFactory(Context context, RequestManager requestManager,  OnEditTextComponentChangeListener onEditTextComponentChangeListener){
         this.mContext = context;
         this.requestManager = requestManager;
         this.onEditTextComponentChangeListener = onEditTextComponentChangeListener;
-        this.componentFocusListener = componentFocusListener;
-
     }
 
     public ComponentViewHolder createViewHolder(BaseComponent.Type type) {
 
         switch (type) {
             case TEXT:
-                return new TextComponentViewHolder(createItemView(type), componentFocusListener, onEditTextComponentChangeListener);
+                return new TextComponentViewHolder(createItemView(type), onEditTextComponentChangeListener);
             case IMG:
-                return new ImgComponentViewHolder(createItemView(type), componentFocusListener, requestManager);
+                return new ImgComponentViewHolder(createItemView(type), requestManager);
             case MAP:
-                return new MapComponentViewHolder(createItemView(type), componentFocusListener, requestManager);
+                return new MapComponentViewHolder(createItemView(type), requestManager);
             case TITLE:
-                return new TitleComponentViewHolder(createItemView(type), componentFocusListener, onEditTextComponentChangeListener);
+                return new TitleComponentViewHolder(createItemView(type), onEditTextComponentChangeListener);
             default:
                 LogController.makeLog("ViewHolderFactroy", "INVALID TYPE", true);
                 return null;
@@ -58,7 +57,7 @@ public class ViewHolderFactory {
 
         switch (type){
             case TEXT:
-                EditText editTextItemView = new EditText(mContext);
+                SmartEditText editTextItemView = new SmartEditText(mContext);
                 editTextItemView.setLayoutParams(lp);
                 return editTextItemView;
             case IMG:
@@ -83,7 +82,8 @@ public class ViewHolderFactory {
                 mapItemView.addView(placeName);
                 return mapItemView;
             case TITLE:
-                EditText editTextTitleItemView = new EditText(mContext);
+                SmartEditText editTextTitleItemView = new SmartEditText(mContext);
+
                 editTextTitleItemView.setLayoutParams(lp);
                 return editTextTitleItemView;
             default:

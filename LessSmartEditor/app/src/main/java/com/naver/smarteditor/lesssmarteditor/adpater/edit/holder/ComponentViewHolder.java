@@ -20,17 +20,8 @@ import com.naver.smarteditor.lesssmarteditor.listener.OnComponentLongClickListen
 abstract public class ComponentViewHolder extends BasicViewHolder {
 
 
-    public ComponentViewHolder(final View itemView, final ComponentFocusListener componentFocusListener) {
+    public ComponentViewHolder(final View itemView) {
         super(itemView);
-
-        itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Rect outRect = new Rect();
-                itemView.getGlobalVisibleRect(outRect);
-                componentFocusListener.OnComponentFocused(outRect, getAdapterPosition());
-            }
-        });
 
     }
 

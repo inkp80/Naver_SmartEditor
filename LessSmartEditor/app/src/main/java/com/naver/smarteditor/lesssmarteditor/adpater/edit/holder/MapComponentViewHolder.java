@@ -23,8 +23,8 @@ public class MapComponentViewHolder extends ComponentViewHolder{
     private LinearLayout placeLinearLayout;
     private RequestManager requestManager;
 
-    public MapComponentViewHolder(View itemView, ComponentFocusListener componentFocusListener, RequestManager requestManager) {
-        super(itemView, componentFocusListener);
+    public MapComponentViewHolder(View itemView, RequestManager requestManager) {
+        super(itemView);
         this.placeLinearLayout = (LinearLayout) itemView;
         this.requestManager = requestManager;
 

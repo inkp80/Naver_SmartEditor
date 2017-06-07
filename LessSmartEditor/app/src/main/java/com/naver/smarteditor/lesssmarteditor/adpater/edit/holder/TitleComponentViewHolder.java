@@ -10,6 +10,7 @@ import com.naver.smarteditor.lesssmarteditor.adpater.edit.util.ComponentFocusLis
 import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
 import com.naver.smarteditor.lesssmarteditor.data.component.TitleComponent;
 import com.naver.smarteditor.lesssmarteditor.listener.OnEditTextComponentChangeListener;
+import com.naver.smarteditor.lesssmarteditor.views.edit.SmartEditText;
 
 /**
  * Created by NAVER on 2017. 6. 2..
@@ -18,14 +19,14 @@ import com.naver.smarteditor.lesssmarteditor.listener.OnEditTextComponentChangeL
 public class TitleComponentViewHolder extends ComponentViewHolder {
 
 
-    private EditText title;
+    private SmartEditText title;
     private OnEditTextComponentChangeListener onEditTextComponentChangeListener;
     private TextWatcher textWatcher;
 
 
-    public TitleComponentViewHolder(View itemView, ComponentFocusListener componentFocusListener, OnEditTextComponentChangeListener onEditTextComponentChangeListener) {
-        super(itemView, null);
-        this.title = (EditText) itemView;
+    public TitleComponentViewHolder(View itemView, OnEditTextComponentChangeListener onEditTextComponentChangeListener) {
+        super(itemView);
+        this.title = (SmartEditText) itemView;
         ((EditText)itemView).setHint("제목을 입력하세요");
 
         this.onEditTextComponentChangeListener = onEditTextComponentChangeListener;
@@ -78,4 +79,8 @@ public class TitleComponentViewHolder extends ComponentViewHolder {
         return;
     }
 
+
+    public SmartEditText getEditText(){
+        return title;
+    }
 }

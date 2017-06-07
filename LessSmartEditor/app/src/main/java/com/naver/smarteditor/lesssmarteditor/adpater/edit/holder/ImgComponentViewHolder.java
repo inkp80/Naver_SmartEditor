@@ -18,8 +18,8 @@ public class ImgComponentViewHolder extends ComponentViewHolder {
     private ImageView imageView;
     private RequestManager requestManager;
 
-    public ImgComponentViewHolder(View itemView, final ComponentFocusListener componentFocusListener, RequestManager requestManager) {
-        super(itemView, componentFocusListener);
+    public ImgComponentViewHolder(View itemView, RequestManager requestManager) {
+        super(itemView);
         this.imageView = (ImageView) itemView;
         this.requestManager = requestManager;
 

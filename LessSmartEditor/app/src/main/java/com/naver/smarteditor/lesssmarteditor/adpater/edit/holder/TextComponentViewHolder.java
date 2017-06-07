@@ -7,12 +7,11 @@ import android.view.View;
 import android.widget.EditText;
 
 
-import com.naver.smarteditor.lesssmarteditor.LogController;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.util.ComponentFocusListener;
 import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
 import com.naver.smarteditor.lesssmarteditor.data.component.TextComponent;
-import com.naver.smarteditor.lesssmarteditor.listener.OnComponentLongClickListener;
 import com.naver.smarteditor.lesssmarteditor.listener.OnEditTextComponentChangeListener;
+import com.naver.smarteditor.lesssmarteditor.views.edit.SmartEditText;
 
 /**
  * Created by NAVER on 2017. 5. 22..
@@ -23,26 +22,15 @@ public class TextComponentViewHolder extends ComponentViewHolder {
 
     public boolean focused = false;
 
-    private EditText et;
+    private SmartEditText et;
     private final OnEditTextComponentChangeListener onEditTextComponentChangeListener;
     private TextWatcher textWatcher;
 
-    public TextComponentViewHolder(final View itemView, final ComponentFocusListener componentFocusListener, final OnEditTextComponentChangeListener onEditTextComponentChangeListener) {
-        super(itemView, componentFocusListener);
-        this.et = (EditText) itemView;
+    public TextComponentViewHolder(final View itemView, final OnEditTextComponentChangeListener onEditTextComponentChangeListener) {
+        super(itemView);
+        this.et = (SmartEditText) itemView;
 
         this.onEditTextComponentChangeListener = onEditTextComponentChangeListener;
-        et.setOnClickListener(null);
-        et.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if(hasFocus){
-                    focused = true;
-                } else {
-                    focused = false;
-                }
-            }
-        });
     }
 
 
@@ -85,6 +73,10 @@ public class TextComponentViewHolder extends ComponentViewHolder {
         this.removeWatcher();
         this.setText(textData.getText());
         this.bindTextWathcer();
+    }
+
+    public SmartEditText getEditText(){
+        return et;
     }
 }
 

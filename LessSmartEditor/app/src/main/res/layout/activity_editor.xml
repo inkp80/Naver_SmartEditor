@@ -53,45 +53,83 @@
     </LinearLayout>
 
 
-
-    <LinearLayout
-        android:weightSum="1"
-        android:orientation="vertical"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+
         <android.support.v7.widget.RecyclerView
-            android:layout_weight="1"
             android:id="@+id/editor_recyclerview"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"></android.support.v7.widget.RecyclerView>
+            android:layout_height="match_parent"
+            android:layout_above="@+id/layout_buttons"
+            android:layout_weight="1"></android.support.v7.widget.RecyclerView>
 
         <LinearLayout
-            android:id="@+id/editor_component_menu"
+            android:id="@+id/layout_buttons"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:visibility="gone">
+            android:layout_alignParentBottom="true"
+            android:orientation="vertical"
+            android:weightSum="1">
 
-            <Button
-                android:id="@+id/editor_bt_delete"
+            <LinearLayout
+                android:id="@+id/editor_img_map_comp_menu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="delete" />
+                android:orientation="horizontal"
+                android:visibility="gone">
 
-            <Button
-                android:id="@+id/editor_bt_cancel"
+                <Button
+                    android:id="@+id/editor_bt_delete"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="delete" />
+
+                <Button
+                    android:id="@+id/editor_bt_cancel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="cancel" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/editor_text_span_menu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="cancel" />
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <Button
+                    android:id="@+id/editor_bt_bold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="B" />
+
+                <Button
+                    android:id="@+id/editor_bt_italic"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="T" />
+
+                <Button
+                    android:id="@+id/editor_bt_underline"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="U" />
+            </LinearLayout>
+
+
+            <Button
+                android:id="@+id/editor_bt_save"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="save" />
         </LinearLayout>
-
-        <Button
-            android:id="@+id/editor_bt_save"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="save" />
-    </LinearLayout>
+    </RelativeLayout>
 </LinearLayout>

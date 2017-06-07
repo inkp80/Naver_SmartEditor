@@ -1,24 +1,22 @@
 package com.naver.smarteditor.lesssmarteditor.adpater.edit;
 
 import android.content.Context;
-import android.graphics.Rect;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.naver.smarteditor.lesssmarteditor.LogController;
+import com.naver.smarteditor.lesssmarteditor.adpater.basic.holder.BasicViewHolder;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.holder.ComponentViewHolder;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.holder.TextComponentViewHolder;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.holder.TitleComponentViewHolder;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.holder.ViewHolderFactory;
-import com.naver.smarteditor.lesssmarteditor.adpater.edit.util.ComponentFocusListener;
 import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
 import com.naver.smarteditor.lesssmarteditor.data.component.TextComponent;
 import com.naver.smarteditor.lesssmarteditor.data.component.TitleComponent;
 import com.naver.smarteditor.lesssmarteditor.listener.OnEditTextComponentChangeListener;
-import com.naver.smarteditor.lesssmarteditor.views.edit.ViewHolderToActivity;
-import com.naver.smarteditor.lesssmarteditor.views.edit.ActivityToViewHolder;
+import com.naver.smarteditor.lesssmarteditor.listener.TextCursorListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,64 +38,66 @@ public class EditComponentAdapter extends RecyclerView.Adapter<ComponentViewHold
     private OnEditTextComponentChangeListener onEditTextComponentChangeListener;
     private List<BaseComponent> mComponents;
 
-    private ComponentFocusListener componentFocusListener;
 
     private int mFocusingComponentPostion = -1;
 
-    private ViewHolderToActivity viewHolderToActivity;
-    private ActivityToViewHolder activityToViewHolder = new ActivityToViewHolder() {
-        @Override
-        public void clearFocus() {
-            mFocusingComponentPostion = -1;
-            notifyDataChange();
-        }
-    };
 
     public EditComponentAdapter(Context context) {
         this.mContext = context;
         mComponents = new ArrayList<>();
         requestManager = Glide.with(context);
-        componentFocusListener = new ComponentFocusListener() {
-            @Override
-            public void OnComponentFocused(Rect focusingView, int focusingIndex) {
-                viewHolderToActivity.focusing(focusingView);
-                mFocusingComponentPostion = focusingIndex;
-                notifyDataChange();
-            }
-        };
-    }
-
-    public void setV2A(ViewHolderToActivity viewHolderToActivity){
-        this.viewHolderToActivity = viewHolderToActivity;
-    }
-    public ActivityToViewHolder getA2V(){
-        return activityToViewHolder;
     }
 
     public int getFocusingViewIndex(){
         return mFocusingComponentPostion;
     }
 
+    private TextCursorListener textCursorListener;
+    public void setTextCursorChangeListener(TextCursorListener textCursorChangeListener){
+        this.textCursorListener = textCursorChangeListener;
+
+    }
+
+    int focusingCompPosition = -1;
+
+    @Override
+    public void requestTextFocus(int componentPosition) {
+        focusingCompPosition = mComponents.size()-1;
+        notifyDataChange();
+    }
 
     @Override
     public ComponentViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         //TODO : viewHolderFactory 메모리 누수?
         //매번 new를 하고 있는데 좋은 방법이 아닌 거 같음..
-        viewHolderFactory = new ViewHolderFactory(mContext, requestManager, onEditTextComponentChangeListener, componentFocusListener);
+        viewHolderFactory = new ViewHolderFactory(mContext, requestManager, onEditTextComponentChangeListener);
 
         BaseComponent.Type viewHolderType = BaseComponent.getType(viewType);
-        return viewHolderFactory.createViewHolder(viewHolderType);
+
+        ComponentViewHolder newViewHolder = viewHolderFactory.createViewHolder(viewHolderType);
+
+
+        if(viewHolderType == BaseComponent.Type.TEXT){
+            ((TextComponentViewHolder) newViewHolder).getEditText().setTextCursorListener(textCursorListener);
+        } else if(viewHolderType == BaseComponent.Type.TITLE){
+            ((TitleComponentViewHolder) newViewHolder).getEditText().setTextCursorListener(textCursorListener);
+        }
+//        return viewHolderFactory.createViewHolder(viewHolderType);
+        return newViewHolder;
     }
 
     @Override
     public void onBindViewHolder(ComponentViewHolder holder, int position) {
-        //TODO: 관련 없는 애들도 계속 배경을 그리고 있음 처리 하시오!
+        //TODO: 관련 없는 애들도 계속 배경을 그리고 있음
         holder.bindView(mComponents.get(position));
-        if(position == mFocusingComponentPostion){
-            holder.showHighlight();
-        } else {
-            holder.dismissHighlight();
+        if(position == focusingCompPosition){
+            ((TextComponentViewHolder)holder).getEditText().requestFocus();
         }
+//        if(position == mFocusingComponentPostion){
+//            holder.showHighlight();
+//        } else {
+//            holder.dismissHighlight();
+//        }
     }
 
     @Override

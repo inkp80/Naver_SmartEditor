@@ -59,6 +59,12 @@ public class EditPresenter implements EditContract.Presenter{
     public void addComponentToDocument(BaseComponent component){
         editComponentRepository.addComponent(component);
         adapterModel.initDocmentComponents(editComponentRepository.getCurrentDocumentComponents());
+
+        if(component.getComponentType() == BaseComponent.Type.TEXT) {
+            adapterView.requestTextFocus(editComponentRepository.getCurrentDocumentComponents().size());
+        }
+//        adapterView.notifyDataChange();
+        view.scrollToNewComponent(editComponentRepository.getCurrentDocumentComponents().size());
         adapterView.notifyDataChange();
     }
 
