@@ -232,7 +232,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
             @Override
             public void onClick(View v) {
                 //ADD TEXT COMPONENT TO EDITOR
-                mPresenter.addComponentToDocument(new TextComponent(""));
+                mPresenter.addComponentToDocument(new TextComponent("", ""));
                 mSelectComponentDialog.dismiss();
             }
         };

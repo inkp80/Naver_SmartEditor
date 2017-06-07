@@ -33,7 +33,7 @@ public class MyJsonDeserializer implements JsonDeserializer<BaseComponent> {
 
         if ("TEXT".equals(type)) {
             LogController.makeLog("Deserializer type", "TEXT", true);
-            typeModel = new TextComponent(null);
+            typeModel = new TextComponent(null, "");
             JsonElement json_text = jsonObject.get("text");
             ((TextComponent) typeModel).setText(json_text.getAsString());
 

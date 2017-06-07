@@ -8,6 +8,7 @@ import android.text.style.StyleSpan;
 import android.text.style.UnderlineSpan;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
 
 import com.naver.smarteditor.lesssmarteditor.listener.TextCursorListener;
@@ -17,6 +18,7 @@ import com.naver.smarteditor.lesssmarteditor.listener.TextCursorListener;
  */
 
 public class SmartEditText extends EditText {
+
 
     public static final int Typeface_Underline = 3;
 

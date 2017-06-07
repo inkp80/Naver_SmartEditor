@@ -35,6 +35,11 @@ public class DocumentModel implements DocumentDataSource.LocalModel {
 
     @Override
     public void updateDocumentComponent(BaseComponent baseComponent, int position) {
+        if(position == -1){
+            //TODO do nothing-
+            return;
+        }
+        LogController.makeLog(TAG, "updateDocument:"+String.valueOf(position), mLocalLogPermission);
         BaseComponent thisComponent = mComponents.get(position);
         thisComponent.updateData(baseComponent);
 //        mComponents.set(position, baseComponent);
@@ -54,20 +59,20 @@ public class DocumentModel implements DocumentDataSource.LocalModel {
     public void initDocumentComponents(List<BaseComponent> components) {
         mComponents = components;
 
-        LogController.makeLog("init size", String.valueOf(mComponents.size()), true);
-        for(int i=0; i<components.size(); i++){
-            BaseComponent.Type type = components.get(i).getComponentType();
-            switch (type){
-                case TITLE:
-                    LogController.makeLog("init ", ((TitleComponent)mComponents.get(i)).getTitle(), true);
-                    break;
-                case TEXT:
-                    LogController.makeLog("init ", ((TextComponent)mComponents.get(i)).getText(), true);
-                    break;
-                default:
-                    break;
-            }
-        }
+//        LogController.makeLog("init size", String.valueOf(mComponents.size()), true);
+//        for(int i=0; i<components.size(); i++){
+//            BaseComponent.Type type = components.get(i).getComponentType();
+//            switch (type){
+//                case TITLE:
+//                    LogController.makeLog("init ", ((TitleComponent)mComponents.get(i)).getTitle(), true);
+//                    break;
+//                case TEXT:
+//                    LogController.makeLog("init ", ((TextComponent)mComponents.get(i)).getText(), true);
+//                    break;
+//                default:
+//                    break;
+//            }
+//        }
     }
 
     @Override
