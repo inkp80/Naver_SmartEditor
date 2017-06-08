@@ -1,22 +1,22 @@
 package com.naver.smarteditor.lesssmarteditor.views.edit;
 
-import static com.naver.smarteditor.lesssmarteditor.views.edit.SmartEditText.Typeface_Underline;
+import static com.naver.smarteditor.lesssmarteditor.views.edit.SmartEditText.TYPE_UNDERLINE;
 
 /**
  * Created by NAVER on 2017. 6. 6..
  */
 
-public class ClassGenerator<T> {
+public class SpanClassGenerator<T> {
     private Class<T> mClass;
 
-    public ClassGenerator(Class<T> cls) {
+    public SpanClassGenerator(Class<T> cls) {
         mClass = cls;
     }
 
     public T get(int value) {
         try {
 //            return mClass.newInstance();
-            if(value == Typeface_Underline)
+            if(value == TYPE_UNDERLINE)
                 return mClass.newInstance();
             return mClass.getDeclaredConstructor( Integer.TYPE ).newInstance(value);
         } catch (Exception e) {

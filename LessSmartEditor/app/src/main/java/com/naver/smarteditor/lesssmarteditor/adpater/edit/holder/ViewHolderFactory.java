@@ -17,6 +17,7 @@ import com.naver.smarteditor.lesssmarteditor.LogController;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.util.ComponentFocusListener;
 import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
 import com.naver.smarteditor.lesssmarteditor.listener.OnEditTextComponentChangeListener;
+import com.naver.smarteditor.lesssmarteditor.listener.TextCursorListener;
 import com.naver.smarteditor.lesssmarteditor.views.edit.SmartEditText;
 
 /**
@@ -27,23 +28,30 @@ public class ViewHolderFactory {
     private Context mContext;
     private RequestManager requestManager;
     private OnEditTextComponentChangeListener onEditTextComponentChangeListener;
-    public ViewHolderFactory(Context context, RequestManager requestManager,  OnEditTextComponentChangeListener onEditTextComponentChangeListener){
+    private TextCursorListener textCursorListener;
+
+    public ViewHolderFactory(Context context, RequestManager requestManager, OnEditTextComponentChangeListener onEditTextComponentChangeListener, TextCursorListener textCursorListener){
         this.mContext = context;
         this.requestManager = requestManager;
         this.onEditTextComponentChangeListener = onEditTextComponentChangeListener;
+        this.textCursorListener = textCursorListener;
     }
 
     public ComponentViewHolder createViewHolder(BaseComponent.Type type) {
 
         switch (type) {
             case TEXT:
-                return new TextComponentViewHolder(createItemView(type), onEditTextComponentChangeListener);
+                TextComponentViewHolder textComponentViewHolder = new TextComponentViewHolder(createItemView(type), onEditTextComponentChangeListener);
+                textComponentViewHolder.getEditText().setTextCursorListener(textCursorListener);
+                return textComponentViewHolder;
             case IMG:
                 return new ImgComponentViewHolder(createItemView(type), requestManager);
             case MAP:
                 return new MapComponentViewHolder(createItemView(type), requestManager);
             case TITLE:
-                return new TitleComponentViewHolder(createItemView(type), onEditTextComponentChangeListener);
+                TitleComponentViewHolder titleComponentViewHolder = new TitleComponentViewHolder(createItemView(type), onEditTextComponentChangeListener);
+                titleComponentViewHolder.getEditText().setTextCursorListener(textCursorListener);
+                return titleComponentViewHolder;
             default:
                 LogController.makeLog("ViewHolderFactroy", "INVALID TYPE", true);
                 return null;

@@ -2,13 +2,14 @@ package com.naver.smarteditor.lesssmarteditor.adpater.edit.util;
 
 import android.text.Spannable;
 import android.text.style.StyleSpan;
-import android.text.style.UnderlineSpan;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.naver.smarteditor.lesssmarteditor.LogController;
 import com.naver.smarteditor.lesssmarteditor.data.SpanInfo;
-import com.naver.smarteditor.lesssmarteditor.views.edit.ClassGenerator;
+import com.naver.smarteditor.lesssmarteditor.data.edit.local.UnderlineCustom;
+import com.naver.smarteditor.lesssmarteditor.views.edit.SpanClassGenerator;
 import com.naver.smarteditor.lesssmarteditor.views.edit.SmartEditText;
 
 import org.json.JSONArray;
@@ -17,7 +18,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.naver.smarteditor.lesssmarteditor.views.edit.SmartEditText.Typeface_Underline;
+import static com.naver.smarteditor.lesssmarteditor.views.edit.SmartEditText.TYPE_UNDERLINE;
 
 /**
  * Created by NAVER on 2017. 6. 7..
@@ -34,10 +35,10 @@ public class SpanInfoExtractor {
 
 
         //check Underline spans
-        UnderlineSpan underlineSpans[];
-        underlineSpans = spannable.getSpans(0, spannable.length(), UnderlineSpan.class);
-        for(UnderlineSpan underlineSpan : underlineSpans){
-            spanInfos.add(new SpanInfo(spannable.getSpanStart(underlineSpan), spannable.getSpanEnd(underlineSpan), Typeface_Underline));
+        UnderlineCustom[] underlineSpans;
+        underlineSpans = spannable.getSpans(0, spannable.length(), UnderlineCustom.class);
+        for(UnderlineCustom underlineSpan : underlineSpans){
+            spanInfos.add(new SpanInfo(spannable.getSpanStart(underlineSpan), spannable.getSpanEnd(underlineSpan), TYPE_UNDERLINE));
         }
         return spanInfos;
     }
@@ -76,8 +77,10 @@ public class SpanInfoExtractor {
             int typeValue = spanInfoLists.get(i).getSpanType();
             int spanStart = spanInfoLists.get(i).getSpanStart();
             int spanEnd = spanInfoLists.get(i).getSpanEnd();
-            ClassGenerator<T> classGenerator = new ClassGenerator<>(ClassSetter(typeValue));
-            spannable.setSpan(classGenerator.get(typeValue), spanStart, spanEnd, typeValue);
+            SpanClassGenerator<T> spanClassGenerator = new SpanClassGenerator<>(ClassSetter(typeValue));
+
+            Log.d("sadasd",String.valueOf(spanClassGenerator));
+            spannable.setSpan(spanClassGenerator.get(typeValue), spanStart, spanEnd, typeValue);
         }
 
     }
@@ -92,7 +95,7 @@ public class SpanInfoExtractor {
         } else if(type == 2){
             return StyleSpan.class;
         } else {
-            return UnderlineSpan.class;
+            return UnderlineCustom.class;
         }
     }
 }

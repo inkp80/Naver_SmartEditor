@@ -28,13 +28,13 @@ public class EditComponentAdapter extends RecyclerView.Adapter<ComponentViewHold
     private final String TAG = "EditComponentAdapter";
     private boolean localLogPermission = true;
 
-    private RequestManager requestManager;
+    private RequestManager glideImaRequestor;
 
     private ViewHolderFactory viewHolderFactory;
     private Context mContext;
-    private OnEditTextComponentChangeListener onEditTextComponentChangeListener;
     private List<BaseComponent> mComponents;
-
+    private OnEditTextComponentChangeListener onEditTextComponentChangeListener;
+    private TextCursorListener textCursorListener;
 
     private int mFocusingComponentPostion = -1;
 
@@ -42,60 +42,33 @@ public class EditComponentAdapter extends RecyclerView.Adapter<ComponentViewHold
     public EditComponentAdapter(Context context) {
         this.mContext = context;
         mComponents = new ArrayList<>();
-        requestManager = Glide.with(context);
+        glideImaRequestor = Glide.with(context);
     }
 
-    public int getFocusingViewIndex(){
-        return mFocusingComponentPostion;
-    }
-
-    private TextCursorListener textCursorListener;
     public void setTextCursorChangeListener(TextCursorListener textCursorChangeListener){
         this.textCursorListener = textCursorChangeListener;
 
     }
 
-    int focusingCompPosition = -1;
 
     @Override
     public void requestTextFocus(int componentPosition) {
-//        focusingCompPosition = mComponents.size()-1;
-//        notifyDataChange();
     }
 
     @Override
     public ComponentViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         //TODO : viewHolderFactory 메모리 누수?
-        //매번 new를 하고 있는데 좋은 방법이 아닌 거 같음..
-        viewHolderFactory = new ViewHolderFactory(mContext, requestManager, onEditTextComponentChangeListener);
+        viewHolderFactory = new ViewHolderFactory(mContext, glideImaRequestor, onEditTextComponentChangeListener, textCursorListener);
 
         BaseComponent.Type viewHolderType = BaseComponent.getType(viewType);
-
-        ComponentViewHolder newViewHolder = viewHolderFactory.createViewHolder(viewHolderType);
-
-
-        //TODO : 예외적인 경우... 처리 어떻게..?
-        if(viewHolderType == BaseComponent.Type.TEXT){
-            ((TextComponentViewHolder) newViewHolder).getEditText().setTextCursorListener(textCursorListener);
-        } else if(viewHolderType == BaseComponent.Type.TITLE){
-            ((TitleComponentViewHolder) newViewHolder).getEditText().setTextCursorListener(textCursorListener);
-        }
-
-        return newViewHolder;
+        return viewHolderFactory.createViewHolder(viewHolderType);
     }
 
     @Override
     public void onBindViewHolder(ComponentViewHolder holder, int position) {
         //TODO: 관련 없는 애들도 계속 배경을 그리고 있음
         holder.bindView(mComponents.get(position));
-//        if(position == focusingCompPosition){
-//            ((TextComponentViewHolder)holder).getEditText().requestFocus();
-//        }
-//        if(position == mFocusingComponentPostion){
-//            holder.showHighlight();
-//        } else {
-//            holder.dismissHighlight();
-//        }
+        holder.initFocusing(mFocusingComponentPostion);
     }
 
     @Override
@@ -172,4 +145,19 @@ public class EditComponentAdapter extends RecyclerView.Adapter<ComponentViewHold
         }
         super.onViewAttachedToWindow(holder);
     }
+
+    public void clearFocus(){
+        mFocusingComponentPostion = -1;
+        notifyDataChange();
+    }
+
+    public void setFocus(int position){
+        mFocusingComponentPostion = position;
+        notifyDataChange();
+    }
+
+    public int getFocusPosition() {
+        return mFocusingComponentPostion;
+    }
+
 }

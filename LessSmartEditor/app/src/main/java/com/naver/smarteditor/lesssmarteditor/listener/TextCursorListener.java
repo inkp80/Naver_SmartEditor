@@ -5,5 +5,5 @@ package com.naver.smarteditor.lesssmarteditor.listener;
  */
 
 public interface TextCursorListener {
-    void showSelectedTypes(int styleType);
+    void OnTextCursorMove(int styleType);
 }

@@ -35,7 +35,6 @@ public class TextComponentViewHolder extends ComponentViewHolder {
         super(itemView);
         this.et = (SmartEditText) itemView;
 
-        et.setPaintFlags(et.getPaintFlags() & (~ Paint.UNDERLINE_TEXT_FLAG));
         et.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -92,7 +91,6 @@ public class TextComponentViewHolder extends ComponentViewHolder {
         this.setText(textData.getText());
 
         if(textData.getTextSpans() != null || textData.getText().length() != 0) {
-            LogController.makeLog("bindview:TEXT", textData.getTextSpans().toString(), true);
             List<SpanInfo> spanInfoList = SpanInfoExtractor.spanJsonDeserializer(textData.getTextSpans());
             SpanInfoExtractor.setSpansIntoSpannable(spanInfoList, this.et);
         }
@@ -104,12 +102,12 @@ public class TextComponentViewHolder extends ComponentViewHolder {
     }
 
     @Override
-    public void showHighlight() {
+    public void setMark() {
         return;
     }
 
     @Override
-    public void dismissHighlight() {
+    public void removeMark() {
         return;
     }
 }

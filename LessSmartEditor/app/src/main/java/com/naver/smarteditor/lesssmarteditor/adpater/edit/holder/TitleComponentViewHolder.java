@@ -1,6 +1,7 @@
 package com.naver.smarteditor.lesssmarteditor.adpater.edit.holder;
 
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
@@ -11,6 +12,7 @@ import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
 import com.naver.smarteditor.lesssmarteditor.data.component.TitleComponent;
 import com.naver.smarteditor.lesssmarteditor.listener.OnEditTextComponentChangeListener;
 import com.naver.smarteditor.lesssmarteditor.views.edit.SmartEditText;
+import com.naver.smarteditor.lesssmarteditor.views.edit.utils.TitleFilter;
 
 /**
  * Created by NAVER on 2017. 6. 2..
@@ -29,6 +31,7 @@ public class TitleComponentViewHolder extends ComponentViewHolder {
         this.title = (SmartEditText) itemView;
         ((EditText)itemView).setHint("제목을 입력하세요");
 
+        setTitleLengthLimit(30);
         this.onEditTextComponentChangeListener = onEditTextComponentChangeListener;
         title.setOnClickListener(null);
 
@@ -55,6 +58,13 @@ public class TitleComponentViewHolder extends ComponentViewHolder {
         });
     }
 
+    private void setTitleLengthLimit(int lengthLimit) {
+        InputFilter[] f = new InputFilter[]{
+                new TitleFilter(title.getContext(), lengthLimit)
+        };
+        title.setFilters(f);
+    }
+
 
 
     public void removeWatcher() {
@@ -70,17 +80,17 @@ public class TitleComponentViewHolder extends ComponentViewHolder {
         this.bindTextWathcer();
     }
 
-    @Override
-    public void showHighlight(){
-        return;
-    }
-    @Override
-    public void dismissHighlight(){
-        return;
-    }
-
-
     public SmartEditText getEditText(){
         return title;
+    }
+
+    @Override
+    public void setMark() {
+        return;
+    }
+
+    @Override
+    public void removeMark() {
+        return;
     }
 }

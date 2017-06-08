@@ -5,13 +5,10 @@ import android.graphics.Typeface;
 import android.text.Spannable;
 import android.text.Spanned;
 import android.text.style.StyleSpan;
-import android.text.style.UnderlineSpan;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.View;
 import android.widget.EditText;
 
-import com.naver.smarteditor.lesssmarteditor.data.SpanInfo;
+import com.naver.smarteditor.lesssmarteditor.data.edit.local.UnderlineCustom;
 import com.naver.smarteditor.lesssmarteditor.listener.TextCursorListener;
 
 /**
@@ -21,7 +18,9 @@ import com.naver.smarteditor.lesssmarteditor.listener.TextCursorListener;
 public class SmartEditText extends EditText {
 
 
-    public static final int Typeface_Underline = 3;
+    public static final int TYPE_BOLD = 1;
+    public static final int TYPE_ITALIC = 2;
+    public static final int TYPE_UNDERLINE = 3;
 
     private StatusManager statusManager = new StatusManager();
     TextCursorListener textCursorListener;
@@ -37,9 +36,9 @@ public class SmartEditText extends EditText {
     @Override
     protected void onSelectionChanged(int selStart, int selEnd) {
         super.onSelectionChanged(selStart, selEnd);
-        removeInvaildSpan(0, this.length());
+        cleanGarbageSpan(0, this.length());
         if (textCursorListener != null) {
-            textCursorListener.showSelectedTypes(getSelectedSpanValue());
+            textCursorListener.OnTextCursorMove(getSelectionSpannableState());
         }
     }
 
@@ -49,42 +48,37 @@ public class SmartEditText extends EditText {
     }
 
 
-    public int getSelectedSpanValue() {
+    public int getSelectionSpannableState() {
         int selStart = this.getSelectionStart();
         int selEnd = this.getSelectionEnd();
         Spannable spannable;
         spannable = this.getText();
-        int spanTypeValue = 0;
-
-
+        int spannableState = 0;
+        
         //check StyleSpan : BOLD, ITALIC
         StyleSpan typeSpan[];
         typeSpan = spannable.getSpans(selStart, selEnd, StyleSpan.class);
         for (StyleSpan span : typeSpan) {
-
-            spanTypeValue |= (1 << span.getStyle());
+            spannableState |= (1 << span.getStyle());
             statusManager.setStyleState(span.getStyle(), true);
         }
 
 
-        //check Underline spans
-        UnderlineSpan underlineSpans[];
-        underlineSpans = spannable.getSpans(selStart, selEnd, UnderlineSpan.class);
-        Log.d("underlineLength", String.valueOf(underlineSpans.length));
-
-        for(UnderlineSpan underlineSpan : underlineSpans){
-            spanTypeValue |= (1 << Typeface_Underline);
-            Log.d("getSelectedSpanValue", "Underline is setted, " + ((1 << Typeface_Underline)));
-            statusManager.setStyleState(Typeface_Underline, true);
+        UnderlineCustom underlineCustoms[];
+        underlineCustoms = spannable.getSpans(selStart, selEnd, UnderlineCustom.class);
+        for(UnderlineCustom underlineCustom : underlineCustoms){
+            spannableState |= (1 << TYPE_UNDERLINE);
+            statusManager.setStyleState(TYPE_UNDERLINE, true);
             break;
         }
-
-        return spanTypeValue;
+        
+        return spannableState;
     }
 
 
-    private void removeInvaildSpan(int start, int end){
+    private void cleanGarbageSpan(int start, int end){
         Spannable spannable = this.getEditableText();
+        //TODO 다형성에 대해서 - class
         StyleSpan[] styleSpan = spannable.getSpans(start, end, StyleSpan.class);
         for(StyleSpan span : styleSpan){
             if(spannable.getSpanStart(span) == spannable.getSpanEnd(span)){
@@ -92,39 +86,33 @@ public class SmartEditText extends EditText {
             }
         }
 
-        UnderlineSpan[] underlineSpans = spannable.getSpans(start, end, UnderlineSpan.class);
-        for(UnderlineSpan underlineSpan : underlineSpans){
-            if(spannable.getSpanStart(underlineSpan) == spannable.getSpanEnd(underlineSpan)) {
-                spannable.removeSpan(underlineSpan);
+        UnderlineCustom[] underlineCustoms = spannable.getSpans(start, end, UnderlineCustom.class);
+        for(UnderlineCustom underlineCustom : underlineCustoms){
+            if(spannable.getSpanStart(underlineCustom) == spannable.getSpanEnd(underlineCustom)){
+                spannable.removeSpan(underlineCustom);
             }
         }
-
-        //style, underline ~
     }
 
 
 
     public void editSpannable(Class typeClass, int typeValue){
-        removeInvaildSpan(0, this.length());
-        getSelectedSpanValue();
-        boolean state = statusManager.getStyleState(typeClass, typeValue);
-
-        Log.d("Status", String.valueOf(typeValue) + ", " + String.valueOf(state));
+        cleanGarbageSpan(0, this.length());
+        getSelectionSpannableState();
+        boolean state = statusManager.getStyleState(typeValue);
 
         if(state){
-            Log.d("status", "in true");
             statusManager.setStyleState(typeValue, false);
             adjustSpan(typeClass, typeValue);
             return;
         }else {
-            Log.d("status", "in false");
             statusManager.setStyleState(typeValue, true);
             setSpan(typeClass, typeValue);
         }
     }
 
     private <T> void setSpan(Class<T> typeClass, int typeValue) {
-        ClassGenerator<T> classGenerator = new ClassGenerator<>(typeClass);
+        SpanClassGenerator<T> spanClassGenerator = new SpanClassGenerator<>(typeClass);
         Spannable spannable = this.getText();
 
         int selStartPosition = this.getSelectionStart();
@@ -138,7 +126,7 @@ public class SmartEditText extends EditText {
             this.setSelection(selStartPosition, selEndPosition);
         }
 
-        spannable.setSpan(classGenerator.get(typeValue),
+        spannable.setSpan(spanClassGenerator.get(typeValue),
                 selStartPosition, selEndPosition,
                 Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
     }
@@ -150,13 +138,12 @@ public class SmartEditText extends EditText {
 
         Spannable spannable = this.getEditableText();
         T[] spans = spannable.getSpans(selStart, selEnd, typeClass);
-//        Log.d("Size", String.valueOf(spans.length));
 
         for(T span : spans){
 
             if(typeClass == StyleSpan.class) {
                 if ((((StyleSpan) span).getStyle() & typeValue) == 0) {
-                    Log.d("spanStyleValue", "span:" + String.valueOf(((StyleSpan) span).getStyle()) + ", typeVal:" + String.valueOf(typeValue));
+                    //현재 처리 중인 스타일과 일치하지 않는 스타일 -
                     continue;
                 }
             }
@@ -165,7 +152,7 @@ public class SmartEditText extends EditText {
             int spanEnd = spannable.getSpanEnd(span);
 
             spannable.removeSpan(span);
-            ClassGenerator<T> classGenerator = new ClassGenerator<>(typeClass);
+            SpanClassGenerator<T> spanClassGenerator = new SpanClassGenerator<>(typeClass);
 
             if(selStart == selEnd) {
                 this.getText().insert(selStart, " ");
@@ -173,19 +160,17 @@ public class SmartEditText extends EditText {
 
 
                 if (selStart > spanStart) {
-
-
-                    spannable.setSpan(classGenerator.get(typeValue), spanStart, selStart, Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
-                    spannable.setSpan(classGenerator.get(typeValue), selEnd + 1, spanEnd + 1, Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
+                    spannable.setSpan(spanClassGenerator.get(typeValue), spanStart, selStart, Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
+                    spannable.setSpan(spanClassGenerator.get(typeValue), selEnd + 1, spanEnd + 1, Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
                 } else if (selStart == spanEnd){
-                    spannable.setSpan(classGenerator.get(typeValue), spanEnd, selStart, Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
+                    spannable.setSpan(spanClassGenerator.get(typeValue), spanEnd, selStart, Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
                 }
 
             } else if(selStart >= spanStart && selEnd >= spanEnd){
-                spannable.setSpan(classGenerator.get(typeValue), spanStart, selStart, Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
+                spannable.setSpan(spanClassGenerator.get(typeValue), spanStart, selStart, Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
 
             } else if(selStart <= spanStart && selEnd <= spanEnd){
-                spannable.setSpan(classGenerator.get(typeValue), selEnd, spanEnd, Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
+                spannable.setSpan(spanClassGenerator.get(typeValue), selEnd, spanEnd, Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
             }
         }
 
@@ -193,24 +178,23 @@ public class SmartEditText extends EditText {
 
 
     private class StatusManager{
+        //TODO : 뭔가 더 깔끔한 방법이 있을 거 같다.
+        //TODO : Flag 값 문제 해결
         private boolean bold = false;
         private boolean itlic = false;
         private boolean underline = false;
 
-        private <T extends SpanInfo> boolean getStyleState(Class typeClass, int typeValue){
-            if(typeClass == StyleSpan.class){
-                switch (typeValue){
+        private boolean getStyleState(int typeValue){
+                switch (typeValue) {
                     case Typeface.BOLD:
                         return bold;
                     case Typeface.ITALIC:
                         return itlic;
+                    case TYPE_UNDERLINE:
+                        return underline;
                     default:
                         return false;
                 }
-            } else if(typeClass == UnderlineSpan.class){
-                return underline;
-            }
-            return false;
         }
 
 
@@ -223,7 +207,7 @@ public class SmartEditText extends EditText {
                 case Typeface.ITALIC:
                     itlic = state;
                     break;
-                case Typeface_Underline:
+                case TYPE_UNDERLINE:
                     underline = state;
                 default:
                     break;

@@ -12,15 +12,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.text.InputFilter;
 import android.text.style.StyleSpan;
-import android.text.style.UnderlineSpan;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -39,13 +36,14 @@ import com.naver.smarteditor.lesssmarteditor.data.component.MapComponent;
 import com.naver.smarteditor.lesssmarteditor.data.component.TextComponent;
 import com.naver.smarteditor.lesssmarteditor.data.component.TitleComponent;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.DocumentRepository;
+import com.naver.smarteditor.lesssmarteditor.data.edit.local.UnderlineCustom;
 import com.naver.smarteditor.lesssmarteditor.listener.OnEditTextComponentChangeListener;
+import com.naver.smarteditor.lesssmarteditor.listener.OnSelectChangeListener;
 import com.naver.smarteditor.lesssmarteditor.listener.TextCursorListener;
 import com.naver.smarteditor.lesssmarteditor.views.edit.dialog.SelectComponentDialog;
 import com.naver.smarteditor.lesssmarteditor.views.edit.presenter.EditContract;
 import com.naver.smarteditor.lesssmarteditor.views.edit.presenter.EditPresenter;
 import com.naver.smarteditor.lesssmarteditor.views.edit.utils.ClearCachesTask;
-import com.naver.smarteditor.lesssmarteditor.views.edit.utils.TitleFilter;
 import com.naver.smarteditor.lesssmarteditor.views.doclist.DocumentListActivity;
 import com.naver.smarteditor.lesssmarteditor.views.map.SearchPlaceActivity;
 
@@ -59,7 +57,12 @@ import static com.naver.smarteditor.lesssmarteditor.MyApplication.NO_TITLE_IMG;
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.REQ_MOV2_DOCLIST;
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.REQ_MOV2_GALLERY;
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.REQ_MOV2_SEARCH_PLACE;
-import static com.naver.smarteditor.lesssmarteditor.views.edit.SmartEditText.Typeface_Underline;
+import static com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent.Type.IMG;
+import static com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent.Type.MAP;
+import static com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent.Type.TEXT;
+import static com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent.Type.TITLE;
+import static com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent.getType;
+import static com.naver.smarteditor.lesssmarteditor.views.edit.SmartEditText.TYPE_UNDERLINE;
 
 /**
  * Created by NAVER on 2017. 5. 11..
@@ -93,8 +96,6 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
     Button mBtUnderline;
 
 
-    @BindView(R.id.editor_et_title)
-    EditText mTxtTitle;
     @BindView(R.id.editor_bt_newdocument)
     Button mBtNewDocument;
     @BindView(R.id.editor_bt_loaddocument)
@@ -107,8 +108,12 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
     RecyclerView mEditorRecyclerView;
 
 
+
     private SelectComponentDialog mSelectComponentDialog;
 
+
+    private SmartEditText currentEditText;
+    private Boolean isViewHolderFocused = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,8 +130,8 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         mAdapter = new EditComponentAdapter(this);
         mAdapter.setTextCursorChangeListener(new TextCursorListener() {
             @Override
-            public void showSelectedTypes(int styleType) {
-                detectSpans(styleType);
+            public void OnTextCursorMove(int styleType) {
+                initSpanOption(styleType);
             }
         });
 
@@ -138,8 +143,6 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         initEditorMenu();
 
         initSelectComponentDialog();
-
-        setTitleLengthLimit(30);
 
         initComponentOption();
     }
@@ -282,6 +285,8 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         mBtAddComponent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                getCurrentFocus().clearFocus();
+                hideSoftKeyboard();
                 mSelectComponentDialog.show();
             }
         });
@@ -316,12 +321,9 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
                                 //TODO : document ID init
                                 mPresenter.clearCurrentDocument();
                                 mPresenter.addComponentToDocument(new TitleComponent("", NO_TITLE_IMG));
+                                mAdapter.clearFocus();
+                                hideComponentOption();
 
-                                if (currentFocusingViewHolder != null) {
-                                    currentFocusingViewHolder.dismissHighlight();
-                                    currentFocusingViewHolder = null;
-                                    hideComponentOption();
-                                }
                             }
                         });
                 ab.show();
@@ -329,13 +331,6 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         });
     }
 
-    private void setTitleLengthLimit(int lengthLimit) {
-        InputFilter[] f = new InputFilter[]{
-                new TitleFilter(getBaseContext(), lengthLimit)
-        };
-
-        mTxtTitle.setFilters(f);
-    }
 
     @Override
     public void showToast(String message) {
@@ -346,11 +341,10 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
     public void onBackPressed() {
         if (System.currentTimeMillis() > backKeyTime + 2000) {
             hideSoftKeyboard();
-            if (currentFocusingViewHolder != null) {
-                currentFocusingViewHolder.dismissHighlight();
-                currentFocusingViewHolder = null;
-                hideComponentOption();
-            }
+            getCurrentFocus().clearFocus();
+            mAdapter.clearFocus();
+            hideComponentOption();
+
             backKeyTime = System.currentTimeMillis();
             Toast.makeText(this, "\'뒤로\' 한번 더 누르시면 종료됩니다.", Toast.LENGTH_SHORT).show();
             return;
@@ -369,25 +363,18 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         mBtCancelMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (currentFocusingViewHolder != null) {
-                    currentFocusingViewHolder.dismissHighlight();
-                    currentFocusingViewHolder = null;
-                    hideComponentOption();
-                }
+                mAdapter.clearFocus();
+                hideComponentOption();
             }
         });
 
         mBtDeleteComponent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (currentFocusingViewHolder != null) {
                     //TODO : delete
-                    mPresenter.deleteComponentFromDocument(currentFocusingPosition);
-
-                    currentFocusingViewHolder.dismissHighlight();
-                    currentFocusingViewHolder = null;
+                    mPresenter.deleteComponentFromDocument(mAdapter.getFocusPosition());
+                    mAdapter.clearFocus();
                     hideComponentOption();
-                }
             }
         });
 
@@ -396,7 +383,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
             @Override
             public void onClick(View v) {
                 currentEditText.editSpannable(StyleSpan.class, Typeface.BOLD);
-                detectSpans(currentEditText.getSelectedSpanValue());
+                initSpanOption(currentEditText.getSelectionSpannableState());
             }
         });
 
@@ -404,15 +391,15 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
             @Override
             public void onClick(View v) {
                 currentEditText.editSpannable(StyleSpan.class, Typeface.ITALIC);
-                detectSpans(currentEditText.getSelectedSpanValue());
+                initSpanOption(currentEditText.getSelectionSpannableState());
             }
         });
 
         mBtUnderline.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                currentEditText.editSpannable(UnderlineSpan.class, Typeface_Underline);
-                detectSpans(currentEditText.getSelectedSpanValue());
+                currentEditText.editSpannable(UnderlineCustom.class, TYPE_UNDERLINE);
+                initSpanOption(currentEditText.getSelectionSpannableState());
             }
         });
     }
@@ -420,22 +407,18 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
     private void showComponentOption(int type) {
         //TODO : 분기문 개선하기
         mBtSaveButton.setVisibility(GONE);
-        if (BaseComponent.getType(type) == BaseComponent.Type.IMG || BaseComponent.getType(type) == BaseComponent.Type.MAP) {
+        if (getType(type) == IMG || getType(type) == MAP) {
             mImgMapComponentMenu.setVisibility(View.VISIBLE);
             return;
-        } else if (BaseComponent.getType(type) == BaseComponent.Type.TEXT) {
-            currentEditText = ((TextComponentViewHolder) currentFocusingViewHolder).getEditText();
-        } else if (BaseComponent.getType(type) == BaseComponent.Type.TITLE) {
-            currentEditText = ((TitleComponentViewHolder) currentFocusingViewHolder).getEditText();
+        } else if(getType(type) == TEXT || getType(type) == TITLE){
+            View v = mEditorRecyclerView.getChildAt(mAdapter.getFocusPosition());
+            currentEditText = (SmartEditText) ((ComponentViewHolder) mEditorRecyclerView.getChildViewHolder(v)).getItemView();
+            mTextSpanMenu.setVisibility(View.VISIBLE);
         }
-        mTextSpanMenu.setVisibility(View.VISIBLE);
     }
 
 
     private void hideComponentOption() {
-        if(currentEditText != null)
-            currentEditText.clearFocus();
-
         mImgMapComponentMenu.setVisibility(GONE);
         mTextSpanMenu.setVisibility(GONE);
         mBtSaveButton.setVisibility(View.VISIBLE);
@@ -448,11 +431,6 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
     ////////////////////////////////////////////////////////////////////////////////////
 
 
-    private int currentFocusingPosition;
-    private SmartEditText currentEditText;
-    private ComponentViewHolder currentFocusingViewHolder;
-
-    private Boolean isViewHolderFocused = false;
 
 
     private class RecyclerViewTouchItemHelper implements RecyclerView.OnItemTouchListener {
@@ -466,43 +444,39 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
 
                 if (clickedView == null) {
                     //빈 공간을 클릭한 경우 / 혹은 그 이외의 케이스
-                    //TODO : editText의 경우 현재 구간을 선택 중인가? 체크
                     isViewHolderFocused = false;
-                    if (currentFocusingViewHolder != null) {
-                        currentFocusingViewHolder.dismissHighlight();
-                        currentFocusingViewHolder = null;
-                    }
+
+                    getCurrentFocus().clearFocus();
+
+
+                    mAdapter.clearFocus();
                     hideSoftKeyboard();
                     hideComponentOption();
                     return false;
                 }
 
                 clickedViewholder = (ComponentViewHolder) mEditorRecyclerView.getChildViewHolder(clickedView);
+                int componentType = clickedViewholder.getItemViewType();
 
                 ///////////////////////////
                 if (isViewHolderFocused) {
                     //자기 자신
-                    if (currentFocusingViewHolder == clickedViewholder) {
+                    if (mAdapter.getFocusPosition() == clickedViewholder.getAdapterPosition()) {
                         doNothing();
                     } else {
                         //타 객체
-                        if (currentFocusingViewHolder != null) {
-                            currentFocusingViewHolder.dismissHighlight();
-                            currentFocusingViewHolder = clickedViewholder;
-                            currentFocusingViewHolder.showHighlight();
-                            currentFocusingPosition = mEditorRecyclerView.getChildAdapterPosition(clickedView);
-                            hideComponentOption();
-                            hideSoftKeyboard();
-                            showComponentOption(currentFocusingViewHolder.getItemViewType());
-                        }
+                        getCurrentFocus().clearFocus();
+                        mAdapter.setFocus(clickedViewholder.getAdapterPosition());
+                        hideComponentOption();
+                        showComponentOption(componentType);
+                        hideSoftKeyboard();
                         return false;
                     }
                 } else {
                     isViewHolderFocused = true;
-                    currentFocusingPosition = mEditorRecyclerView.getChildAdapterPosition(clickedView);
-                    currentFocusingViewHolder = clickedViewholder;
-                    currentFocusingViewHolder.showHighlight();
-                    showComponentOption(currentFocusingViewHolder.getItemViewType());
+                    mAdapter.setFocus(clickedViewholder.getAdapterPosition());
+                    showComponentOption(componentType);
+                    inputMethodManager.toggleSoftInput(1, 0);
                     return false;
                 }
             }
@@ -521,40 +495,40 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
     }
 
 
-    public void detectSpans(int styleType) {
-        mBtItalic.setText("I(X)");
-        mBtBold.setText("B(X)");
-        mBtUnderline.setText("U(X)");
+        public void initSpanOption(int styleType) {
+            mBtItalic.setText("I(X)");
+            mBtBold.setText("B(X)");
+            mBtUnderline.setText("U(X)");
 
 
-        //Typeface.BOLD = 1 ~ 2;
-        //Typeface.ITALIC = 2 ~ 4;
-        //Typeface_Underline = 3 ~ 8;
+            //Typeface.BOLD = 1 ~ 2;
+            //Typeface.ITALIC = 2 ~ 4;
+            //TYPE_UNDERLINE = 3 ~ 8;
 
-        for (int i = 1; i <= 3; i++) {
-            int isChecked = styleType & (1 << i);
-            if ((isChecked & (1 << Typeface.BOLD)) != 0) {
-                mBtBold.setText("B(O)");
-                continue;
+            for (int i = 1; i <= 3; i++) {
+                int isChecked = styleType & (1 << i);
+                if ((isChecked & (1 << Typeface.BOLD)) != 0) {
+                    mBtBold.setText("B(O)");
+                    continue;
 
-            } else if ((isChecked & (1 << Typeface.ITALIC)) != 0) {
-                mBtItalic.setText("I(O)");
-                continue;
-            } else if ((isChecked & (1 << Typeface_Underline)) != 0) {
-                mBtUnderline.setText("U(O)");
-                continue;
+                } else if ((isChecked & (1 << Typeface.ITALIC)) != 0) {
+                    mBtItalic.setText("I(O)");
+                    continue;
+                } else if ((isChecked & (1 << TYPE_UNDERLINE)) != 0) {
+                    mBtUnderline.setText("U(O)");
+                    continue;
+                }
             }
         }
-    }
 
-    private void hideSoftKeyboard() {
-        if (inputMethodManager.isAcceptingText()) {
-            inputMethodManager.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), 0);
+        private void hideSoftKeyboard() {
+            if (inputMethodManager.isAcceptingText()) {
+                inputMethodManager.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), 0);
 
+            }
+        }
+
+        private void doNothing() {
+            return;
         }
     }
-
-    private void doNothing() {
-        return;
-    }
-}
