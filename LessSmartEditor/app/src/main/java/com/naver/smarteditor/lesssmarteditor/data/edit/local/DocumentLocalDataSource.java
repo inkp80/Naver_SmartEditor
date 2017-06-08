@@ -44,7 +44,6 @@ public class DocumentLocalDataSource implements DocumentDataSource.DocumentLocal
 
     @Override
     public void updateDocumentData(List<BaseComponent> documentData, DocumentDataSource.DatabaseUpdateCallback databaseUpdateCallback) {
-        LogController.makeLog(TAG, String.valueOf(currentDocumentId), localLogPermission);
         if (currentDocumentId == NEW_DOCUMENT) {
             if (databaseUpdateCallback != null) {
                 try {
@@ -100,7 +99,6 @@ public class DocumentLocalDataSource implements DocumentDataSource.DocumentLocal
         String title = ((TitleComponent) components.get(TITLE_COMPONENT)).getTitle();
 
         String jsonStr = new Gson().toJson(components);
-        LogController.makeLog("save into local", jsonStr, true);
 
 
         String query = "INSERT INTO " + EditorContract.ComponentEntry.TABLE_NAME + "(" + EditorContract.ComponentEntry.COLUMN_TITLE + "," + EditorContract.ComponentEntry.COLUMN_TIMESTAMP +

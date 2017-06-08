@@ -7,14 +7,11 @@ import android.view.ViewGroup;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.naver.smarteditor.lesssmarteditor.LogController;
-import com.naver.smarteditor.lesssmarteditor.adpater.basic.holder.BasicViewHolder;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.holder.ComponentViewHolder;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.holder.TextComponentViewHolder;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.holder.TitleComponentViewHolder;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.holder.ViewHolderFactory;
 import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
-import com.naver.smarteditor.lesssmarteditor.data.component.TextComponent;
-import com.naver.smarteditor.lesssmarteditor.data.component.TitleComponent;
 import com.naver.smarteditor.lesssmarteditor.listener.OnEditTextComponentChangeListener;
 import com.naver.smarteditor.lesssmarteditor.listener.TextCursorListener;
 
@@ -62,8 +59,8 @@ public class EditComponentAdapter extends RecyclerView.Adapter<ComponentViewHold
 
     @Override
     public void requestTextFocus(int componentPosition) {
-        focusingCompPosition = mComponents.size()-1;
-        notifyDataChange();
+//        focusingCompPosition = mComponents.size()-1;
+//        notifyDataChange();
     }
 
     @Override
@@ -77,12 +74,13 @@ public class EditComponentAdapter extends RecyclerView.Adapter<ComponentViewHold
         ComponentViewHolder newViewHolder = viewHolderFactory.createViewHolder(viewHolderType);
 
 
+        //TODO : 예외적인 경우... 처리 어떻게..?
         if(viewHolderType == BaseComponent.Type.TEXT){
             ((TextComponentViewHolder) newViewHolder).getEditText().setTextCursorListener(textCursorListener);
         } else if(viewHolderType == BaseComponent.Type.TITLE){
             ((TitleComponentViewHolder) newViewHolder).getEditText().setTextCursorListener(textCursorListener);
         }
-//        return viewHolderFactory.createViewHolder(viewHolderType);
+
         return newViewHolder;
     }
 
@@ -90,9 +88,9 @@ public class EditComponentAdapter extends RecyclerView.Adapter<ComponentViewHold
     public void onBindViewHolder(ComponentViewHolder holder, int position) {
         //TODO: 관련 없는 애들도 계속 배경을 그리고 있음
         holder.bindView(mComponents.get(position));
-        if(position == focusingCompPosition){
-            ((TextComponentViewHolder)holder).getEditText().requestFocus();
-        }
+//        if(position == focusingCompPosition){
+//            ((TextComponentViewHolder)holder).getEditText().requestFocus();
+//        }
 //        if(position == mFocusingComponentPostion){
 //            holder.showHighlight();
 //        } else {
@@ -121,24 +119,19 @@ public class EditComponentAdapter extends RecyclerView.Adapter<ComponentViewHold
     @Override
     public void initDocmentComponents(List<BaseComponent> components) {
         mComponents = new ArrayList<>(components);
-
-
-
-
-        LogController.makeLog("Adapter init size", String.valueOf(mComponents.size()), true);
-        for(int i=0; i<components.size(); i++){
-            BaseComponent.Type type = components.get(i).getComponentType();
-            switch (type){
-                case TITLE:
-                    LogController.makeLog("init ", ((TitleComponent)mComponents.get(i)).getTitle(), true);
-                    break;
-                case TEXT:
-                    LogController.makeLog("init ", ((TextComponent)mComponents.get(i)).getText(), true);
-                    break;
-                default:
-                    break;
-            }
-        }
+//        for(int i=0; i<components.size(); i++){
+//            BaseComponent.Type type = components.get(i).getComponentType();
+//            switch (type){
+//                case TITLE:
+//                    LogController.makeLog("init ", ((TitleComponent)mComponents.get(i)).getTitle(), true);
+//                    break;
+//                case TEXT:
+//                    LogController.makeLog("init ", ((TextComponent)mComponents.get(i)).getText(), true);
+//                    break;
+//                default:
+//                    break;
+//            }
+//        }
     }
 
 

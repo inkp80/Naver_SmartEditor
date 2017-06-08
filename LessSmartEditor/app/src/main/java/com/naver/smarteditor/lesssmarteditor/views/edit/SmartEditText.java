@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
+import com.naver.smarteditor.lesssmarteditor.data.SpanInfo;
 import com.naver.smarteditor.lesssmarteditor.listener.TextCursorListener;
 
 /**
@@ -196,7 +197,7 @@ public class SmartEditText extends EditText {
         private boolean itlic = false;
         private boolean underline = false;
 
-        private <T> boolean getStyleState(Class typeClass, int typeValue){
+        private <T extends SpanInfo> boolean getStyleState(Class typeClass, int typeValue){
             if(typeClass == StyleSpan.class){
                 switch (typeValue){
                     case Typeface.BOLD:

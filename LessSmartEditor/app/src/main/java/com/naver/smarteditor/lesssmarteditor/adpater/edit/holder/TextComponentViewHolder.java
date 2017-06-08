@@ -1,11 +1,14 @@
 package com.naver.smarteditor.lesssmarteditor.adpater.edit.holder;
 
+import android.graphics.Paint;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.Spannable;
 import android.text.TextWatcher;
 import android.view.View;
 
 import com.google.gson.Gson;
+import com.naver.smarteditor.lesssmarteditor.LogController;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.util.SpanInfoExtractor;
 import com.naver.smarteditor.lesssmarteditor.data.SpanInfo;
 import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
@@ -26,14 +29,13 @@ public class TextComponentViewHolder extends ComponentViewHolder {
     public boolean focused = false;
 
     private SmartEditText et;
-    private final OnEditTextComponentChangeListener onEditTextComponentChangeListener;
     private TextWatcher textWatcher;
 
     public TextComponentViewHolder(final View itemView, final OnEditTextComponentChangeListener onEditTextComponentChangeListener) {
         super(itemView);
         this.et = (SmartEditText) itemView;
 
-        this.onEditTextComponentChangeListener = onEditTextComponentChangeListener;
+        et.setPaintFlags(et.getPaintFlags() & (~ Paint.UNDERLINE_TEXT_FLAG));
         et.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -71,9 +73,7 @@ public class TextComponentViewHolder extends ComponentViewHolder {
 
             @Override
             public void afterTextChanged(Editable s) {
-//                Log.d("afterText", str);
 //                onEditTextComponentChangeListener.onEditTextComponentTextChange(new TextComponent(s.toString(), SpanInfoExtractor.extractSpansFromSpannable(s)), getAdapterPosition());
-//                LogController.makeLog("TextWatcher", "Editable S : " + s.toString() + ", editText : " + et.getText().toString(), true);
             }
         });
 
@@ -88,15 +88,29 @@ public class TextComponentViewHolder extends ComponentViewHolder {
     @Override
     public void bindView(BaseComponent baseComponent) {
         TextComponent textData = (TextComponent)baseComponent;
-        List<SpanInfo> spanInfoList = SpanInfoExtractor.spanJsonDeserializer(textData.getTextSpans());
         this.removeWatcher();
         this.setText(textData.getText());
-        SpanInfoExtractor.setSpansIntoSpannable(spanInfoList, this.et);
+
+        if(textData.getTextSpans() != null || textData.getText().length() != 0) {
+            LogController.makeLog("bindview:TEXT", textData.getTextSpans().toString(), true);
+            List<SpanInfo> spanInfoList = SpanInfoExtractor.spanJsonDeserializer(textData.getTextSpans());
+            SpanInfoExtractor.setSpansIntoSpannable(spanInfoList, this.et);
+        }
         this.bindTextWathcer();
     }
 
     public SmartEditText getEditText(){
         return et;
+    }
+
+    @Override
+    public void showHighlight() {
+        return;
+    }
+
+    @Override
+    public void dismissHighlight() {
+        return;
     }
 }
 

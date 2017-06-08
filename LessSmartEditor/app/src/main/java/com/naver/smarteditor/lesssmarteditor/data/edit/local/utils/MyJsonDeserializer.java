@@ -32,17 +32,19 @@ public class MyJsonDeserializer implements JsonDeserializer<BaseComponent> {
         BaseComponent typeModel = null;
 
         if ("TEXT".equals(type)) {
-            LogController.makeLog("Deserializer type", "TEXT", true);
+
             typeModel = new TextComponent(null, "");
             JsonElement json_text = jsonObject.get("text");
+            JsonElement json_textSpans = jsonObject.get("textSpans");
             ((TextComponent) typeModel).setText(json_text.getAsString());
+            ((TextComponent) typeModel).setTextSpans(json_textSpans.getAsString());
 
         } else if ("IMG".equals(type)) {
+
             JsonElement imgUri = jsonObject.get("imgUri");
             typeModel = new ImgComponent(imgUri.getAsString());
 
         } else if ("MAP".equals(type)) {
-            LogController.makeLog("Deserializer type", "Map", true);
 
             JsonElement placeName = jsonObject.get("placeName");
             JsonElement placeAddress = jsonObject.get("placeAddress");
@@ -51,7 +53,6 @@ public class MyJsonDeserializer implements JsonDeserializer<BaseComponent> {
             typeModel = new MapComponent(placeName.getAsString(), placeAddress.getAsString(), placeCoords.getAsString(), placeMapImgUri.getAsString());
 
         } else if ("TITLE".equals(type)){
-            LogController.makeLog("Deserializer type", "Title", true);
 
             JsonElement title = jsonObject.get("title");
             JsonElement titleBackgroundUri = jsonObject.get("titleBackgroundUri");

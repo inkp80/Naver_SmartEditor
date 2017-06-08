@@ -117,13 +117,16 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         ButterKnife.bind(this);
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
+        );
         inputMethodManager = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
 
         mAdapter = new EditComponentAdapter(this);
         mAdapter.setTextCursorChangeListener(new TextCursorListener() {
-              @Override
+            @Override
             public void showSelectedTypes(int styleType) {
-                checkSelectedType(styleType);
+                detectSpans(styleType);
             }
         });
 
@@ -139,11 +142,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         setTitleLengthLimit(30);
 
         initComponentOption();
-
-        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
     }
-
 
     @Override
     public void onDestroy() {
@@ -232,7 +231,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
             @Override
             public void onClick(View v) {
                 //ADD TEXT COMPONENT TO EDITOR
-                mPresenter.addComponentToDocument(new TextComponent("", ""));
+                mPresenter.addComponentToDocument(new TextComponent("", null));
                 mSelectComponentDialog.dismiss();
             }
         };
@@ -346,6 +345,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
     @Override
     public void onBackPressed() {
         if (System.currentTimeMillis() > backKeyTime + 2000) {
+            hideSoftKeyboard();
             if (currentFocusingViewHolder != null) {
                 currentFocusingViewHolder.dismissHighlight();
                 currentFocusingViewHolder = null;
@@ -396,7 +396,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
             @Override
             public void onClick(View v) {
                 currentEditText.editSpannable(StyleSpan.class, Typeface.BOLD);
-                checkSelectedType(currentEditText.getSelectedSpanValue());
+                detectSpans(currentEditText.getSelectedSpanValue());
             }
         });
 
@@ -404,7 +404,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
             @Override
             public void onClick(View v) {
                 currentEditText.editSpannable(StyleSpan.class, Typeface.ITALIC);
-                checkSelectedType(currentEditText.getSelectedSpanValue());
+                detectSpans(currentEditText.getSelectedSpanValue());
             }
         });
 
@@ -412,7 +412,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
             @Override
             public void onClick(View v) {
                 currentEditText.editSpannable(UnderlineSpan.class, Typeface_Underline);
-                checkSelectedType(currentEditText.getSelectedSpanValue());
+                detectSpans(currentEditText.getSelectedSpanValue());
             }
         });
     }
@@ -433,6 +433,9 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
 
 
     private void hideComponentOption() {
+        if(currentEditText != null)
+            currentEditText.clearFocus();
+
         mImgMapComponentMenu.setVisibility(GONE);
         mTextSpanMenu.setVisibility(GONE);
         mBtSaveButton.setVisibility(View.VISIBLE);
@@ -465,12 +468,16 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
                     //빈 공간을 클릭한 경우 / 혹은 그 이외의 케이스
                     //TODO : editText의 경우 현재 구간을 선택 중인가? 체크
                     isViewHolderFocused = false;
+                    if (currentFocusingViewHolder != null) {
+                        currentFocusingViewHolder.dismissHighlight();
+                        currentFocusingViewHolder = null;
+                    }
                     hideSoftKeyboard();
                     hideComponentOption();
                     return false;
-                } else {
-                    clickedViewholder = (ComponentViewHolder) mEditorRecyclerView.getChildViewHolder(clickedView);
                 }
+
+                clickedViewholder = (ComponentViewHolder) mEditorRecyclerView.getChildViewHolder(clickedView);
 
                 ///////////////////////////
                 if (isViewHolderFocused) {
@@ -479,62 +486,28 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
                         doNothing();
                     } else {
                         //타 객체
-                        hideSoftKeyboard();
-                        isViewHolderFocused = false;
-                        hideComponentOption();
+                        if (currentFocusingViewHolder != null) {
+                            currentFocusingViewHolder.dismissHighlight();
+                            currentFocusingViewHolder = clickedViewholder;
+                            currentFocusingViewHolder.showHighlight();
+                            currentFocusingPosition = mEditorRecyclerView.getChildAdapterPosition(clickedView);
+                            hideComponentOption();
+                            hideSoftKeyboard();
+                            showComponentOption(currentFocusingViewHolder.getItemViewType());
+                        }
                         return false;
                     }
                 } else {
                     isViewHolderFocused = true;
                     currentFocusingPosition = mEditorRecyclerView.getChildAdapterPosition(clickedView);
                     currentFocusingViewHolder = clickedViewholder;
+                    currentFocusingViewHolder.showHighlight();
                     showComponentOption(currentFocusingViewHolder.getItemViewType());
                     return false;
                 }
             }
             return false;
         }
-
-//            {
-//            View v = mEditorRecyclerView.findChildViewUnder(event.getX(), event.getY());
-//            if (v == null) {
-//                if (currentFocusingViewHolder != null) {
-//                    currentFocusingViewHolder.dismissHighlight();
-//                    currentFocusingViewHolder = null;
-//                }
-//                if (inputMethodManager.isAcceptingText()) {
-//                    inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-//                }
-//                hideComponentOption();
-//                return false;
-//            }
-//
-//            ComponentViewHolder temp = (ComponentViewHolder) mEditorRecyclerView.getChildViewHolder(v);
-//
-//            if (temp == currentFocusingViewHolder) {
-//                return false;
-//            }
-//            if (inputMethodManager.isAcceptingText()) {
-//                inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-//            }
-//
-//            if (currentFocusingViewHolder != null) {
-//                currentFocusingViewHolder.dismissHighlight();
-//                currentFocusingViewHolder = null;
-//                hideComponentOption();
-//                return false;
-//            }
-//
-//            currentFocusingViewHolder = temp;
-//            currentFocusingViewHolder.showHighlight();
-//
-//
-//            currentFucusingPosition = mEditorRecyclerView.getChildAdapterPosition(v);
-//            BaseComponent.Type type = BaseComponent.getType(mAdapter.getItemViewType(currentFucusingPosition));
-//            showComponentOption(type);
-//        }
-//            return false;
-//    }
 
         @Override
         public void onTouchEvent(RecyclerView rv, MotionEvent e) {
@@ -548,7 +521,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
     }
 
 
-    public void checkSelectedType(int styleType) {
+    public void detectSpans(int styleType) {
         mBtItalic.setText("I(X)");
         mBtBold.setText("B(X)");
         mBtUnderline.setText("U(X)");
@@ -576,11 +549,12 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
 
     private void hideSoftKeyboard() {
         if (inputMethodManager.isAcceptingText()) {
-            inputMethodManager.hideSoftInputFromInputMethod(getCurrentFocus().getWindowToken(), 0);
+            inputMethodManager.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), 0);
+
         }
     }
 
-    private boolean doNothing() {
-        return false;
+    private void doNothing() {
+        return;
     }
 }

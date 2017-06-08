@@ -50,6 +50,7 @@ public class DocumentRepository implements DocumentDataSource.Repository{
 
     @Override
     public void updateDocument(DocumentDataSource.DatabaseUpdateCallback databaseUpdateCallback) {
+        LogController.makeLog(TAG, "updateDoc", localLogPermission);
         mEditComponentLocalDataSource.updateDocumentData(getCurrentDocumentComponents(), databaseUpdateCallback);
     }
 
@@ -71,7 +72,6 @@ public class DocumentRepository implements DocumentDataSource.Repository{
 
     @Override
     public void getDocumentById(final int documentId, final DocumentDataSource.DatabaseReadCallback databaseReadCallback) {
-        LogController.makeLog(TAG, "getDocByID" + documentId, true);
         mEditComponentLocalDataSource.readDocumentData(new DocumentDataSource.DatabaseReadCallback(){
 
             @Override
@@ -82,7 +82,6 @@ public class DocumentRepository implements DocumentDataSource.Repository{
                         foundDocs.add(document);
                     }
                 }
-                LogController.makeLog("repository", String.valueOf(foundDocs.size()), true);
                 Document targetDoc = foundDocs.get(0);
 
                 mDocumentModel.initDocumentComponents(getComponentsFromDocument(targetDoc));
@@ -167,7 +166,7 @@ public class DocumentRepository implements DocumentDataSource.Repository{
                 gson.fromJson(object.toString(), BaseComponent.class);
                 components.add(gson.fromJson(object.toString(), BaseComponent.class));
             } catch (Exception e) {
-                LogController.makeLog(TAG, "FAIL : load components from json, " + e, localLogPermission);
+                LogController.makeLog(TAG, "ERROR : load components from json, " + e, localLogPermission);
             }
         }
         LogController.makeLog(TAG, String.valueOf(components.size()), localLogPermission);

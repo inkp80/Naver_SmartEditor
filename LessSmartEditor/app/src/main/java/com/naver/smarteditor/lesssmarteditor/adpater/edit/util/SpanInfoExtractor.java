@@ -43,6 +43,7 @@ public class SpanInfoExtractor {
     }
 
     public static List<SpanInfo> spanJsonDeserializer(String json){
+        LogController.makeLog("spanJsonDeserializer", json, true);
         //TODO json deserializer
         JSONArray jsonArray = null;
         try {
@@ -50,6 +51,7 @@ public class SpanInfoExtractor {
         } catch (Exception e){
             LogController.makeLog("EEER", "JSON Error : string to json-array", true);
         }
+
 
         List<SpanInfo> spans = new ArrayList<>();
         GsonBuilder gsonBuilder = new GsonBuilder();
@@ -79,8 +81,10 @@ public class SpanInfoExtractor {
         }
 
     }
-
-    public String spansToJson()
+//
+//    public String spansToJson(){
+//
+//    }
 
     public static <T> Class ClassSetter(int type){
         if(type == 1){
