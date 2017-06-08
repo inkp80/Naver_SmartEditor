@@ -12,25 +12,20 @@ import java.util.List;
 
 public interface DocumentDataSource {
 
-    interface LoadComponentCallBack{
-        void OnComponentLoaded(List<BaseComponent> components);
-    }
-
-    interface LoadFromDatabaseCallBack{
-        void OnLoadFinished(List<Document> data);
-    }
-
     interface DatabaseUpdateCallback {
+
         void OnSuccess();
         void OnFail();
     }
 
     interface DatabaseReadCallback {
+
         void OnSuccess(List<Document> document);
         void OnFail();
     }
 
     interface DatabaseDeleteCallback{
+
         void OnSuccess();
         void OnFail();
     }
@@ -48,7 +43,6 @@ public interface DocumentDataSource {
 
         void clearDocumentComponents();
 
-        void convertParcelToComponents(DocumentParcelable documentParcelable);
 
         void swapDocumentComponent(int from, int to);
 
@@ -70,17 +64,22 @@ public interface DocumentDataSource {
     }
 
     interface Repository{
+
         void addComponent(BaseComponent component);
+
         void updateComponent(BaseComponent baseComponent, int position);
+
         void deleteComponent(int position);
-        void initComponent(List<BaseComponent> components);
+
         void swapComponent(int fromPosition, int toPosition);
+
         void clearComponent();
 
 
         void updateDocument(DatabaseUpdateCallback databaseUpdateCallback);
+
         void deleteDocument(DatabaseUpdateCallback databaseUpdateCallback);
-        void createDocument(DatabaseUpdateCallback databaseUpdateCallback);
+
         void getDocumentLists(DatabaseReadCallback databaseReadCallback);
 
         void getDocumentById(int documentId, DatabaseReadCallback databaseReadCallback);

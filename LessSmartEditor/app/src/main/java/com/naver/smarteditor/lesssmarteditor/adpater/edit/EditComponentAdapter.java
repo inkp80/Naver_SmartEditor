@@ -36,7 +36,7 @@ public class EditComponentAdapter extends RecyclerView.Adapter<ComponentViewHold
     private OnEditTextComponentChangeListener onEditTextComponentChangeListener;
     private TextCursorListener textCursorListener;
 
-    private int mFocusingComponentPostion = -1;
+    private int mFocusingPosition = -1;
 
 
     public EditComponentAdapter(Context context) {
@@ -52,10 +52,6 @@ public class EditComponentAdapter extends RecyclerView.Adapter<ComponentViewHold
 
 
     @Override
-    public void requestTextFocus(int componentPosition) {
-    }
-
-    @Override
     public ComponentViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         //TODO : viewHolderFactory 메모리 누수?
         viewHolderFactory = new ViewHolderFactory(mContext, glideImaRequestor, onEditTextComponentChangeListener, textCursorListener);
@@ -68,7 +64,7 @@ public class EditComponentAdapter extends RecyclerView.Adapter<ComponentViewHold
     public void onBindViewHolder(ComponentViewHolder holder, int position) {
         //TODO: 관련 없는 애들도 계속 배경을 그리고 있음
         holder.bindView(mComponents.get(position));
-        holder.initFocusing(mFocusingComponentPostion);
+        holder.initFocusing(mFocusingPosition);
     }
 
     @Override
@@ -92,19 +88,6 @@ public class EditComponentAdapter extends RecyclerView.Adapter<ComponentViewHold
     @Override
     public void initDocmentComponents(List<BaseComponent> components) {
         mComponents = new ArrayList<>(components);
-//        for(int i=0; i<components.size(); i++){
-//            BaseComponent.Type type = components.get(i).getComponentType();
-//            switch (type){
-//                case TITLE:
-//                    LogController.makeLog("init ", ((TitleComponent)mComponents.get(i)).getTitle(), true);
-//                    break;
-//                case TEXT:
-//                    LogController.makeLog("init ", ((TextComponent)mComponents.get(i)).getText(), true);
-//                    break;
-//                default:
-//                    break;
-//            }
-//        }
     }
 
 
@@ -147,17 +130,17 @@ public class EditComponentAdapter extends RecyclerView.Adapter<ComponentViewHold
     }
 
     public void clearFocus(){
-        mFocusingComponentPostion = -1;
-        notifyDataChange();
+        mFocusingPosition = -1;
+//        notifyDataChange();
     }
 
-    public void setFocus(int position){
-        mFocusingComponentPostion = position;
-        notifyDataChange();
+    public void setFocusingPosition(int position){
+        mFocusingPosition = position;
+//        notifyDataChange();
     }
 
-    public int getFocusPosition() {
-        return mFocusingComponentPostion;
+    public int getFocusingPosition() {
+        return mFocusingPosition;
     }
 
 }

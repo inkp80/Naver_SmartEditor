@@ -67,6 +67,7 @@ public class ViewHolderFactory {
             case TEXT:
                 SmartEditText editTextItemView = new SmartEditText(mContext);
                 editTextItemView.setLayoutParams(lp);
+//                editTextItemView.requestFocus();
                 return editTextItemView;
             case IMG:
                 ImageView imageItemView = new ImageView(mContext);

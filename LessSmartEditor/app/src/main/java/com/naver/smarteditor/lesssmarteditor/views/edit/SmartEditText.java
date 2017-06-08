@@ -59,6 +59,8 @@ public class SmartEditText extends EditText {
         StyleSpan typeSpan[];
         typeSpan = spannable.getSpans(selStart, selEnd, StyleSpan.class);
         for (StyleSpan span : typeSpan) {
+            if(selEnd == spannable.getSpanStart(span))
+                continue;
             spannableState |= (1 << span.getStyle());
             statusManager.setStyleState(span.getStyle(), true);
         }
@@ -67,6 +69,8 @@ public class SmartEditText extends EditText {
         UnderlineCustom underlineCustoms[];
         underlineCustoms = spannable.getSpans(selStart, selEnd, UnderlineCustom.class);
         for(UnderlineCustom underlineCustom : underlineCustoms){
+            if(selEnd == spannable.getSpanStart(underlineCustom))
+                continue;
             spannableState |= (1 << TYPE_UNDERLINE);
             statusManager.setStyleState(TYPE_UNDERLINE, true);
             break;

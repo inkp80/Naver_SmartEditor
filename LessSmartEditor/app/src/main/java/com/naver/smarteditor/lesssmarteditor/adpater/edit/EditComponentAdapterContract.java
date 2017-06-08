@@ -19,8 +19,6 @@ public interface EditComponentAdapterContract {
         void swapDocumentComponent(int fromPosition, int toPosition);
 
         void setOnEditTextComponentChangeListener(OnEditTextComponentChangeListener onEditTextComponentChangeListener);
-
-        void requestTextFocus(int componentPosition);
     }
 
     interface Model extends BaseAdapterContract.Model {

@@ -3,12 +3,14 @@ package com.naver.smarteditor.lesssmarteditor.data.edit.local;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.google.gson.Gson;
 
 import com.naver.smarteditor.lesssmarteditor.LogController;
 import com.naver.smarteditor.lesssmarteditor.data.Document;
 import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
+import com.naver.smarteditor.lesssmarteditor.data.component.TextComponent;
 import com.naver.smarteditor.lesssmarteditor.data.component.TitleComponent;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.utils.EditorContract;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.utils.EditorDbHelper;
@@ -18,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+
+import static com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent.Type.TEXT;
 
 /**
  * Created by NAVER on 2017. 5. 21..
@@ -33,10 +37,8 @@ public class DocumentLocalDataSource implements DocumentDataSource.DocumentLocal
     private final int NEW_DOCUMENT = -1;
     private int currentDocumentId = NEW_DOCUMENT;
 
-    List<BaseComponent> mComponents;
 
     public DocumentLocalDataSource(Context context) {
-        mComponents = new ArrayList<>();
         mDbHelper = new EditorDbHelper(context);
         db = mDbHelper.getWritableDatabase();
     }
@@ -47,6 +49,13 @@ public class DocumentLocalDataSource implements DocumentDataSource.DocumentLocal
         if (currentDocumentId == NEW_DOCUMENT) {
             if (databaseUpdateCallback != null) {
                 try {
+                    if(((TitleComponent)documentData.get(0)).getTitle().length() == 0 ){
+                        ((TitleComponent)documentData.get(0)).setTitle("제목 없음");
+                    }
+                    if(!checkDocumentComponentValidate(documentData)){
+                        databaseUpdateCallback.OnFail();
+                        return;
+                    }
                     insertLocalDatabase(documentData);
                     databaseUpdateCallback.OnSuccess();
                 } catch (Exception e){
@@ -65,6 +74,36 @@ public class DocumentLocalDataSource implements DocumentDataSource.DocumentLocal
             }
         }
     }
+
+    private boolean checkDocumentComponentValidate(List<BaseComponent> mComponents){
+        List<BaseComponent> components = new ArrayList<>();
+        for(BaseComponent baseComponent : mComponents){
+            BaseComponent.Type type = baseComponent.getComponentType();
+            switch(type){
+                case TEXT:
+                    TextComponent thisTexComponent = (TextComponent) baseComponent;
+                    if(thisTexComponent.getText().length() == 0){
+                        break;
+                    }
+                    components.add(baseComponent);
+                    break;
+                case IMG:
+                    components.add(baseComponent);
+                    break;
+                case MAP:
+                    components.add(baseComponent);
+                    break;
+                default:
+                    break;
+            }
+        }
+        if(components.size() == 0){
+            return false;
+        } else {
+            return true;
+        }
+    }
+
 
     @Override
     public void deleteDocumentData(int documentId, DocumentDataSource.DatabaseUpdateCallback databaseUpdateCallback) {
@@ -125,6 +164,27 @@ public class DocumentLocalDataSource implements DocumentDataSource.DocumentLocal
 
         Cursor cursor = db.rawQuery(querySelete, null);
         return converCursorToList(cursor);
+    }
+
+    public void findDocumentById(int documentId, DocumentDataSource.DatabaseReadCallback databaseReadCallback){
+        String querySelect = "SELECT * " +
+                "FROM " + EditorContract.ComponentEntry.TABLE_NAME
+                + " where _id = '" + String.valueOf(documentId) + "'";
+        Cursor cursor = null;
+        try {
+            cursor = db.rawQuery(querySelect, null);
+        } catch (Exception e){
+            LogController.makeLog(TAG, "ERROR : Database read" + e, localLogPermission);
+        }
+
+        if(databaseReadCallback!=null){
+            if(cursor != null) {
+                databaseReadCallback.OnSuccess(converCursorToList(cursor));
+                currentDocumentId = documentId;
+            } else {
+                databaseReadCallback.OnFail();
+            }
+        }
     }
 
     private void deleteDocument(int docId) {

@@ -1,6 +1,8 @@
 package com.naver.smarteditor.lesssmarteditor.adpater.edit.util;
 
+import android.app.Application;
 import android.text.Spannable;
+import android.text.Spanned;
 import android.text.style.StyleSpan;
 import android.util.Log;
 
@@ -67,11 +69,15 @@ public class SpanInfoExtractor {
 
             }
         }
+
+        Log.d("Spannable deserializer", json);
         return spans;
     }
 
     public static <T> void setSpansIntoSpannable(List<SpanInfo> spanInfoLists, SmartEditText target){
         Spannable spannable = target.getText();
+
+        Log.d("values", String.valueOf(spanInfoLists));
 
         for(int i=0; i<spanInfoLists.size(); i++){
             int typeValue = spanInfoLists.get(i).getSpanType();
@@ -79,8 +85,7 @@ public class SpanInfoExtractor {
             int spanEnd = spanInfoLists.get(i).getSpanEnd();
             SpanClassGenerator<T> spanClassGenerator = new SpanClassGenerator<>(ClassSetter(typeValue));
 
-            Log.d("sadasd",String.valueOf(spanClassGenerator));
-            spannable.setSpan(spanClassGenerator.get(typeValue), spanStart, spanEnd, typeValue);
+            spannable.setSpan(spanClassGenerator.get(typeValue), spanStart, spanEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
 
     }

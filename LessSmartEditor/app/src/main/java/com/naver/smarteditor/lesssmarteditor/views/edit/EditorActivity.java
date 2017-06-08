@@ -13,6 +13,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.style.StyleSpan;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -26,7 +27,6 @@ import com.naver.smarteditor.lesssmarteditor.R;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.EditComponentAdapter;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.holder.ComponentViewHolder;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.holder.TextComponentViewHolder;
-import com.naver.smarteditor.lesssmarteditor.adpater.edit.holder.TitleComponentViewHolder;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.util.ComponentTouchEventListener;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.util.ComponentTouchItemHelperCallback;
 import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
@@ -38,7 +38,6 @@ import com.naver.smarteditor.lesssmarteditor.data.component.TitleComponent;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.DocumentRepository;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.UnderlineCustom;
 import com.naver.smarteditor.lesssmarteditor.listener.OnEditTextComponentChangeListener;
-import com.naver.smarteditor.lesssmarteditor.listener.OnSelectChangeListener;
 import com.naver.smarteditor.lesssmarteditor.listener.TextCursorListener;
 import com.naver.smarteditor.lesssmarteditor.views.edit.dialog.SelectComponentDialog;
 import com.naver.smarteditor.lesssmarteditor.views.edit.presenter.EditContract;
@@ -51,6 +50,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static android.view.View.GONE;
+import static android.view.View.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.DOCUMENT_ID;
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.MAPINFO_PARCEL;
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.NO_TITLE_IMG;
@@ -286,6 +286,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
             @Override
             public void onClick(View v) {
                 getCurrentFocus().clearFocus();
+                mAdapter.clearFocus();
                 hideSoftKeyboard();
                 mSelectComponentDialog.show();
             }
@@ -372,7 +373,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
             @Override
             public void onClick(View v) {
                     //TODO : delete
-                    mPresenter.deleteComponentFromDocument(mAdapter.getFocusPosition());
+                    mPresenter.deleteComponentFromDocument(mAdapter.getFocusingPosition());
                     mAdapter.clearFocus();
                     hideComponentOption();
             }
@@ -411,8 +412,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
             mImgMapComponentMenu.setVisibility(View.VISIBLE);
             return;
         } else if(getType(type) == TEXT || getType(type) == TITLE){
-            View v = mEditorRecyclerView.getChildAt(mAdapter.getFocusPosition());
-            currentEditText = (SmartEditText) ((ComponentViewHolder) mEditorRecyclerView.getChildViewHolder(v)).getItemView();
+            currentEditText = (SmartEditText) componentViewHolder.getItemView();
             mTextSpanMenu.setVisibility(View.VISIBLE);
         }
     }
@@ -432,53 +432,76 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
 
 
 
+    private ComponentViewHolder componentViewHolder = null;
 
     private class RecyclerViewTouchItemHelper implements RecyclerView.OnItemTouchListener {
         //TODO : 이벤트 감지 외 많은 작업을 이 곳에서 수행하고 있음 - 역할 수정 필요
         @Override
         public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent event) {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                ComponentViewHolder clickedViewholder = null;
-                View clickedView = mEditorRecyclerView.findChildViewUnder(event.getX(), event.getY());
 
+                View view = mEditorRecyclerView.findChildViewUnder(event.getX(), event.getY());
 
-                if (clickedView == null) {
-                    //빈 공간을 클릭한 경우 / 혹은 그 이외의 케이스
-                    isViewHolderFocused = false;
-
+                if(view == null){
+                    Log.d("TYPE", "NULL");
                     getCurrentFocus().clearFocus();
-
+                    hideComponentOption();
+                    hideSoftKeyboard();
 
                     mAdapter.clearFocus();
-                    hideSoftKeyboard();
-                    hideComponentOption();
-                    return false;
-                }
-
-                clickedViewholder = (ComponentViewHolder) mEditorRecyclerView.getChildViewHolder(clickedView);
-                int componentType = clickedViewholder.getItemViewType();
-
-                ///////////////////////////
-                if (isViewHolderFocused) {
-                    //자기 자신
-                    if (mAdapter.getFocusPosition() == clickedViewholder.getAdapterPosition()) {
-                        doNothing();
-                    } else {
-                        //타 객체
-                        getCurrentFocus().clearFocus();
-                        mAdapter.setFocus(clickedViewholder.getAdapterPosition());
-                        hideComponentOption();
-                        showComponentOption(componentType);
-                        hideSoftKeyboard();
-                        return false;
+                    if(componentViewHolder != null) {
+                        componentViewHolder.removeMark();
+                        componentViewHolder = null;
                     }
-                } else {
-                    isViewHolderFocused = true;
-                    mAdapter.setFocus(clickedViewholder.getAdapterPosition());
-                    showComponentOption(componentType);
-                    inputMethodManager.toggleSoftInput(1, 0);
                     return false;
                 }
+
+                if(componentViewHolder != null){
+                    componentViewHolder.removeMark();
+                }
+                //ㅓㅎ엏너ㅓㄴㄴ횽ㄷㅎㅇㅎㅇㅇ
+                //ㅓㅎ엏너ㅓㄴㄴ횽ㄷㅎㅇㅎㅇㅇ \n ㅛㅇㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎ \n ㅛ용ㅎㅇㅎㅇㅎㅇㅎ옹ㅌ오올려 \n\n ㅛ올오오여로로ㅓ러ㅓ러로러러 \n\n ㅎ요여려려로ㅗㅗ로로로려료욘 \n
+                //
+
+                ComponentViewHolder clickedViewHolder = (ComponentViewHolder) mEditorRecyclerView.getChildViewHolder(view);
+                if(componentViewHolder == clickedViewHolder){
+                    doNothing();
+                    return false;
+                }
+                componentViewHolder = clickedViewHolder;
+                componentViewHolder.setMark();
+
+                int viewHolderType = clickedViewHolder.getItemViewType();
+                hideSoftKeyboard();
+
+                switch (getType(viewHolderType)){
+                    case TEXT:
+                        Log.d("TYPE", "TEXT" + mAdapter.getFocusingPosition());
+                        hideComponentOption();
+                        showComponentOption(viewHolderType);
+                        return false;
+                    case TITLE:
+                        Log.d("TYPE", "TITLE"+ mAdapter.getFocusingPosition());
+                        break;
+                    case MAP:
+                        hideComponentOption();
+                        showComponentOption(viewHolderType);
+                        Log.d("TYPE", "MAP"+ mAdapter.getFocusingPosition());
+                        break;
+                    case IMG:
+                        hideComponentOption();
+                        showComponentOption(viewHolderType);
+                        Log.d("TYPE", "IMG"+ mAdapter.getFocusingPosition());
+                        break;
+                    default:
+                        Log.d("ERR","RR"+ mAdapter.getFocusingPosition());
+                        break;
+                }
+                return false;
+
+
+
+
             }
             return false;
         }
@@ -524,7 +547,6 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         private void hideSoftKeyboard() {
             if (inputMethodManager.isAcceptingText()) {
                 inputMethodManager.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), 0);
-
             }
         }
 

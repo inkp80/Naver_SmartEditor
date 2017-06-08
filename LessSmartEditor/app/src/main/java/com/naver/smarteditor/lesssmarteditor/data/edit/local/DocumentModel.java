@@ -42,7 +42,6 @@ public class DocumentModel implements DocumentDataSource.LocalModel {
         LogController.makeLog(TAG, "updateDocument:"+String.valueOf(position), mLocalLogPermission);
         BaseComponent thisComponent = mComponents.get(position);
         thisComponent.updateData(baseComponent);
-//        mComponents.set(position, baseComponent);
     }
 
     @Override
@@ -58,26 +57,6 @@ public class DocumentModel implements DocumentDataSource.LocalModel {
     @Override
     public void initDocumentComponents(List<BaseComponent> components) {
         mComponents = components;
-
-//        LogController.makeLog("init size", String.valueOf(mComponents.size()), true);
-//        for(int i=0; i<components.size(); i++){
-//            BaseComponent.Type type = components.get(i).getComponentType();
-//            switch (type){
-//                case TITLE:
-//                    LogController.makeLog("init ", ((TitleComponent)mComponents.get(i)).getTitle(), true);
-//                    break;
-//                case TEXT:
-//                    LogController.makeLog("init ", ((TextComponent)mComponents.get(i)).getText(), true);
-//                    break;
-//                default:
-//                    break;
-//            }
-//        }
-    }
-
-    @Override
-    public void convertParcelToComponents(DocumentParcelable documentParcelable) {
-        //do Json things
 
     }
 

@@ -31,7 +31,6 @@ public class DocumentRepository implements DocumentDataSource.Repository{
     private DocumentModel mDocumentModel;
 
 
-    ///////////
     private DocumentRepository(Context mContext){
         mEditComponentLocalDataSource = new DocumentLocalDataSource(mContext);
         mDocumentModel = new DocumentModel();
@@ -42,10 +41,8 @@ public class DocumentRepository implements DocumentDataSource.Repository{
             mEditComponentRepository = new DocumentRepository(context);
         }
         return mEditComponentRepository;
-    } //Singleton
+    }
 
-
-    //////////////////
 
 
     @Override
@@ -60,10 +57,6 @@ public class DocumentRepository implements DocumentDataSource.Repository{
 
     }
 
-    @Override
-    public void createDocument(DocumentDataSource.DatabaseUpdateCallback databaseUpdateCallback) {
-
-    }
 
     @Override
     public void getDocumentLists(DocumentDataSource.DatabaseReadCallback databaseReadCallback) {
@@ -72,28 +65,43 @@ public class DocumentRepository implements DocumentDataSource.Repository{
 
     @Override
     public void getDocumentById(final int documentId, final DocumentDataSource.DatabaseReadCallback databaseReadCallback) {
-        mEditComponentLocalDataSource.readDocumentData(new DocumentDataSource.DatabaseReadCallback(){
 
+        mEditComponentLocalDataSource.findDocumentById(documentId, new DocumentDataSource.DatabaseReadCallback() {
             @Override
-            public void OnSuccess(List<Document> documents) {
-                List<Document> foundDocs = new ArrayList<>();
-                for(Document document : documents) {
-                    if (document.get_id() == documentId) {
-                        foundDocs.add(document);
-                    }
-                }
-                Document targetDoc = foundDocs.get(0);
-
+            public void OnSuccess(List<Document> document) {
+                Document targetDoc = document.get(0);
                 mDocumentModel.initDocumentComponents(getComponentsFromDocument(targetDoc));
                 databaseReadCallback.OnSuccess(null);
-                mEditComponentLocalDataSource.setDocumentInfo(documentId);
             }
 
             @Override
             public void OnFail() {
-
+                LogController.makeLog(TAG, "ERROR : Database Read", localLogPermission);
             }
         });
+
+//        mEditComponentLocalDataSource.readDocumentData(new DocumentDataSource.DatabaseReadCallback(){
+//
+//            @Override
+//            public void OnSuccess(List<Document> documents) {
+//                List<Document> foundDocs = new ArrayList<>();
+//                for(Document document : documents) {
+//                    if (document.get_id() == documentId) {
+//                        foundDocs.add(document);
+//                    }
+//                }
+//                Document targetDoc = foundDocs.get(0);
+//
+//                mDocumentModel.initDocumentComponents(getComponentsFromDocument(targetDoc));
+//                databaseReadCallback.OnSuccess(null);
+//                mEditComponentLocalDataSource.setDocumentInfo(documentId);
+//            }
+//
+//            @Override
+//            public void OnFail() {
+//
+//            }
+//        });
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -118,10 +126,6 @@ public class DocumentRepository implements DocumentDataSource.Repository{
         mDocumentModel.deleteDocumentComponent(position);
     }
 
-    @Override
-    public void initComponent(List<BaseComponent> components) {
-        mDocumentModel.initDocumentComponents(components);
-    }
 
     @Override
     public void swapComponent(int fromPosition, int toPosition) {
