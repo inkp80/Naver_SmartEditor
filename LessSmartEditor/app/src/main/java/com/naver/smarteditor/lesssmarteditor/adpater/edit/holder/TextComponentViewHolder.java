@@ -3,17 +3,17 @@ package com.naver.smarteditor.lesssmarteditor.adpater.edit.holder;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 
 import com.google.gson.Gson;
-import com.naver.smarteditor.lesssmarteditor.LogController;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.util.SpanInfoExtractor;
 import com.naver.smarteditor.lesssmarteditor.data.SpanInfo;
 import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
 import com.naver.smarteditor.lesssmarteditor.data.component.TextComponent;
 import com.naver.smarteditor.lesssmarteditor.listener.OnEditTextComponentChangeListener;
 import com.naver.smarteditor.lesssmarteditor.views.edit.SmartEditText;
+
+import java.util.List;
 
 /**
  * Created by NAVER on 2017. 5. 22..
@@ -41,7 +41,7 @@ public class TextComponentViewHolder extends ComponentViewHolder {
                     Spannable spannable = et.getText();
 
                     Gson gson = new Gson();
-                    String str = gson.toJson(SpanInfoExtractor.extractSpanInformation(spannable));
+                    String str = gson.toJson(SpanInfoExtractor.extractSpansFromSpannable(spannable));
 
                     onEditTextComponentChangeListener.onEditTextComponentTextChange(new TextComponent(et.getText().toString(), str), getAdapterPosition());
                 }
@@ -72,7 +72,7 @@ public class TextComponentViewHolder extends ComponentViewHolder {
             @Override
             public void afterTextChanged(Editable s) {
 //                Log.d("afterText", str);
-//                onEditTextComponentChangeListener.onEditTextComponentTextChange(new TextComponent(s.toString(), SpanInfoExtractor.extractSpanInformation(s)), getAdapterPosition());
+//                onEditTextComponentChangeListener.onEditTextComponentTextChange(new TextComponent(s.toString(), SpanInfoExtractor.extractSpansFromSpannable(s)), getAdapterPosition());
 //                LogController.makeLog("TextWatcher", "Editable S : " + s.toString() + ", editText : " + et.getText().toString(), true);
             }
         });
@@ -88,8 +88,10 @@ public class TextComponentViewHolder extends ComponentViewHolder {
     @Override
     public void bindView(BaseComponent baseComponent) {
         TextComponent textData = (TextComponent)baseComponent;
+        List<SpanInfo> spanInfoList = SpanInfoExtractor.spanJsonDeserializer(textData.getTextSpans());
         this.removeWatcher();
         this.setText(textData.getText());
+        SpanInfoExtractor.setSpansIntoSpannable(spanInfoList, this.et);
         this.bindTextWathcer();
     }
 

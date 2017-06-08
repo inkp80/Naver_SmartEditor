@@ -121,7 +121,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
 
         mAdapter = new EditComponentAdapter(this);
         mAdapter.setTextCursorChangeListener(new TextCursorListener() {
-            @Override
+              @Override
             public void showSelectedTypes(int styleType) {
                 checkSelectedType(styleType);
             }
