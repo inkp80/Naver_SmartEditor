@@ -3,7 +3,6 @@ package com.naver.smarteditor.lesssmarteditor.data.edit.local;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import com.google.gson.Gson;
 
@@ -14,14 +13,11 @@ import com.naver.smarteditor.lesssmarteditor.data.component.TextComponent;
 import com.naver.smarteditor.lesssmarteditor.data.component.TitleComponent;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.utils.EditorContract;
 import com.naver.smarteditor.lesssmarteditor.data.edit.local.utils.EditorDbHelper;
-import com.naver.smarteditor.lesssmarteditor.data.edit.local.utils.WrongComponentException;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
-
-import static com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent.Type.TEXT;
 
 /**
  * Created by NAVER on 2017. 5. 21..
@@ -33,7 +29,7 @@ public class DocumentLocalDataSource implements DocumentDataSource.DocumentLocal
     private EditorDbHelper mDbHelper;
     private SQLiteDatabase db;
 
-
+    private final int TITLE_COMP_POSITION = 0;
     private final int NEW_DOCUMENT = -1;
     private int currentDocumentId = NEW_DOCUMENT;
 
@@ -49,10 +45,10 @@ public class DocumentLocalDataSource implements DocumentDataSource.DocumentLocal
         if (currentDocumentId == NEW_DOCUMENT) {
             if (databaseUpdateCallback != null) {
                 try {
-                    if(((TitleComponent)documentData.get(0)).getTitle().length() == 0 ){
-                        ((TitleComponent)documentData.get(0)).setTitle("제목 없음");
+                    if(((TitleComponent)documentData.get(TITLE_COMP_POSITION)).getTitle().length() == 0 ){
+                        ((TitleComponent)documentData.get(TITLE_COMP_POSITION)).setTitle("제목 없음");
                     }
-                    if(!checkDocumentComponentValidate(documentData)){
+                    if(!isComponentValidate(documentData)){
                         databaseUpdateCallback.OnFail();
                         return;
                     }
@@ -75,7 +71,7 @@ public class DocumentLocalDataSource implements DocumentDataSource.DocumentLocal
         }
     }
 
-    private boolean checkDocumentComponentValidate(List<BaseComponent> mComponents){
+    private boolean isComponentValidate(List<BaseComponent> mComponents){
         List<BaseComponent> components = new ArrayList<>();
         for(BaseComponent baseComponent : mComponents){
             BaseComponent.Type type = baseComponent.getComponentType();

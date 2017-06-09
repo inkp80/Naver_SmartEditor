@@ -44,10 +44,8 @@ public class DocumentRepository implements DocumentDataSource.Repository{
     }
 
 
-
     @Override
     public void updateDocument(DocumentDataSource.DatabaseUpdateCallback databaseUpdateCallback) {
-        LogController.makeLog(TAG, "updateDoc", localLogPermission);
         mEditComponentLocalDataSource.updateDocumentData(getCurrentDocumentComponents(), databaseUpdateCallback);
     }
 
@@ -79,35 +77,7 @@ public class DocumentRepository implements DocumentDataSource.Repository{
                 LogController.makeLog(TAG, "ERROR : Database Read", localLogPermission);
             }
         });
-
-//        mEditComponentLocalDataSource.readDocumentData(new DocumentDataSource.DatabaseReadCallback(){
-//
-//            @Override
-//            public void OnSuccess(List<Document> documents) {
-//                List<Document> foundDocs = new ArrayList<>();
-//                for(Document document : documents) {
-//                    if (document.get_id() == documentId) {
-//                        foundDocs.add(document);
-//                    }
-//                }
-//                Document targetDoc = foundDocs.get(0);
-//
-//                mDocumentModel.initDocumentComponents(getComponentsFromDocument(targetDoc));
-//                databaseReadCallback.OnSuccess(null);
-//                mEditComponentLocalDataSource.setDocumentInfo(documentId);
-//            }
-//
-//            @Override
-//            public void OnFail() {
-//
-//            }
-//        });
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 
 

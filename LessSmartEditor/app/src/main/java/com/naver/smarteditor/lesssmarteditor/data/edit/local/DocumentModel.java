@@ -36,10 +36,9 @@ public class DocumentModel implements DocumentDataSource.LocalModel {
     @Override
     public void updateDocumentComponent(BaseComponent baseComponent, int position) {
         if(position == -1){
-            //TODO do nothing-
+            // do nothing-
             return;
         }
-//        LogController.makeLog(TAG, "updateDocument:"+ String.valueOf(((TitleComponent)baseComponent).getTitleBackgroundUri()), mLocalLogPermission);
         BaseComponent thisComponent = mComponents.get(position);
         thisComponent.updateData(baseComponent);
     }
@@ -62,8 +61,6 @@ public class DocumentModel implements DocumentDataSource.LocalModel {
 
     @Override
     public void swapDocumentComponent(int from, int to) {
-
-        //TODO : check if is it Title Component;
         if (from < to) {
             for (int i = from; i < to; i++) {
                 swap(mComponents, i, i + 1);

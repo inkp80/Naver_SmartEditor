@@ -1,5 +1,6 @@
 package com.naver.smarteditor.lesssmarteditor;
 
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Spannable;
@@ -44,6 +45,6 @@ public class NewAct extends AppCompatActivity {
 
     void setUnder(){
         Spannable spannable = editText.getText();
-        spannable.setSpan(new UnderlineCustom(), 0, editText.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+        spannable.setSpan(new ItalicSpan(Typeface.BOLD), 0, editText.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
     }
 }
