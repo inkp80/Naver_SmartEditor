@@ -56,6 +56,7 @@ import static com.naver.smarteditor.lesssmarteditor.MyApplication.MAPINFO_PARCEL
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.NO_TITLE_IMG;
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.REQ_MOV2_DOCLIST;
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.REQ_MOV2_GALLERY;
+import static com.naver.smarteditor.lesssmarteditor.MyApplication.REQ_MOV2_GALLERY_TITLE;
 import static com.naver.smarteditor.lesssmarteditor.MyApplication.REQ_MOV2_SEARCH_PLACE;
 import static com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent.Type.IMG;
 import static com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent.Type.MAP;
@@ -78,6 +79,13 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
     private EditContract.Presenter mPresenter;
     private EditComponentAdapter mAdapter;
 
+
+    @BindView(R.id.editor_title_menu)
+    LinearLayout mTitleMenu;
+    @BindView(R.id.editor_bt_title_img)
+    Button mBtTitleImage;
+    @BindView(R.id.editor_bt_title_cancel)
+    Button mBtTitleCancel;
 
     @BindView(R.id.editor_img_map_comp_menu)
     LinearLayout mImgMapComponentMenu;
@@ -108,12 +116,10 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
     RecyclerView mEditorRecyclerView;
 
 
-
     private SelectComponentDialog mSelectComponentDialog;
 
 
     private SmartEditText currentEditText;
-    private Boolean isViewHolderFocused = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -182,6 +188,9 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
 
                 }
 
+            } else if (requestCode == REQ_MOV2_GALLERY_TITLE) {
+                Uri selectedImgUri = data.getData();
+                mPresenter.updateComponentInDocument(new TitleComponent(null, selectedImgUri.toString()), 0);
             }
         }
     }
@@ -225,7 +234,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         mPresenter.setComponentAdatperModel(mAdapter);
         mPresenter.setComponentDataSource(DocumentRepository.getInstance(this));
 
-        mPresenter.addComponentToDocument(new TitleComponent("", NO_TITLE_IMG));
+        mPresenter.addComponentToDocument(new TitleComponent("", null));
     }
 
     private void initSelectComponentDialog() {
@@ -321,7 +330,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
                             public void onClick(DialogInterface dialog, int which) {
                                 //TODO : document ID init
                                 mPresenter.clearCurrentDocument();
-                                mPresenter.addComponentToDocument(new TitleComponent("", NO_TITLE_IMG));
+                                mPresenter.addComponentToDocument(new TitleComponent("", null));
                                 mAdapter.clearFocus();
                                 hideComponentOption();
 
@@ -372,10 +381,28 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         mBtDeleteComponent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    //TODO : delete
-                    mPresenter.deleteComponentFromDocument(mAdapter.getFocusingPosition());
-                    mAdapter.clearFocus();
-                    hideComponentOption();
+                mPresenter.deleteComponentFromDocument(mAdapter.getFocusingPosition());
+                mAdapter.clearFocus();
+                hideComponentOption();
+            }
+        });
+
+        mBtTitleImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_PICK);
+                intent.setType(android.provider.MediaStore.Images.Media.CONTENT_TYPE);
+                intent.setData(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(intent, REQ_MOV2_GALLERY_TITLE);
+            }
+        });
+
+        mBtTitleCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mAdapter.clearFocus();
+                hideSoftKeyboard();
+                hideComponentOption();
             }
         });
 
@@ -411,14 +438,17 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
         if (getType(type) == IMG || getType(type) == MAP) {
             mImgMapComponentMenu.setVisibility(View.VISIBLE);
             return;
-        } else if(getType(type) == TEXT || getType(type) == TITLE){
+        } else if (getType(type) == TEXT) {
             currentEditText = (SmartEditText) componentViewHolder.getItemView();
             mTextSpanMenu.setVisibility(View.VISIBLE);
+        } else if (getType(type) == TITLE){
+            mTitleMenu.setVisibility(View.VISIBLE);
         }
     }
 
 
     private void hideComponentOption() {
+        mTitleMenu.setVisibility(GONE);
         mImgMapComponentMenu.setVisibility(GONE);
         mTextSpanMenu.setVisibility(GONE);
         mBtSaveButton.setVisibility(View.VISIBLE);
@@ -431,7 +461,6 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
     ////////////////////////////////////////////////////////////////////////////////////
 
 
-
     private ComponentViewHolder componentViewHolder = null;
 
     private class RecyclerViewTouchItemHelper implements RecyclerView.OnItemTouchListener {
@@ -442,29 +471,26 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
 
                 View view = mEditorRecyclerView.findChildViewUnder(event.getX(), event.getY());
 
-                if(view == null){
+                if (view == null) {
                     Log.d("TYPE", "NULL");
                     getCurrentFocus().clearFocus();
                     hideComponentOption();
                     hideSoftKeyboard();
 
                     mAdapter.clearFocus();
-                    if(componentViewHolder != null) {
+                    if (componentViewHolder != null) {
                         componentViewHolder.removeMark();
                         componentViewHolder = null;
                     }
                     return false;
                 }
 
-                if(componentViewHolder != null){
+                if (componentViewHolder != null) {
                     componentViewHolder.removeMark();
                 }
-                //ㅓㅎ엏너ㅓㄴㄴ횽ㄷㅎㅇㅎㅇㅇ
-                //ㅓㅎ엏너ㅓㄴㄴ횽ㄷㅎㅇㅎㅇㅇ \n ㅛㅇㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎㅇㅎ \n ㅛ용ㅎㅇㅎㅇㅎㅇㅎ옹ㅌ오올려 \n\n ㅛ올오오여로로ㅓ러ㅓ러로러러 \n\n ㅎ요여려려로ㅗㅗ로로로려료욘 \n
-                //
 
                 ComponentViewHolder clickedViewHolder = (ComponentViewHolder) mEditorRecyclerView.getChildViewHolder(view);
-                if(componentViewHolder == clickedViewHolder){
+                if (componentViewHolder == clickedViewHolder) {
                     doNothing();
                     return false;
                 }
@@ -474,32 +500,32 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
                 int viewHolderType = clickedViewHolder.getItemViewType();
                 hideSoftKeyboard();
 
-                switch (getType(viewHolderType)){
+                switch (getType(viewHolderType)) {
                     case TEXT:
                         Log.d("TYPE", "TEXT" + mAdapter.getFocusingPosition());
                         hideComponentOption();
                         showComponentOption(viewHolderType);
                         return false;
                     case TITLE:
-                        Log.d("TYPE", "TITLE"+ mAdapter.getFocusingPosition());
+                        Log.d("TYPE", "TITLE" + mAdapter.getFocusingPosition());
+                        hideComponentOption();
+                        showComponentOption(viewHolderType);
                         break;
                     case MAP:
                         hideComponentOption();
                         showComponentOption(viewHolderType);
-                        Log.d("TYPE", "MAP"+ mAdapter.getFocusingPosition());
+                        Log.d("TYPE", "MAP" + mAdapter.getFocusingPosition());
                         break;
                     case IMG:
                         hideComponentOption();
                         showComponentOption(viewHolderType);
-                        Log.d("TYPE", "IMG"+ mAdapter.getFocusingPosition());
+                        Log.d("TYPE", "IMG" + mAdapter.getFocusingPosition());
                         break;
                     default:
-                        Log.d("ERR","RR"+ mAdapter.getFocusingPosition());
+                        Log.d("ERR", "RR" + mAdapter.getFocusingPosition());
                         break;
                 }
                 return false;
-
-
 
 
             }
@@ -518,39 +544,39 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
     }
 
 
-        public void initSpanOption(int styleType) {
-            mBtItalic.setText("I(X)");
-            mBtBold.setText("B(X)");
-            mBtUnderline.setText("U(X)");
+    public void initSpanOption(int styleType) {
+        mBtItalic.setText("I(X)");
+        mBtBold.setText("B(X)");
+        mBtUnderline.setText("U(X)");
 
 
-            //Typeface.BOLD = 1 ~ 2;
-            //Typeface.ITALIC = 2 ~ 4;
-            //TYPE_UNDERLINE = 3 ~ 8;
+        //Typeface.BOLD = 1 ~ 2;
+        //Typeface.ITALIC = 2 ~ 4;
+        //TYPE_UNDERLINE = 3 ~ 8;
 
-            for (int i = 1; i <= 3; i++) {
-                int isChecked = styleType & (1 << i);
-                if ((isChecked & (1 << Typeface.BOLD)) != 0) {
-                    mBtBold.setText("B(O)");
-                    continue;
+        for (int i = 1; i <= 3; i++) {
+            int isChecked = styleType & (1 << i);
+            if ((isChecked & (1 << Typeface.BOLD)) != 0) {
+                mBtBold.setText("B(O)");
+                continue;
 
-                } else if ((isChecked & (1 << Typeface.ITALIC)) != 0) {
-                    mBtItalic.setText("I(O)");
-                    continue;
-                } else if ((isChecked & (1 << TYPE_UNDERLINE)) != 0) {
-                    mBtUnderline.setText("U(O)");
-                    continue;
-                }
+            } else if ((isChecked & (1 << Typeface.ITALIC)) != 0) {
+                mBtItalic.setText("I(O)");
+                continue;
+            } else if ((isChecked & (1 << TYPE_UNDERLINE)) != 0) {
+                mBtUnderline.setText("U(O)");
+                continue;
             }
-        }
-
-        private void hideSoftKeyboard() {
-            if (inputMethodManager.isAcceptingText()) {
-                inputMethodManager.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), 0);
-            }
-        }
-
-        private void doNothing() {
-            return;
         }
     }
+
+    private void hideSoftKeyboard() {
+        if (inputMethodManager.isAcceptingText()) {
+            inputMethodManager.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), 0);
+        }
+    }
+
+    private void doNothing() {
+        return;
+    }
+}

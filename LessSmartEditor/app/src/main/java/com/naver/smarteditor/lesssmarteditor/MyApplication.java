@@ -17,6 +17,8 @@ public class MyApplication extends Application {
     public static final int REQ_MOV2_SEARCH_PLACE = 105;
     public static final int REQ_MOV2_DOCLIST = 106;
 
+    public static final int REQ_MOV2_GALLERY_TITLE = 107;
+
 
     public static final int RETROFIT_FAIL400 = 400;
     public static final int RETROFIT_SUCCESS = 200;

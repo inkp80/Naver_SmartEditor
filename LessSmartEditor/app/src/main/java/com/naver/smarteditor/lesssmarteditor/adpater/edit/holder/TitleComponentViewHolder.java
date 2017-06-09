@@ -3,8 +3,10 @@ package com.naver.smarteditor.lesssmarteditor.adpater.edit.holder;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
 
 import com.naver.smarteditor.lesssmarteditor.MyApplication;
@@ -20,7 +22,6 @@ import com.naver.smarteditor.lesssmarteditor.views.edit.utils.TitleFilter;
  */
 
 public class TitleComponentViewHolder extends ComponentViewHolder {
-
 
     private SmartEditText title;
     private OnEditTextComponentChangeListener onEditTextComponentChangeListener;
@@ -75,6 +76,7 @@ public class TitleComponentViewHolder extends ComponentViewHolder {
     @Override
     public void bindView(BaseComponent baseComponent) {
         TitleComponent component = (TitleComponent) baseComponent;
+        Log.d("bindView - Title", String.valueOf(component.getTitleBackgroundUri()));
         this.removeWatcher();
         if(component.getTitle() != null)
             (this.title).setText(component.getTitle().toString());

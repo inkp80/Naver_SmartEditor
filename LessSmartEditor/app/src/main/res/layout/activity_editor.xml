@@ -109,6 +109,26 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="save" />
+
+            <LinearLayout
+                android:id="@+id/editor_title_menu"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone">
+
+                <Button
+                    android:id="@+id/editor_bt_title_img"
+                    android:text="background Image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <Button
+                    android:id="@+id/editor_bt_title_cancel"
+                    android:text="cancel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
         </LinearLayout>
     </RelativeLayout>
 </LinearLayout>

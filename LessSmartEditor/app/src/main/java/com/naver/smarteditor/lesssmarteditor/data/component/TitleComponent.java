@@ -45,7 +45,7 @@ public class TitleComponent extends BaseComponent {
             this.title = component.getTitle();
         }
 
-        if(component.getTitleBackgroundUri() != MyApplication.NO_TITLE_IMG){
+        if(component.getTitleBackgroundUri() != null){
             LogController.makeLog("titlecompoennt", "updating uri", true);
             this.titleBackgroundUri = component.titleBackgroundUri;
         }
