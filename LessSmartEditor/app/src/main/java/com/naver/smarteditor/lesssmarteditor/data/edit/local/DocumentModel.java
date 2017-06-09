@@ -39,7 +39,7 @@ public class DocumentModel implements DocumentDataSource.LocalModel {
             //TODO do nothing-
             return;
         }
-        LogController.makeLog(TAG, "updateDocument:"+ String.valueOf(((TitleComponent)baseComponent).getTitleBackgroundUri()), mLocalLogPermission);
+//        LogController.makeLog(TAG, "updateDocument:"+ String.valueOf(((TitleComponent)baseComponent).getTitleBackgroundUri()), mLocalLogPermission);
         BaseComponent thisComponent = mComponents.get(position);
         thisComponent.updateData(baseComponent);
     }

@@ -1,5 +1,6 @@
 package com.naver.smarteditor.lesssmarteditor.adpater.edit.holder;
 
+import android.os.Build;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
@@ -8,7 +9,12 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 
+import com.bumptech.glide.RequestManager;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.ViewTarget;
 import com.naver.smarteditor.lesssmarteditor.MyApplication;
 import com.naver.smarteditor.lesssmarteditor.adpater.edit.util.ComponentFocusListener;
 import com.naver.smarteditor.lesssmarteditor.data.component.BaseComponent;
@@ -26,9 +32,10 @@ public class TitleComponentViewHolder extends ComponentViewHolder {
     private SmartEditText title;
     private OnEditTextComponentChangeListener onEditTextComponentChangeListener;
     private TextWatcher textWatcher;
+    private RequestManager requestManager;
 
 
-    public TitleComponentViewHolder(View itemView, OnEditTextComponentChangeListener onEditTextComponentChangeListener) {
+    public TitleComponentViewHolder(View itemView, RequestManager requestManager, OnEditTextComponentChangeListener onEditTextComponentChangeListener) {
         super(itemView);
         this.title = (SmartEditText) itemView;
         ((EditText)itemView).setHint("제목을 입력하세요");
@@ -36,6 +43,7 @@ public class TitleComponentViewHolder extends ComponentViewHolder {
         setTitleLengthLimit(30);
         this.onEditTextComponentChangeListener = onEditTextComponentChangeListener;
         title.setOnClickListener(null);
+        this.requestManager = requestManager;
 
     }
 
@@ -73,10 +81,29 @@ public class TitleComponentViewHolder extends ComponentViewHolder {
         title.removeTextChangedListener(textWatcher);
     }
 
+
     @Override
     public void bindView(BaseComponent baseComponent) {
         TitleComponent component = (TitleComponent) baseComponent;
-        Log.d("bindView - Title", String.valueOf(component.getTitleBackgroundUri()));
+        if(component.getTitleBackgroundUri() != null) {
+            if(component.getTitleBackgroundUri() == ""){
+                title.setBackgroundResource(android.R.drawable.edit_text);
+                return;
+            }
+            requestManager.load(component.getTitleBackgroundUri()).override(600, 200).into(new ViewTarget<SmartEditText, GlideDrawable>(this.title) {
+                @Override
+                public void onResourceReady(GlideDrawable resource, GlideAnimation anim) {
+                    SmartEditText myView = this.view;
+                    if (Build.VERSION.SDK_INT >= 16)
+                        myView.setBackground(resource);
+                    else
+                        return;
+                }
+            });
+        } else {
+            title.setBackgroundResource(android.R.drawable.edit_text);
+        }
+
         this.removeWatcher();
         if(component.getTitle() != null)
             (this.title).setText(component.getTitle().toString());

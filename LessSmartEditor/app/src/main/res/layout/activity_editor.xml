@@ -118,11 +118,20 @@
                 android:visibility="gone">
 
                 <Button
+                    android:layout_weight="1"
                     android:id="@+id/editor_bt_title_img"
                     android:text="background Image"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
+
                 <Button
+                    android:layout_weight="1"
+                    android:id="@+id/editor_bt_title_delete"
+                    android:text="delete"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <Button
+                    android:layout_weight="1"
                     android:id="@+id/editor_bt_title_cancel"
                     android:text="cancel"
                     android:layout_width="wrap_content"

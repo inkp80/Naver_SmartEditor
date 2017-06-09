@@ -86,6 +86,8 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
     Button mBtTitleImage;
     @BindView(R.id.editor_bt_title_cancel)
     Button mBtTitleCancel;
+    @BindView(R.id.editor_bt_title_delete)
+    Button mBtTitleDelete;
 
     @BindView(R.id.editor_img_map_comp_menu)
     LinearLayout mImgMapComponentMenu;
@@ -191,6 +193,7 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
             } else if (requestCode == REQ_MOV2_GALLERY_TITLE) {
                 Uri selectedImgUri = data.getData();
                 mPresenter.updateComponentInDocument(new TitleComponent(null, selectedImgUri.toString()), 0);
+                mAdapter.notifyDataChange();
             }
         }
     }
@@ -394,6 +397,14 @@ public class EditorActivity extends AppCompatActivity implements EditContract.Vi
                 intent.setType(android.provider.MediaStore.Images.Media.CONTENT_TYPE);
                 intent.setData(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 startActivityForResult(intent, REQ_MOV2_GALLERY_TITLE);
+            }
+        });
+
+        mBtTitleDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPresenter.updateComponentInDocument(new TitleComponent(null, ""), 0);
+                mAdapter.notifyDataChange();
             }
         });
 

@@ -10,6 +10,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.RequestManager;
@@ -49,7 +50,7 @@ public class ViewHolderFactory {
             case MAP:
                 return new MapComponentViewHolder(createItemView(type), requestManager);
             case TITLE:
-                TitleComponentViewHolder titleComponentViewHolder = new TitleComponentViewHolder(createItemView(type), onEditTextComponentChangeListener);
+                TitleComponentViewHolder titleComponentViewHolder = new TitleComponentViewHolder(createItemView(type), requestManager, onEditTextComponentChangeListener);
                 titleComponentViewHolder.getEditText().setTextCursorListener(textCursorListener);
                 return titleComponentViewHolder;
             default:
@@ -91,9 +92,17 @@ public class ViewHolderFactory {
                 mapItemView.addView(placeName);
                 return mapItemView;
             case TITLE:
+//                RelativeLayout relativeLayout = new RelativeLayout(mContext);
+//                RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+//                relativeLayout.setLayoutParams(rlp);
+
                 SmartEditText editTextTitleItemView = new SmartEditText(mContext);
 
                 editTextTitleItemView.setLayoutParams(lp);
+
+//                relativeLayout.addView(editTextTitleItemView);
+
+//                return relativeLayout;
                 return editTextTitleItemView;
             default:
                 return null;
